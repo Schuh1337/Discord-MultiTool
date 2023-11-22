@@ -1,6 +1,8 @@
 # Discord-Tool - SchuhRewrite
 
-![Tool](https://schuh.wtf/resources/images/tool.png)
+<div style="text-align:center">
+  <img src="https://schuh.wtf/resources/images/tool.png" alt="Tool Image">
+</div>
 
 ## Overview
 
