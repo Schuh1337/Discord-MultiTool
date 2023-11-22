@@ -5,8 +5,6 @@ PURPLE = '\033[95m'
 RED = '\033[91m'
 GRAY = '\033[90m'
 ENDC = '\033[0m'
-keys = {"dev": "dev"}
-system("title " + "Schuh Rewrite - Authentication")
 def send_discord_webhook(url, content):
     data = {'content': content}
     response = requests.post(url, json=data)
@@ -100,23 +98,7 @@ def close_all_dms(user_token):
             print(PURPLE + "[#] All DMs closed successfully." + ENDC)
     except requests.exceptions.RequestException:
         print(RED + f"[!] An error occurred. If this issue persists, please report it to schuh." + ENDC)
-while True:
-    try:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        entered_key = input(PURPLE + "[#] Enter Key: " + ENDC).strip()
-        if entered_key in keys:
-            user = keys[entered_key]
-            print(GREEN + f"[#] Signed in as {user}. Redirecting to homepage.." + ENDC)
-            time.sleep(3)
-            break
-        else:
-            print(RED + "[#] Invalid Key." + ENDC)
-            time.sleep(2)
-    except KeyboardInterrupt:
-        continue
-    except EOFError:
-        pass
-system("title " + f"Schuh Rewrite - Account: {user}  l  CTRL + C at any time to stop")
+system("title " + f"Schuh Rewrite    -    CTRL + C at any time to stop")
 while True:
     try:
         os.system('cls' if os.name == 'nt' else 'clear')
