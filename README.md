@@ -1,5 +1,6 @@
 # Discord-Tool - SchuhRewrite
-![Tool](https://schuh.wtf/resources/images/tool.png)          
+![Tool](https://schuh.wtf/resources/images/tool.png)
+#
 ## Overview
 This project is created and shared for educational purposes only. It serves as a learning resource to help individuals understand and explore.
 ## Disclaimer
