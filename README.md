@@ -1,4 +1,4 @@
-# Discord-Tool - SchuhRewrite ![Tool](https://schuh.wtf/resources/images/tool.png)
+# ![Tool](https://schuh.wtf/resources/images/tool.png) Discord-Tool - SchuhRewrite
 
 
 ## Overview
