@@ -1,4 +1,4 @@
-# Discord-Tool
+# Discord-Tool - SchuhRewrite
 
 ## Overview
 
