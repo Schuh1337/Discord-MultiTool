@@ -1,6 +1,6 @@
 # Discord-Tool - SchuhRewrite
 
-![Tool](schuh.wtf/resources/tool.png)
+![Tool](https://schuh.wtf/resources/images/tool.png)
 
 ## Overview
 
