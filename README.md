@@ -1,5 +1,5 @@
 # Discord-Tool - SchuhRewrite
-![Tool](https://schuh.wtf/resources/images/tool.png)
+![Tool](https://schuh.wtf/resources/litecoin.png)
 # 
 Make sure to have `VirtualTerminalLevel = 1` for the best experience.
 ## Overview
