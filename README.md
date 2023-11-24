@@ -1,6 +1,5 @@
 # Discord-Tool - SchuhRewrite
 ![Tool](https://schuh.wtf/resources/images/tool.png)
-#
 Make sure to have `VirtualTerminalLevel = 1` for the best experience.
 ## Overview
 This project is created and shared for educational purposes only. It serves as a learning resource to help individuals understand and explore.
