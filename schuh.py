@@ -189,7 +189,7 @@ while True:
         elif mode == '5':
             os.system('cls' if os.name == 'nt' else 'clear')
             message_content = input(PURPLE + "[#] Message you want to spam: " + ENDC)
-            auth_key = input(PURPLE + "[#] Token: " + ENDC)
+            user_token = input(PURPLE + "[#] Token: " + ENDC)
             channel_link = input(PURPLE + "[#] Channel Link: " + ENDC)
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
@@ -206,7 +206,7 @@ while True:
             delay = input(PURPLE + "[#] Delay (in seconds): " + ENDC)
             delay = float(delay) if delay else 1
             payload = {'content': message_content}
-            header = {'authorization': auth_key}
+            header = {'authorization': user_token}
             for i in range(num_messages):
                 response = requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", data=payload, headers=header)
                 if response.status_code == 200:
@@ -258,7 +258,7 @@ while True:
         elif mode == '7':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            confirmation = input(PURPLE + "[#] Are you sure you want to close all DMs for the provided token? *[This will not leave group chats] (y/n): " + ENDC)
+            confirmation = input(RED + "[#] Are you sure you want to close all DMs for the provided token? *[This will not leave group chats] (y/n): " + ENDC)
             if confirmation.lower() == "y":
                 close_all_dms(user_token)
             else:
@@ -298,15 +298,15 @@ while True:
         elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            status_list = input(PURPLE + "[#] List of Statuses separated by commas: " + ENDC).split(',')
+            status_list = input(PURPLE + "[#] List of Statuses (separated by commas): " + ENDC).split(',')
             status_list = [status.strip() for status in status_list if status.strip()]
             while not status_list:
                 print(RED + "[#] Invalid input. Please enter at least two Statuses." + ENDC)
-                status_list = input(PURPLE + "[#] List of Statuses separated by commas: " + ENDC).split(',')
+                status_list = input(PURPLE + "[#] List of Statuses (separated by commas): " + ENDC).split(',')
                 status_list = [status.strip() for status in status_list if status.strip()]
             while len(status_list) < 2 or not status_list:
                 print(RED + "[#] Invalid input. Please enter at least two Statuses." + ENDC)
-                status_list = input(PURPLE + "[#] List of Statuses separated by commas: " + ENDC).split(',')
+                status_list = input(PURPLE + "[#] List of Statuses (separated by commas): " + ENDC).split(',')
                 status_list = [status.strip() for status in status_list if status.strip()]
             delay = input(PURPLE + "[#] Delay (in seconds): " + ENDC)
             delay = float(delay) if delay else 1.0
