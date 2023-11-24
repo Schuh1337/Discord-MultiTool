@@ -101,9 +101,9 @@ system("title " + f"Schuh Rewrite    -    CTRL + C at any time to stop")
 while True:
     try:
         os.system('cls' if os.name == 'nt' else 'clear')
-        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Token Information\n\n> " + ENDC)
+        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Hypesquad Changer\n[11] Token Information\n\n> " + ENDC)
         try:
-            if int(mode) < 0 or int(mode) > 10:
+            if int(mode) < 0 or int(mode) > 11:
                 continue
         except ValueError:
             pass
@@ -326,6 +326,26 @@ while True:
                 index = (index + 1) % len(status_list)
                 time.sleep(delay)
         elif mode == '10':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance'}
+            print(PURPLE + "[#] Choose HypeSquad House:" + ENDC)
+            for option, house in hypesquad_options.items():
+                print(PURPLE + f"[#] {option}. {house}" + ENDC)
+            selected_option = input(PURPLE + "> " + ENDC)
+            while selected_option not in hypesquad_options:
+                print(RED + "[#] Invalid option. Please choose a valid HypeSquad House 1-3." + ENDC)
+                selected_option = input(PURPLE + "> " + ENDC)
+            hypesquad_house = hypesquad_options[selected_option]
+            headers = {'authorization': user_token, 'content-type': 'application/json'}
+            payload = {'house_id': selected_option}
+            response = requests.post('https://discord.com/api/v9/hypesquad/online', json=payload, headers=headers)
+            if response.status_code == 204:
+                print(GREEN + f"[#] Successfully changed HypeSquad House to {hypesquad_house}." + ENDC)
+            else:
+                print(RED + f"[!] Failed to change HypeSquad House. Status code: {response.status_code}" + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+        elif mode == '11':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             num_guilds = get_num_user_guilds(user_token)
