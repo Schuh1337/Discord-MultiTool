@@ -1,6 +1,6 @@
 # Discord-Tool - SchuhRewrite
 ![Tool](https://schuh.wtf/resources/images/tool.png)
-(https://schuh.wtf/resources/images/tool.png)
+![1](https://schuh.wtf/resources/images/tool.png)
 #
 Make sure to have `VirtualTerminalLevel = 1` for the best experience.
 ## Overview
