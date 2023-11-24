@@ -5,6 +5,13 @@ PURPLE = '\033[95m'
 RED = '\033[91m'
 GRAY = '\033[90m'
 ENDC = '\033[0m'
+def prompt_for_valid_input(prompt, validation_function, error_message):
+    while True:
+        user_input = input(prompt)
+        if validation_function(user_input):
+            return user_input
+        else:
+            print(RED + error_message + ENDC)
 def send_discord_webhook(url, content):
     data = {'content': content}
     response = requests.post(url, json=data)
@@ -14,8 +21,8 @@ def send_discord_webhook(url, content):
         print(RED + f"[#] Failed to send message. Error code: {response.status_code}" + ENDC)
         print("[#] Retrying in 5 seconds...")
         time.sleep(5)
-def delete_webhook(webhook):
-    response = requests.delete(webhook)
+def delete_webhook(url):
+    response = requests.delete(url)
     if response.status_code == 204:
         print(GREEN + "[#] Webhook deleted successfully!" + ENDC)
         input(PURPLE + "[#] Press enter to return." + ENDC)
@@ -38,7 +45,7 @@ def get_user_info(token):
         response.raise_for_status()
         user_data = response.json()
         return user_data
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         print(RED + f"[#] Failed to fetch token information, invalid token or an error occured." + ENDC)
         return None
 def get_num_user_friends(token):
@@ -49,18 +56,17 @@ def get_num_user_friends(token):
         friends_data = response.json()
         num_friends = len([friend for friend in friends_data if friend['type'] == 1])
         return num_friends
-    except requests.exceptions.RequestException as e:
-        pass
+    except requests.exceptions.RequestException:
         return 0
-def get_num_user_guilds(token13):
-    headers = {'Authorization': token13}
+def get_num_user_guilds(token):
+    headers = {'Authorization': token}
     try:
         response = requests.get('https://discord.com/api/v10/users/@me/guilds', headers=headers)
         response.raise_for_status()
         guilds_data = response.json()
         num_guilds = len(guilds_data)
         return num_guilds
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         pass
         return 0
 def validate_token(token):
@@ -68,17 +74,10 @@ def validate_token(token):
     try:
         response = requests.get('https://discord.com/api/v10/users/@me', headers=headers)
         return response.status_code == 200
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         return False
-def prompt_for_valid_input(prompt, validation_function, error_message):
-    while True:
-        user_input = input(prompt)
-        if validation_function(user_input):
-            return user_input
-        else:
-            print(RED + error_message + ENDC)
-def close_all_dms(user_token):
-    headers = {'Authorization': user_token}
+def close_all_dms(token):
+    headers = {'Authorization': token}
     try:
         response = requests.get('https://discord.com/api/v10/users/@me/channels', headers=headers)
         response.raise_for_status()
