@@ -2,6 +2,7 @@
 ![Tool](https://schuh.wtf/resources/images/rw.png)
 #
 Make sure to have `VirtualTerminalLevel = 1` for the best experience.
+#
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default discord emojis
 ## Overview
