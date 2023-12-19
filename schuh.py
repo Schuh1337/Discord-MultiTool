@@ -258,7 +258,7 @@ while True:
         elif mode == '7':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            confirmation = input(RED + "[#] Are you sure you want to close all DMs for the provided token? *[This will not leave group chats] (y/n): " + ENDC)
+            confirmation = input(RED + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC)
             if confirmation.lower() == "y":
                 close_all_dms(user_token)
             else:
