@@ -3,7 +3,7 @@
 #
 Make sure to have `VirtualTerminalLevel = 1` for the best experience.
 #
-Latest Update 19.12.23
+Latest Update - 19.12.23
 * Added 'Remove Hypesquad' to HypeSquad Changer
 #
 Known Issues / "Bugs"
