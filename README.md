@@ -4,7 +4,7 @@
 Make sure to have `VirtualTerminalLevel = 1` for the best experience.
 #
 Latest Update 19.12.23
-Added 'Remove Hypesquad' to HypeSquad Changer
+* Added 'Remove Hypesquad' to HypeSquad Changer
 #
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis
