@@ -9,6 +9,6 @@ Latest Update - 19.12.23
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis
 ## Overview
-This project is created and shared for educational purposes only. It serves as a learning resource to help individuals understand and explore.
-This project is not intended for production use, its code may not adhere to best practices or security standards. It is solely meant for educational purposes, providing examples, and encouraging experimentation.
+* This project is created and shared for educational purposes only. It serves as a learning resource to help individuals understand and explore.
+* This project is not intended for production use, its code may not adhere to best practices or security standards. It is solely meant for educational purposes, providing examples, and encouraging experimentation.
  
