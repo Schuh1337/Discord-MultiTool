@@ -328,22 +328,29 @@ while True:
         elif mode == '10':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance'}
-            print(PURPLE + "[#] Choose HypeSquad House:" + ENDC)
+            hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance', '4': 'Remove'}
             for option, house in hypesquad_options.items():
                 print(PURPLE + f"[#] {option}. {house}" + ENDC)
-            selected_option = input(PURPLE + "> " + ENDC)
+            selected_option = input(PURPLE + "\n> " + ENDC)
             while selected_option not in hypesquad_options:
-                print(RED + "[#] Invalid option. Please choose a valid HypeSquad House 1-3." + ENDC)
+                print(RED + "[#] Invalid option. Please choose a valid HypeSquad House 1-4." + ENDC)
                 selected_option = input(PURPLE + "> " + ENDC)
-            hypesquad_house = hypesquad_options[selected_option]
-            headers = {'authorization': user_token, 'content-type': 'application/json'}
-            payload = {'house_id': selected_option}
-            response = requests.post('https://discord.com/api/v9/hypesquad/online', json=payload, headers=headers)
-            if response.status_code == 204:
-                print(GREEN + f"[#] Successfully changed HypeSquad House to {hypesquad_house}." + ENDC)
+            if selected_option == '4':
+                headers = {'authorization': user_token, 'content-type': 'application/json'}
+                response = requests.delete('https://discord.com/api/v9/hypesquad/online', headers=headers)
+                if response.status_code == 204:
+                    print(GREEN + "[#] Successfully removed HypeSquad House." + ENDC)
+                else:
+                    print(RED + f"[!] Failed to remove HypeSquad House. Status code: {response.status_code}" + ENDC)
             else:
-                print(RED + f"[!] Failed to change HypeSquad House. Status code: {response.status_code}" + ENDC)
+                hypesquad_house = hypesquad_options[selected_option]
+                headers = {'authorization': user_token, 'content-type': 'application/json'}
+                payload = {'house_id': selected_option}
+                response = requests.post('https://discord.com/api/v9/hypesquad/online', json=payload, headers=headers)
+                if response.status_code == 204:
+                    print(GREEN + f"[#] Successfully changed HypeSquad House to {hypesquad_house}." + ENDC)
+                else:
+                    print(RED + f"[!] Failed to change HypeSquad House. Status code: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
         elif mode == '11':
             os.system('cls' if os.name == 'nt' else 'clear')
