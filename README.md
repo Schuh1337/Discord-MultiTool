@@ -5,6 +5,7 @@ Make sure to have `VirtualTerminalLevel = 1` for the best experience. -> [Tutori
 #
 Latest Update - 19.12.23
 * Added 'Remove Hypesquad' to HypeSquad Changer
+* Improved Inputs and thereby reduced number of Lines from 400 to 360 
 #
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis
