@@ -269,7 +269,7 @@ while True:
             emoji = prompt_for_valid_input(PURPLE + "[#] Emoji string (without angle brackets): " + ENDC, lambda e: len(e) > 0, "[#] Emoji string cannot be empty.")
             last_message_id = None
             while True:
-                response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=100", headers={'authorization': user_token})
+                response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=1", headers={'authorization': user_token})
                 if response.status_code != 200:
                     print(RED + f"[!] Failed to retrieve messages. Status code: {response.status_code}" + ENDC)
                     input(PURPLE + "[#] Press enter to return.")
@@ -281,7 +281,7 @@ while True:
                         if last_message_id is None or message_id > last_message_id:
                             status_code, response_content = react_to_message(message_id, emoji)
                             if status_code == 204:
-                                print(GREEN + f"[#] Reacted to message " + PURPLE + f"ID : {message_id}" + ENDC)
+                                print(GREEN + f"[#] Reacted to message" + ENDC, ": " + PURPLE + message_id + ENDC)
                             else:
                                 print(RED + f"[!] Failed to react to message {message_id}. Status code: {status_code}" + ENDC)
                             last_message_id = message_id
