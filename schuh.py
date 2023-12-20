@@ -311,10 +311,7 @@ while True:
             hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance', '4': 'Remove'}
             for option, house in hypesquad_options.items():
                 print(PURPLE + f"[#] {option}. {house}" + ENDC)
-            selected_option = input(PURPLE + "\n> " + ENDC)
-            while selected_option not in hypesquad_options:
-                print(RED + "[#] Invalid option. Please choose a valid HypeSquad House 1-4." + ENDC)
-                selected_option = input(PURPLE + "> " + ENDC)
+            print(); selected_option = prompt_for_valid_input(PURPLE + "> " + ENDC, lambda value: value in hypesquad_options, RED + "[#] Invalid Option. Please choose a valid Option." + ENDC)
             if selected_option == '4':
                 headers = {'authorization': user_token, 'content-type': 'application/json'}
                 response = requests.delete('https://discord.com/api/v9/hypesquad/online', headers=headers)
