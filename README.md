@@ -3,7 +3,7 @@
 #
 Make sure to have `VirtualTerminalLevel = 1` for the best experience. -> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 #
-Latest Update - 19.12.23
+Latest Update - 20.12.23
 * Added 'Remove Hypesquad' to HypeSquad Changer
 * Added 'IP Address Lookup'
 * Improved Inputs
