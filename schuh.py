@@ -1,4 +1,4 @@
-import os, requests, time, re, json
+import os, requests, time, re, json, ipaddress
 from os import system
 GREEN = '\033[92m'
 PURPLE = '\033[95m'
@@ -18,7 +18,7 @@ def send_discord_webhook(url, content):
     if response.status_code == 204:
         print(GREEN + "[#] Message sent successfully!" + ENDC, ": " + PURPLE + content + ENDC)
     else:
-        print(RED + f"[#] Failed to send message. Error code: {response.status_code}" + ENDC)
+        print(RED + f"[!] Failed to send message. Error code: {response.status_code}" + ENDC)
         print("[#] Retrying in 5 seconds...")
         time.sleep(5)
 def delete_webhook(url):
@@ -28,7 +28,7 @@ def delete_webhook(url):
         input(PURPLE + "[#] Press enter to return." + ENDC)
         return True
     else:
-        print(RED + f"[#] Failed to delete webhook. Error code: {response.status_code}" + ENDC)
+        print(RED + f"[!] Failed to delete webhook. Error code: {response.status_code}" + ENDC)
         input(PURPLE + "[#] Press enter to return." + ENDC)
         return False
 def validate_webhook_url(url):
@@ -46,7 +46,7 @@ def get_user_info(token):
         user_data = response.json()
         return user_data
     except requests.exceptions.RequestException:
-        print(RED + f"[#] Failed to fetch token information, invalid token or an error occured." + ENDC)
+        print(RED + f"[!] Failed to fetch token information." + ENDC)
         return None
 def get_num_user_friends(token):
     headers = {'Authorization': token}
@@ -96,11 +96,27 @@ def close_all_dms(token):
             print(PURPLE + "[#] All DMs closed successfully." + ENDC)
     except requests.exceptions.RequestException:
         print(RED + f"[!] An error occurred. If this issue persists, please report it to schuh." + ENDC)
+def ip_lookup(ip):
+    try:
+        response = requests.get(f'https://ipinfo.io/{ip}/json')
+        response.raise_for_status()
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException:
+        return None
+    except ValueError:
+        return None
+def validate_ip(ip):
+    try:
+        ipaddress.ip_address(ip)
+        return True
+    except Exception:
+        return False
 system("title " + f"Schuh Rewrite    -    CTRL + C at any time to stop")
 while True:
     try:
         os.system('cls' if os.name == 'nt' else 'clear')
-        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Hypesquad Changer\n[11] Token Information\n\n> " + ENDC)
+        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Hypesquad Changer\n[11] IP Address Lookup\n[12] Token Information\n\n> " + ENDC)
         try:
             if int(mode) < 0 or int(mode) > 11:
                 continue
@@ -155,7 +171,7 @@ while True:
                     else:
                         print(GRAY + f"[#] Created by: N/A" + ENDC)
                 else:
-                    print(RED + f"[#] Failed to fetch webhook information. Error code: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to fetch webhook information. Error code: {response.status_code}" + ENDC)
                 input(PURPLE + "[#] Press enter to return." + ENDC)
             except json.JSONDecodeError:
                 pass
@@ -186,7 +202,7 @@ while True:
                 if response.status_code == 200:
                     print(GREEN + f"[#] Message {i+1}/{num_messages} sent successfully!" + ENDC, ": " + PURPLE + message_content + ENDC)
                 else:
-                    print(RED + f"[#] Failed to send message. Error code: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to send message. Error code: {response.status_code}" + ENDC)
                     print("[#] Retrying in 5 seconds...")
                     time.sleep(5)
                 time.sleep(delay)
@@ -317,6 +333,25 @@ while True:
                     print(RED + f"[!] Failed to change HypeSquad House. Status code: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
         elif mode == '11':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            ip_address = prompt_for_valid_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
+            ip_data = ip_lookup(ip_address)
+            if ip_data is not None:
+                print(GRAY + f"[#] City: {ip_data.get("city", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Region: {ip_data.get("region", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Country: {ip_data.get("country", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Hostname: {ip_data.get("hostname", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Organization: {ip_data.get("org", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Location: {ip_data.get("loc", "N/A")}" + ENDC)
+                loc = ip_data.get("loc", "").split(",")
+                latitude, longitude = loc
+                maps_link = f"https://www.google.com/maps?q={latitude},{longitude}"
+                print(GRAY + f"[#] Google Maps Link: {maps_link}" + ENDC)
+            else:
+                print(RED + "[!] An unknown error occurred." + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '12':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             num_guilds = get_num_user_guilds(user_token)
