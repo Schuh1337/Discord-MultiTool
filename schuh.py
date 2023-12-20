@@ -123,7 +123,7 @@ while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Hypesquad Changer\n[11] IP Address Lookup\n[12] Token Information\n\n> " + ENDC)
         try:
-            if int(mode) < 0 or int(mode) > 11:
+            if int(mode) < 0 or int(mode) > 12:
                 continue
         except ValueError:
             pass
