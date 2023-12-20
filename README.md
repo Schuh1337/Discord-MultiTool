@@ -5,8 +5,8 @@ Make sure to have `VirtualTerminalLevel = 1` for the best experience. -> [Tutori
 #
 Latest Update - 19.12.23
 * Added 'Remove Hypesquad' to HypeSquad Changer
-* Improved Inputs
 * Added 'IP Address Lookup'
+* Improved Inputs
 #
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis
