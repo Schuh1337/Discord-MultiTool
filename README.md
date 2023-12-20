@@ -1,5 +1,5 @@
 # Discord-Tool - SchuhRewrite
-![Tool](https://schuh.wtf/resources/images/sr.png)
+![Tool](https://schuh.wtf/resources/images/rewrite.png)
 #
 Make sure to have `VirtualTerminalLevel = 1` for the best experience. -> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 #
