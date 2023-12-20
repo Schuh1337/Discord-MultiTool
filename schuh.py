@@ -96,6 +96,11 @@ def close_all_dms(token):
             print(PURPLE + "[#] All DMs closed successfully." + ENDC)
     except requests.exceptions.RequestException:
         print(RED + f"[!] An error occurred. If this issue persists, please report it to schuh." + ENDC)
+def react_to_message(message_id, emoji):
+    reaction_url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"
+    headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0',}
+    response = requests.put(reaction_url, headers=headers)
+    return response.status_code, response.content.decode('utf-8')
 def ip_lookup(ip):
     try:
         response = requests.get(f'https://ipinfo.io/{ip}/json')
@@ -262,11 +267,6 @@ while True:
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
             emoji = prompt_for_valid_input(PURPLE + "[#] Emoji string (without angle brackets): " + ENDC, lambda e: len(e) > 0, "[#] Emoji string cannot be empty.")
-            def react_to_message(message_id, emoji):
-                reaction_url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"
-                headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0',}
-                response = requests.put(reaction_url, headers=headers)
-                return response.status_code, response.content.decode('utf-8')
             last_message_id = None
             while True:
                 response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=100", headers={'authorization': user_token})
