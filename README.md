@@ -3,9 +3,10 @@
 #
 Make sure that you have `VirtualTerminalLevel = 1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 #
-Latest Update - 20.12.23
+Latest Update - 21.12.23
 * Added 'Remove Hypesquad' to HypeSquad Changer
 * Added 'IP Address Lookup'
+* Improved Channel Monitoring
 * Improved Inputs
 #
 Known Issues / "Bugs"
