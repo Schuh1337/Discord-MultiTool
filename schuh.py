@@ -338,13 +338,11 @@ while True:
                 print(GRAY + f"[#] City: {ip_data.get("city", "N/A")}" + ENDC)
                 print(GRAY + f"[#] Region: {ip_data.get("region", "N/A")}" + ENDC)
                 print(GRAY + f"[#] Country: {ip_data.get("country", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Postal: {ip_data.get("postal", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Timezone: {ip_data.get("timezone", "N/A")}" + ENDC)
                 print(GRAY + f"[#] Hostname: {ip_data.get("hostname", "N/A")}" + ENDC)
                 print(GRAY + f"[#] Organization: {ip_data.get("org", "N/A")}" + ENDC)
                 print(GRAY + f"[#] Location: {ip_data.get("loc", "N/A")}" + ENDC)
-                loc = ip_data.get("loc", "").split(",")
-                latitude, longitude = loc
-                maps_link = f"https://www.google.com/maps?q={latitude},{longitude}"
-                print(GRAY + f"[#] Google Maps Link: {maps_link}" + ENDC)
             else:
                 print(RED + "[!] An unknown error occurred." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
