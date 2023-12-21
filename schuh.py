@@ -220,11 +220,11 @@ while True:
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
             headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+            params = {'limit': 1}
             print(GREEN + "[#] Monitoring Channel. Press Ctrl + C to stop." + ENDC)
             processed_messages = set()
             try:
                 while True:
-                    params = {'limit': 1}
                     response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages", params=params, headers=headers)
                     if response.status_code != 200:
                         print(RED + f"[!] Failed to retrieve messages. Status code: {response.status_code}" + ENDC)
@@ -240,12 +240,21 @@ while True:
                                         author = author + " [BOT]"
                                     if 'attachments' in message:
                                         for attachment in message['attachments']:
-                                            if attachment['filename'].endswith(('.jpg', '.jpeg', '.png', '.gif')):
-                                                content = GRAY + content + ENDC + RED + f" [Image]" + ENDC
-                                            elif attachment['filename'].endswith(('.mp4', '.webm', '.mov')):
-                                                content = GRAY + content + ENDC + RED + f" [Video]" + ENDC
+                                            filename = attachment['filename']
+                                            if filename.endswith(('.jpg', '.jpeg', '.png')):
+                                                if content: content += " "
+                                                content = GRAY + content + ENDC + RED + "[Image]" + ENDC
+                                            elif filename.endswith(('.gif')):
+                                                if content: content += " "
+                                                content = GRAY + content + ENDC + RED + "[GIF]" + ENDC                                                
+                                            elif filename.endswith(('.mp4', '.webm', '.mov')):
+                                                if content: content += " "
+                                                content = GRAY + content + ENDC + RED + "[Video]" + ENDC
+                                            elif filename.endswith(('.mp3', '.wav', '.ogg')):
+                                                if content: content += " "
+                                                content = GRAY + content + ENDC + RED + "[Audio]" + ENDC
                                     if 'sticker_items' in message:
-                                        content = RED + f"[Sticker] " + ENDC + GRAY + content + ENDC
+                                        content = RED + f"[Sticker]" + ENDC
                                     print(GRAY + f"[#] {author}: {content}" + ENDC)
                                     processed_messages.add(message_id)
             except KeyboardInterrupt:
