@@ -5,7 +5,7 @@ PURPLE = '\033[95m'
 RED = '\033[91m'
 GRAY = '\033[90m'
 ENDC = '\033[0m'
-def prompt_for_valid_input(prompt, validator, error_message):
+def validate_input(prompt, validator, error_message):
     while True:
         user_input = input(prompt).strip()
         if validator(user_input):
@@ -31,7 +31,7 @@ def delete_webhook(url):
         print(RED + f"[!] Failed to delete webhook. Error code: {response.status_code}" + ENDC)
         input(PURPLE + "[#] Press enter to return." + ENDC)
         return False
-def validate_webhook_url(url):
+def validate_webhook(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -129,18 +129,18 @@ while True:
             pass
         if mode == '1': 
             os.system('cls' if os.name == 'nt' else 'clear')
-            message_content = prompt_for_valid_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, RED + "[#] Message too short. Please enter a message with at least 1 character." + ENDC)            
-            webhook_url = prompt_for_valid_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook_url, "[#] Invalid webhook URL. Please check the URL and try again.")
-            delay = prompt_for_valid_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
+            message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, RED + "[#] Message too short. Please enter a message with at least 1 character." + ENDC)            
+            webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
+            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
             while True:
                 send_discord_webhook(webhook_url, message_content)
                 time.sleep(delay)
         elif mode == '2':
             os.system('cls' if os.name == 'nt' else 'clear')
-            message_content = prompt_for_valid_input(PURPLE + "[#] Message you want to spam and animate: " + ENDC, lambda content: len(content) >= 2, RED + "[#] Message too short. Please enter a message with at least 2 characters." + ENDC)            
-            webhook_url = prompt_for_valid_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook_url, "[#] Invalid webhook URL. Please check the URL and try again.")
-            delay = prompt_for_valid_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
+            message_content = validate_input(PURPLE + "[#] Message you want to spam and animate: " + ENDC, lambda content: len(content) >= 2, RED + "[#] Message too short. Please enter a message with at least 2 characters." + ENDC)            
+            webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
+            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
             while True:
                 for i in range(1, len(message_content) + 1):
@@ -155,7 +155,7 @@ while True:
                         time.sleep(delay)
         elif mode == '3':
             os.system('cls' if os.name == 'nt' else 'clear')
-            webhook_url = prompt_for_valid_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook_url, "[#] Invalid webhook URL. Please check the URL and try again.")
+            webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
             try:
                 response = requests.get(webhook_url)
                 if response.status_code == 200:
@@ -182,7 +182,7 @@ while True:
                 pass
         elif mode == '4':
             os.system('cls' if os.name == 'nt' else 'clear')
-            webhook_url = prompt_for_valid_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook_url, "[#] Invalid webhook URL. Please check the URL and try again.")
+            webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
             confirmation = input(PURPLE + "[#] Are you sure you want to delete the webhook? (y/n): " + ENDC)
             if confirmation.lower() == 'y':
                 delete_webhook(webhook_url)
@@ -191,14 +191,14 @@ while True:
                 input(PURPLE + "[#] Press enter to return." + ENDC)
         elif mode == '5':
             os.system('cls' if os.name == 'nt' else 'clear')
-            message_content = input(PURPLE + "[#] Message you want to spam: " + ENDC)
-            user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_link = prompt_for_valid_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")            
+            message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, RED + "[#] Message too short. Please enter a message with at least 1 character." + ENDC)            
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")            
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
-            num_messages = prompt_for_valid_input(PURPLE + "[#] Number of times to send the message: " + ENDC, lambda value: value.isdigit() and int(value) > 0, "[#] Invalid input. Please enter a positive integer.")
+            num_messages = validate_input(PURPLE + "[#] Number of times to send the message: " + ENDC, lambda value: value.isdigit() and int(value) > 0, "[#] Invalid input. Please enter a positive integer.")
             num_messages = int(num_messages)
-            delay = prompt_for_valid_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
+            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
             payload = {'content': message_content}
             header = {'authorization': user_token}
@@ -215,8 +215,8 @@ while True:
             continue
         elif mode == '6':
             os.system('cls' if os.name == 'nt' else 'clear')
-            user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_link = prompt_for_valid_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
             headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
@@ -261,7 +261,7 @@ while True:
                 pass
         elif mode == '7':
             os.system('cls' if os.name == 'nt' else 'clear')
-            user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             confirmation = input(RED + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC)
             if confirmation.lower() == "y":
                 close_all_dms(user_token)
@@ -271,11 +271,11 @@ while True:
             continue
         elif mode == '8':
             os.system('cls' if os.name == 'nt' else 'clear')
-            user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_link = prompt_for_valid_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
-            emoji = prompt_for_valid_input(PURPLE + "[#] Emoji string (without angle brackets): " + ENDC, lambda e: len(e) > 0, "[#] Emoji string cannot be empty.")
+            emoji = validate_input(PURPLE + "[#] Emoji string (without angle brackets): " + ENDC, lambda e: len(e) > 0, "[#] Emoji string cannot be empty.")
             last_message_id = None
             while True:
                 response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=1", headers={'authorization': user_token})
@@ -296,10 +296,10 @@ while True:
                             last_message_id = message_id
         elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
-            user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            status_list_input = prompt_for_valid_input(PURPLE + "[#] List of Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 2, "[#] Invalid Statuses. Please enter at least 2 Statuses separated by commas.")
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            status_list_input = validate_input(PURPLE + "[#] List of Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 2, "[#] Invalid Statuses. Please enter at least 2 Statuses separated by commas.")
             status_list = [status.strip() for status in status_list_input.split(',') if status.strip()]
-            delay = prompt_for_valid_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
+            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
             index = 0
             headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0', 'content-type': 'application/json'}
@@ -316,12 +316,12 @@ while True:
                 time.sleep(delay)
         elif mode == '10':
             os.system('cls' if os.name == 'nt' else 'clear')
-            user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance', '4': 'Remove'}
             for option, house in hypesquad_options.items():
                 print(PURPLE + f"[#] {option}. {house}" + ENDC)
             print() 
-            selected_option = prompt_for_valid_input(PURPLE + "> " + ENDC, lambda value: value in hypesquad_options, RED + "[#] Invalid Option. Please choose a valid Option." + ENDC)
+            selected_option = validate_input(PURPLE + "> " + ENDC, lambda value: value in hypesquad_options, RED + "[#] Invalid Option. Please choose a valid Option." + ENDC)
             if selected_option == '4':
                 headers = {'authorization': user_token, 'content-type': 'application/json'}
                 response = requests.delete('https://discord.com/api/v9/hypesquad/online', headers=headers)
@@ -341,7 +341,7 @@ while True:
             input(PURPLE + "[#] Press enter to return." + ENDC)
         elif mode == '11':
             os.system('cls' if os.name == 'nt' else 'clear')
-            ip_address = prompt_for_valid_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
+            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, RED + "[#] Invalid IP Address. Please check the IP and try again." + ENDC)
             ip_data = ip_lookup(ip_address)
             if ip_data is not None:
                 print(GRAY + f"[#] City: {ip_data.get("city", "N/A")}" + ENDC)
@@ -358,7 +358,7 @@ while True:
             continue
         elif mode == '12':
             os.system('cls' if os.name == 'nt' else 'clear')
-            user_token = prompt_for_valid_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, RED + "[#] Invalid Token. Please check the token and try again." + ENDC)
             num_guilds = get_num_user_guilds(user_token)
             num_friends = get_num_user_friends(user_token)
             user_info = get_user_info(user_token)
