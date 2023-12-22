@@ -4,7 +4,7 @@
 Make sure that you have `VirtualTerminalLevel = 1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 #
 Hotfix 1 (Latest) -  22.12.23
-* Added ´.strip()´ to the validate input function.
+* Added '.strip()' to the validate input function.
 #
 Update 1 (Latest) - 21.12.23
 * Added 'Remove Hypesquad' to HypeSquad Changer
