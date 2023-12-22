@@ -5,13 +5,13 @@ PURPLE = '\033[95m'
 RED = '\033[91m'
 GRAY = '\033[90m'
 ENDC = '\033[0m'
-def prompt_for_valid_input(prompt, validation_function, error_message):
+def prompt_for_valid_input(prompt, validator, error_message):
     while True:
-        user_input = input(prompt)
-        if validation_function(user_input):
+        user_input = input(prompt).strip()
+        if validator(user_input):
             return user_input
         else:
-            print(RED + error_message + ENDC)
+            print(error_message)
 def send_discord_webhook(url, content):
     data = {'content': content}
     response = requests.post(url, json=data)
