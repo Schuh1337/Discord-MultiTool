@@ -6,6 +6,7 @@ Make sure that you have `VirtualTerminalLevel = 1` for the best experience. --> 
 Update 2 - 25.12.2023
 * Added Emoji Support to Animated Status
 * Improved Animated Status error handling
+* im so fucking lazy i dont want to add any more error handlers for validating emoji ids etc, if you want to do that pop a pull request!
 #
 Hotfix 1 - 22.12.23
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
