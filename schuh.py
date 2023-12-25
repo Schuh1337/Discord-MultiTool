@@ -313,9 +313,9 @@ while True:
                 response = requests.patch('https://discord.com/api/v9/users/@me/settings', data=payload_json, headers=headers)
                 if response.status_code == 200:
                     if emoji_id:
-                        print(GREEN + f"[#] Changed Status to: " + PURPLE + status + ENDC + GREEN + " with emoji " + ENDC + PURPLE + emoji_id + ENDC)
+                        print(GREEN + f"[#] Changed Status to: " + PURPLE + status + GREEN + " with emoji " + PURPLE + emoji_id + ENDC)
                     else:
-                        print(GREEN + f"[#] Changed Status to: {PURPLE}{status}{ENDC}")
+                        print(GREEN + f"[#] Changed Status to: " + PURPLE + status + ENDC)
                 else:
                     print(RED + f"[!] Failed to change Status. Status code: {response.status_code}" + ENDC)
                 index = (index + 1) % len(status_list)
