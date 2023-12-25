@@ -297,19 +297,25 @@ while True:
         elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            status_list_input = validate_input(PURPLE + "[#] List of Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 1 and all(s.strip() != '' for s in value.split(',')), "[#] Invalid Statuses. Please enter at least 2 Statuses separated by commas.")
+            status_list_input = validate_input(PURPLE + "[#] Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 1 and all(s.strip() != '' for s in value.split(',')), "[#] Invalid Statuses. Please enter at least 2 Statuses separated by commas.")
             status_list = [status.strip() for status in status_list_input.split(',') if status.strip()]
+            emoji_list_input = validate_input(PURPLE + "[#] Emoji IDs (optional, separated by commas): " + ENDC, lambda emojis: len(emojis.split(',')) == len(status_list) if emojis.strip() else True, "[#] Invalid Emoji IDs. Please enter the same amount of IDs as Statuses.")
+            emoji_list = [emoji.strip() for emoji in emoji_list_input.split(',') if emoji.strip()]
             delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
             index = 0
             headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0', 'content-type': 'application/json'}
             while True:
                 status = status_list[index]
-                payload = {'custom_status': {'text': status}}
+                emoji_id = emoji_list[index] if emoji_list else None
+                payload = {'custom_status': {'text': status, 'emoji_id': emoji_id} if emoji_id else {'text': status}}
                 payload_json = json.dumps(payload)
                 response = requests.patch('https://discord.com/api/v9/users/@me/settings', data=payload_json, headers=headers)
                 if response.status_code == 200:
-                    print(GREEN + "[#] Changed Status to: " + PURPLE + status + ENDC)
+                    if emoji_id:
+                        print(GREEN + f"[#] Changed Status to: " + PURPLE + status + ENDC + GREEN + " with emoji " + ENDC + PURPLE + emoji_id + ENDC)
+                    else:
+                        print(GREEN + f"[#] Changed Status to: {PURPLE}{status}{ENDC}")
                 else:
                     print(RED + f"[!] Failed to change Status. Status code: {response.status_code}" + ENDC)
                 index = (index + 1) % len(status_list)
