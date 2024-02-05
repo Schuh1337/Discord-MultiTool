@@ -7,12 +7,13 @@ Make sure that you have `VirtualTerminalLevel` set to `1` for the best experienc
 Hotfix 1 - 22.12.23
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
 * Other minor fixes & adjustments
-Update 1 - 21.12.23<br>
-* Added 'Remove Hypesquad' to HypeSquad Changer<br>
-* Added 'IP Address Lookup'<br>
-* Improved Channel Monitoring<br>
+<br>
+Update 1 - 21.12.23
+* Added 'Remove Hypesquad' to HypeSquad Changer
+* Added 'IP Address Lookup'
+* Improved Channel Monitoring
 * Improved Inputs
-<br><br>
-Known Issues / "Bugs"<br>
-* Message Reacter doesn't work with default Discord Emojis<br>
+<br>
+Known Issues / "Bugs"
+* Message Reacter doesn't work with default Discord Emojis
 * DM Channel Clearer only closes DMs with messages in them
