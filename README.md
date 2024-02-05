@@ -8,12 +8,12 @@ Hotfix 1 - 22.12.23
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
 * Other minor fixes & adjustments
 <br>
-Update 1 - 21.12.23
-* Added 'Remove Hypesquad' to HypeSquad Changer
-* Added 'IP Address Lookup'
-* Improved Channel Monitoring
-* Improved Inputs
+Update 1 - 21.12.23<br>
+* Added 'Remove Hypesquad' to HypeSquad Changer<br>
+* Added 'IP Address Lookup'<br>
+* Improved Channel Monitoring<br>
+* Improved Inputs<br>
 <br>
-Known Issues / "Bugs"
-* Message Reacter doesn't work with default Discord Emojis
+Known Issues / "Bugs"<br>
+* Message Reacter doesn't work with default Discord Emojis<br>
 * DM Channel Clearer only closes DMs with messages in them
