@@ -13,7 +13,7 @@ Update 1 - 21.12.23<br>
 * Added 'IP Address Lookup'<br>
 * Improved Channel Monitoring<br>
 * Improved Inputs
-<br>
+<br><br>
 Known Issues / "Bugs"<br>
 * Message Reacter doesn't work with default Discord Emojis<br>
 * DM Channel Clearer only closes DMs with messages in them
