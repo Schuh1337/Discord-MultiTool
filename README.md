@@ -9,14 +9,14 @@ Update 2 - 22.06.24
 * Added 'Scrape Stickers'
 <br>
 Hotfix 1 - 22.12.23<br>
-* Added .strip() to the validate_input function to remove leading and trailing Spaces
+* Added .strip() to the validate_input function to remove leading and trailing Spaces<br>
 * Other minor fixes & adjustments
 <br>
 Update 1 - 21.12.23<br>
 * Added 'Remove Hypesquad' to HypeSquad Changer<br>
 * Added 'IP Address Lookup'<br>
 * Improved Channel Monitoring<br>
-* Improved Inputs<br>
+* Improved Inputs
 <br>
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis
