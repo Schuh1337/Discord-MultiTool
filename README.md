@@ -8,14 +8,14 @@ Update 2 - 22.06.24
 * Added 'Scrape Emojis'
 * Added 'Scrape Stickers'
 <br>
-Hotfix 1 - 22.12.23
+Hotfix 1 - 22.12.23<br>
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
 * Other minor fixes & adjustments
 <br>
 Update 1 - 21.12.23<br>
-* Added 'Remove Hypesquad' to HypeSquad Changer
-* Added 'IP Address Lookup'
-* Improved Channel Monitoring
+* Added 'Remove Hypesquad' to HypeSquad Changer<br>
+* Added 'IP Address Lookup'<br>
+* Improved Channel Monitoring<br>
 * Improved Inputs<br>
 <br>
 Known Issues / "Bugs"
