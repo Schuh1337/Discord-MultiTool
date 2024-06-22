@@ -1,4 +1,4 @@
-# Discord-Tool - SchuhRewrite
+# Discord-Tool - Schuh Rewrite
 ![Tool](https://schuh.wtf/resources/images/multitool.png)
 <br><br>
 This tool is made for Educational Purposes and Educational Purposes ONLY.<br>
