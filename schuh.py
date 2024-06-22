@@ -156,7 +156,7 @@ async def download_sticker(sticker, inner_sticker_dir):
     valid_filename = re.sub(r'[\\/*?:"<>|]', '', sticker['name'])
     sticker_path = os.path.join(inner_sticker_dir, f"{valid_filename}.webp")
     try:
-        response = requests.get(f"https://media.discordapp.net/stickers/{sticker['id']}.webp?size=160")
+        response = requests.get(f"https://media.discordapp.net/stickers/{sticker['id']}.{'webp' if sticker['format_type'] == 1 else 'gif'}?size=160")
         if response.status_code == 200:
             with open(sticker_path, 'wb') as f:
                 f.write(response.content)
