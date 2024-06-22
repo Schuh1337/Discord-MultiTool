@@ -1,4 +1,4 @@
-import os, requests, time, re, json, ipaddress
+import os, requests, time, re, json, ipaddress, asyncio
 from os import system
 GREEN = '\033[92m'
 PURPLE = '\033[95m'
@@ -117,13 +117,70 @@ def validate_ip(ip):
         return True
     except Exception:
         return False
+def get_guild_emojis(token, server_id):
+    headers = {"Authorization": token}
+    response = requests.get(f"https://discord.com/api/v9/guilds/{server_id}/emojis", headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+async def download_emoji(emoji, inner_emoji_dir):
+    emoji_path = os.path.join(inner_emoji_dir, f"{emoji['name']}.{'gif' if emoji['animated'] else 'png'}")
+    try:
+        response = requests.get(f"https://cdn.discordapp.com/emojis/{emoji['id']}.{'gif' if emoji['animated'] else 'png'}")
+        if response.status_code == 200:
+            print(GREEN + f"[#] Successfully downloaded Emoji: {emoji['name']}" + ENDC)
+            with open(emoji_path, 'wb') as f:
+                f.write(response.content)
+            return True
+        else:
+            print(RED + f"[!] Failed to download Emoji: {emoji['name']} - RSC: {response.status_code}" + ENDC)
+            return False 
+    except Exception:
+        print(RED + f"[!] Unknown error while downloading Emoji: {emoji['name']} - RSC: {response.status_code}" + ENDC)
+        return False
+async def download_emoji_async(emojis, inner_emoji_dir):
+    print(PURPLE + f"[#] Downloading {len(emojis)} Emojis.." + ENDC)
+    tasks = [download_emoji(emoji, inner_emoji_dir) for emoji in emojis]
+    results = await asyncio.gather(*tasks)
+    successful_downloads = sum(results)
+    return successful_downloads
+def get_guild_stickers(token, server_id):
+    headers = {"Authorization": token}
+    response = requests.get(f"https://discord.com/api/v9/guilds/{server_id}/stickers", headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+async def download_sticker(sticker, inner_sticker_dir):
+    valid_filename = re.sub(r'[\\/*?:"<>|]', '', sticker['name'])
+    sticker_path = os.path.join(inner_sticker_dir, f"{valid_filename}.webp")
+    try:
+        response = requests.get(f"https://media.discordapp.net/stickers/{sticker['id']}.webp?size=160")
+        if response.status_code == 200:
+            with open(sticker_path, 'wb') as f:
+                f.write(response.content)
+            print(GREEN + f"[#] Successfully downloaded Sticker: {sticker['name']}" + ENDC)
+            return True
+        else:
+            print(RED + f"[!] Failed to download Sticker: {sticker['name']} - RSC: {response.status_code} , {e}" + ENDC)
+            return False
+    except Exception as e:
+        print(RED + f"[!] Error downloading Sticker {sticker['name']} - RSC: {response.status_code} , {e}" + ENDC)
+        return False
+async def download_stickers_async(stickers, inner_sticker_dir):
+    print(PURPLE + f"[#] Downloading {len(stickers)} Stickers.." + ENDC)
+    tasks = [download_sticker(sticker, inner_sticker_dir) for sticker in stickers]
+    results = await asyncio.gather(*tasks)
+    successful_downloads = sum(results)
+    return successful_downloads
 system("title " + f"Schuh Rewrite    -    CTRL + C at any time to stop")
 while True:
     try:
         os.system('cls' if os.name == 'nt' else 'clear')
-        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Hypesquad Changer\n[11] IP Address Lookup\n[12] Token Information\n\n> " + ENDC)
+        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Hypesquad Changer\n[11] IP Address Lookup\n[12] Token Information\n[13] Scrape Emojis\n[14] Scrape Stickers\n\n> " + ENDC)
         try:
-            if int(mode) < 0 or int(mode) > 12:
+            if int(mode) < 0 or int(mode) > 14:
                 continue
         except ValueError:
             pass
@@ -281,7 +338,7 @@ while True:
                 response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=1", headers={'authorization': user_token})
                 if response.status_code != 200:
                     print(RED + f"[!] Failed to retrieve messages. Status code: {response.status_code}" + ENDC)
-                    input(PURPLE + "[#] Press enter to return.")
+                    input(PURPLE + "[#] Press enter to return." + ENDC)
                     continue
                 messages = response.json()
                 for message in messages:
@@ -394,7 +451,45 @@ while True:
                         print(GRAY + f"[#] Nitro: No" + ENDC)
                 print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
                 print(GRAY + f"[#] Servers: {num_guilds}" + ENDC)
-            input(PURPLE + "[#] Press enter to return.")
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '13':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
+            inner_emoji_dir = os.path.join("emojis", str(server_id))
+            os.makedirs(inner_emoji_dir, exist_ok=True)
+            emojis = get_guild_emojis(user_token, server_id)
+            if emojis:
+                scs = asyncio.run(download_emoji_async(emojis, inner_emoji_dir))
+                if scs:
+                    print(PURPLE + f"[#] Successfully downloaded {scs} of {len(emojis)} Emojis.")
+                    input(PURPLE + "[#] Press enter to return." + ENDC) 
+                else:
+                    print(RED + "[!] Unknown error while downloading Emojis." + ENDC)
+                    input(PURPLE + "[#] Press enter to return." + ENDC)
+            else:
+                print(RED + "[!] Failed to retrieve Emojis from Server." + ENDC)
+                input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '14':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
+            inner_sticker_dir = os.path.join("stickers", str(server_id))
+            os.makedirs(inner_sticker_dir, exist_ok=True)
+            stickers = get_guild_stickers(user_token, server_id)
+            if stickers: 
+                scs = asyncio.run(download_stickers_async(stickers, inner_sticker_dir))
+                if scs:
+                    print(PURPLE + f"[#] Successfully downloaded {scs} of {len(stickers)} Stickers.")
+                    input(PURPLE + "[#] Press enter to return." + ENDC) 
+                else:
+                    print(RED + "[!] Unknown error while downloading Stickers." + ENDC)
+                    input(PURPLE + "[#] Press enter to return." + ENDC)
+            else:
+                print(RED + "[!] Failed to retrieve Stickers from Server.")
+                input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
     except KeyboardInterrupt:
         continue
