@@ -152,21 +152,32 @@ def get_guild_stickers(token, server_id):
         return response.json()
     else:
         return None
+def get_format_type(format_type):
+    if format_type == 1:
+        return 'webp'
+    elif format_type == 2:
+        return 'png'
+    elif format_type == 3:
+        return 'lottie'
+    elif format_type == 4:
+        return 'gif'
+    else:
+        return None
 async def download_sticker(sticker, inner_sticker_dir):
     valid_filename = re.sub(r'[\\/*?:"<>|]', '', sticker['name'])
     sticker_path = os.path.join(inner_sticker_dir, f"{valid_filename}.webp")
     try:
-        response = requests.get(f"https://media.discordapp.net/stickers/{sticker['id']}.{'webp' if sticker['format_type'] == 1 else 'gif'}?size=160")
+        response = requests.get(f"https://media.discordapp.net/stickers/{sticker['id']}.{get_format_type(sticker['format_type'])}?size=160")
         if response.status_code == 200:
             with open(sticker_path, 'wb') as f:
                 f.write(response.content)
             print(GREEN + f"[#] Successfully downloaded Sticker: {sticker['name']}" + ENDC)
             return True
         else:
-            print(RED + f"[!] Failed to download Sticker: {sticker['name']} - RSC: {response.status_code} , {e}" + ENDC)
+            print(RED + f"[!] Failed to download Sticker: {sticker['name']} - RSC: {response.status_code}" + ENDC)
             return False
-    except Exception as e:
-        print(RED + f"[!] Error downloading Sticker {sticker['name']} - RSC: {response.status_code} , {e}" + ENDC)
+    except Exception:
+        print(RED + f"[!] Error downloading Sticker {sticker['name']} - RSC: {response.status_code}" + ENDC)
         return False
 async def download_stickers_async(stickers, inner_sticker_dir):
     print(PURPLE + f"[#] Downloading {len(stickers)} Stickers.." + ENDC)
