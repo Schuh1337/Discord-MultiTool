@@ -11,7 +11,8 @@ Update 2 - 22.06.24
 Hotfix 1 - 22.12.23
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
 * Other minor fixes & adjustments
-#
+<br>
+<br>
 Update 1 - 21.12.23<br>
 * Added 'Remove Hypesquad' to HypeSquad Changer
 * Added 'IP Address Lookup'
