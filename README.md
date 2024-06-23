@@ -5,7 +5,8 @@ This tool is made for Educational Purposes and Educational Purposes ONLY.<br>
 Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 #
 Update 3 - 23.06.24
-* Added choice between 'Plain Text' Statuses and 'Emoji & Text' Statuses to 'Animated Status'
+* Added Custom Emoji support to 'Animated Status'
+* Added Choice between 'Plain Text' Statuses and 'Emoji & Text' Statuses to 'Animated Status'
 #
 Hotfix 2 - 22.06.24
 * Fixed Animated Stickers being downloaded as Static
