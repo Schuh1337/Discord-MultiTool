@@ -18,7 +18,7 @@ def send_discord_webhook(url, content):
     if response.status_code == 204:
         print(GREEN + "[#] Message sent successfully!" + ENDC, ": " + PURPLE + content + ENDC)
     else:
-        print(RED + f"[!] Failed to send message. Error code: {response.status_code}" + ENDC)
+        print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
         print("[#] Retrying in 5 seconds...")
         time.sleep(5)
 def delete_webhook(url):
@@ -28,7 +28,7 @@ def delete_webhook(url):
         input(PURPLE + "[#] Press enter to return." + ENDC)
         return True
     else:
-        print(RED + f"[!] Failed to delete webhook. Error code: {response.status_code}" + ENDC)
+        print(RED + f"[!] Failed to delete webhook - RSC: {response.status_code}" + ENDC)
         input(PURPLE + "[#] Press enter to return." + ENDC)
         return False
 def validate_webhook(url):
@@ -89,7 +89,7 @@ def close_all_dms(token):
             if response.status_code == 200:
                 print(GREEN + f"[#] Closed DM {channel_id}" + ENDC)
             else:
-                print(RED + f"[!] Failed to close DM {channel_id}. Status code: {response.status_code}" + ENDC)
+                print(RED + f"[!] Failed to close DM {channel_id} - RSC: {response.status_code}" + ENDC)
         if not any(channel['type'] == 1 for channel in dm_channels):
             print(RED + "[!] No DMs found to close." + ENDC)
         else:
@@ -244,7 +244,7 @@ while True:
                     else:
                         print(GRAY + f"[#] Created by: N/A" + ENDC)
                 else:
-                    print(RED + f"[!] Failed to fetch webhook information. Error code: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to fetch webhook information - RSC: {response.status_code}" + ENDC)
                 input(PURPLE + "[#] Press enter to return." + ENDC)
             except json.JSONDecodeError:
                 pass
@@ -275,7 +275,7 @@ while True:
                 if response.status_code == 200:
                     print(GREEN + f"[#] Message {i+1}/{num_messages} sent successfully!" + ENDC, ": " + PURPLE + message_content + ENDC)
                 else:
-                    print(RED + f"[!] Failed to send message. Error code: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
                     print("[#] Retrying in 5 seconds...")
                     time.sleep(5)
                 time.sleep(delay)
@@ -295,7 +295,7 @@ while True:
                 while True:
                     response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages", params=params, headers=headers)
                     if response.status_code != 200:
-                        print(RED + f"[!] Failed to retrieve messages. Status code: {response.status_code}" + ENDC)
+                        print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
                     else:
                         messages = response.json()
                         for message in reversed(messages):
@@ -348,7 +348,7 @@ while True:
             while True:
                 response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=1", headers={'authorization': user_token})
                 if response.status_code != 200:
-                    print(RED + f"[!] Failed to retrieve messages. Status code: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
                     input(PURPLE + "[#] Press enter to return." + ENDC)
                     continue
                 messages = response.json()
@@ -360,26 +360,45 @@ while True:
                             if status_code == 204:
                                 print(GREEN + f"[#] Reacted to message" + ENDC, ": " + PURPLE + message_id + ENDC)
                             else:
-                                print(RED + f"[!] Failed to react to message {message_id}. Status code: {status_code}" + ENDC)
+                                print(RED + f"[!] Failed to react to message {message_id} - RSC: {status_code}" + ENDC)
                             last_message_id = message_id
         elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            status_list_input = validate_input(PURPLE + "[#] Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 1 and all(s.strip() != '' for s in value.split(',')), "[#] Invalid Statuses. Please enter at least 2 Statuses separated by commas.")
-            status_list = [status.strip() for status in status_list_input.split(',') if status.strip()]
+            status_type_choice = ''
+            status_type_choice = validate_input(PURPLE + "[#] 1. Plain Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice, please enter either 1 or 2.")
+            if status_type_choice == '1':
+                status_list_input = validate_input(PURPLE + "[#] Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 2 and all(s.strip() != '' for s in value.split(',')) and len(set(s.strip() for s in value.split(','))) == len(value.split(',')), "[#] Invalid Statuses. Please enter at least 2 unique statuses separated by commas.")
+                status_list = [status.strip() for status in status_list_input.split(',') if status.strip()]
+            elif status_type_choice == '2':
+                emoji_status_pairs_input = validate_input(PURPLE + "[#] Statuses (e.g., <:en:eid> - Status1, <:en2:eid2> - Status2): " + ENDC, lambda value: all(len(pair.split('-')) == 2 and pair.split('-')[0].strip().startswith('<:') and len(set(pair.split('-')[1].strip() for pair in value.split(','))) == len(value.split(',')) for pair in value.split(',')), "[#] Invalid Emoji & Text pairs. Please enter at least 2 unique pairs in the correct format.")
+                emoji_status_pairs = [pair.strip() for pair in emoji_status_pairs_input.split(',') if pair.strip()]
+                status_list = []
+                for pair in emoji_status_pairs:
+                    emoji_text_pair = pair.split('-')
+                    emoji = emoji_text_pair[0].strip()
+                    text = emoji_text_pair[1].strip()
+                    emoji_id = emoji.split(':')[2][:-1]
+                    status_list.append({"emoji": emoji, "text": text, "emoji_id": emoji_id})
             delay =  validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
-            index = 0
             headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0', 'content-type': 'application/json'}
+            index = 0
             while True:
-                status = status_list[index]
-                payload = {'custom_status': {'text': status}}
+                if status_type_choice == '1':
+                    status = status_list[index]
+                    payload = {'custom_status': {'text': status}}
+                    status_message = status
+                elif status_type_choice == '2':
+                    emoji_text_pair = status_list[index]
+                    payload = {'custom_status': {'text': emoji_text_pair['text'], 'emoji_name': emoji_text_pair['emoji'].split(':')[1], 'emoji_id': emoji_text_pair['emoji_id']}}
+                    status_message = f"[{emoji_text_pair['emoji_id']}] {emoji_text_pair['text']}"
                 payload_json = json.dumps(payload)
                 response = requests.patch('https://discord.com/api/v9/users/@me/settings', data=payload_json, headers=headers)
                 if response.status_code == 200:
-                    print(GREEN + "[#] Changed Status to: " + PURPLE + status + ENDC)
+                    print(GREEN + "[#] Changed Status to: " + PURPLE + status_message + ENDC)
                 else:
-                    print(RED + f"[!] Failed to change Status. Status code: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to change Status - RSC: {response.status_code}" + ENDC)
                 index = (index + 1) % len(status_list)
                 time.sleep(delay)
         elif mode == '10':
@@ -396,7 +415,7 @@ while True:
                 if response.status_code == 204:
                     print(GREEN + "[#] Successfully removed HypeSquad House." + ENDC)
                 else:
-                    print(RED + f"[!] Failed to remove HypeSquad House. Status code: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to remove HypeSquad House - RSC: {response.status_code}" + ENDC)
             else:
                 hypesquad_house = hypesquad_options[selected_option]
                 headers = {'authorization': user_token, 'content-type': 'application/json'}
@@ -405,7 +424,7 @@ while True:
                 if response.status_code == 204:
                     print(GREEN + f"[#] Successfully changed HypeSquad House to {hypesquad_house}." + ENDC)
                 else:
-                    print(RED + f"[!] Failed to change HypeSquad House. Status code: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to change HypeSquad House - RSC: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
         elif mode == '11':
             os.system('cls' if os.name == 'nt' else 'clear')
