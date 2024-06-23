@@ -22,7 +22,7 @@ Update 1 - 21.12.23<br>
 * Improved Inputs
 #
 Known Issues / "Bugs"
-* Message Reacter doesn't work with default Discord Emojis
-  ⮡&nbsp;&nbsp; It works if you input the actual emoji, not something like :joy:
+* Message Reacter doesn't work with default Discord Emojis<br>
+  ⮡&nbsp;&nbsp; It works if you input the actual emoji, not something like :\joy:
 * DM Channel Clearer only closes DMs with messages in them<br>
   ⮡ &nbsp;&nbsp;Pretty sure this is a discord api limitation
