@@ -24,3 +24,4 @@ Update 1 - 21.12.23<br>
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis
 * DM Channel Clearer only closes DMs with messages in them
+  ⮡ Pretty sure this is a discord api limitation.
