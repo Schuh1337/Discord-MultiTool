@@ -1,5 +1,6 @@
 import os, requests, time, re, json, ipaddress, asyncio
 from selenium import webdriver
+from datetime import datetime
 from os import system
 GREEN = '\033[92m'
 PURPLE = '\033[95m'
@@ -13,6 +14,13 @@ def validate_input(prompt, validator, error_message):
             return user_input
         else:
             print(RED + error_message + ENDC)
+def parse_date(iso_date):
+    try:
+        parsed_date = datetime.fromisoformat(iso_date)
+        formatted_date = parsed_date.strftime('%d.%m.%y %H:%M')
+        return formatted_date
+    except ValueError:
+        return "Invalid Date"
 def send_discord_webhook(url, content):
     data = {'content': content}
     response = requests.post(url, json=data)
@@ -190,9 +198,9 @@ system("title " + f"Schuh Rewrite    -    CTRL + C at any time to stop")
 while True:
     try:
         os.system('cls' if os.name == 'nt' else 'clear')
-        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Hypesquad Changer\n[11] IP Address Lookup\n[12] Token Information\n[13] Token Login\n[14] Scrape Emojis\n[15] Scrape Stickers\n\n> " + ENDC)
+        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Hypesquad Changer\n[11] IP Address Lookup\n[12] Token Information\n[13] Token Payments\n[14] Token Login\n[15] Scrape Emojis\n[16] Scrape Stickers\n\n> " + ENDC)
         try:
-            if int(mode) < 0 or int(mode) > 15:
+            if int(mode) < 0 or int(mode) > 16:
                 continue
         except ValueError:
             pass
@@ -486,6 +494,34 @@ while True:
             continue
         elif mode == '13':
             os.system('cls' if os.name == 'nt' else 'clear')
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            headers = {'Authorization': user_token, 'Content-Type': 'application/json'}
+            response = requests.get('https://discord.com/api/v9/users/@me/billing/payments', headers=headers)
+            if response.status_code == 200:
+                payment_history = response.json()
+                if payment_history:
+                    for payment in payment_history:
+                        item = payment.get('description', 'Unknown')
+                        date = parse_date(payment['created_at'])
+                        amount = payment.get('amount', {})
+                        source = payment.get('payment_source', {})
+                        country = source.get('country', 'N/A')
+                        currency = payment.get('currency', '').upper() 
+                        status = "Success" if payment['status'] == 1 else "Failed"
+                        if isinstance(amount, dict):
+                            amount_value = amount.get('amount', 0) / 100
+                            amount_display = f"{currency} {amount_value:.2f}"
+                        else:
+                            amount_display = f"{currency} {amount / 100:.2f}"
+                        print(GRAY + f"[#] Item: {item} | Amount: {amount_display} | Status: {status} | Country: {country} | Date: {date}" + ENDC)
+                else:
+                    print(RED + "[#] No payment history found." + ENDC)
+            else:
+                print(RED + f"[!] Failed to retrieve payment history - RSC: {response.status_code}" + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '14':
+            os.system('cls' if os.name == 'nt' else 'clear')
             user_token = input(PURPLE + "[#] Token: " + ENDC)
             headers = {'Authorization': user_token}
             print(PURPLE + "[#] Logging in with Token.." + ENDC)
@@ -501,7 +537,7 @@ while True:
             print(GREEN + "[#] Successfully logged in!" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '14':
+        elif mode == '15':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
@@ -520,7 +556,7 @@ while True:
                 print(RED + "[!] Failed to retrieve Emojis from Server." + ENDC)
                 input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '15':
+        elif mode == '16':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
