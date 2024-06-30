@@ -28,7 +28,6 @@
 
 #
 ### 🛠️ Updates & Changes
-&nbsp;
 
 Small Update - 30.06.24
 <br>
@@ -99,7 +98,7 @@ Small Update - 30.06.24
 
 #
 ### 🚨 Known Issues / "Bugs"
-&nbsp;
+
 * Message Reacter doesn't work with default Discord Emojis<br>
   ⮡&nbsp;&nbsp; It works if you input the actual emoji, not something like :​joy​:<br>
 * DM Channel Clearer only closes DMs with messages in them<br>
