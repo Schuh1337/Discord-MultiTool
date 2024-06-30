@@ -5,9 +5,9 @@ This tool is made for Educational Purposes and Educational Purposes ONLY.<br>
 Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 #
 Small Update - 30.06.24
-<br>
 * Removed 'Created By' in 'Webhook Information' due to discord changes
 * Added Colors to 'Token Payments' Success & Failed Values
+
 <details>
 <summary>Update 5 - 29.06.24 ~ Click to Expand</summary>
 <br>
@@ -21,7 +21,7 @@ Small Update - 30.06.24
 <details>
 <summary>Update 3 - 23.06.24 ~ Click to Expand</summary>
 <br>
-* Added Custom Emoji support to 'Animated Status'
+* Added Custom Emoji support to 'Animated Status'<br>
 * Added Choice between 'Plain Text' Statuses and 'Emoji & Text' Statuses to 'Animated Status'
 </details>
 <details>
@@ -32,23 +32,24 @@ Small Update - 30.06.24
 <details>
 <summary>Update 2 - 22.06.24 ~ Click to Expand</summary>
 <br>
-* Added 'Scrape Emojis'
+* Added 'Scrape Emojis'<br>
 * Added 'Scrape Stickers'
 </details>
 <details>
 <summary>Hotfix 1 - 22.12.23 ~ Click to Expand</summary>
 <br>
-* Added .strip() to the validate_input function to remove leading and trailing Spaces
+* Added .strip() to the validate_input function to remove leading and trailing Spaces<br>
 * Other minor fixes & adjustments
 </details>
 <details>
 <summary>Update 1 - 21.12.23 ~ Click to Expand</summary>
 <br>
-* Added 'Remove Hypesquad' to HypeSquad Changer
-* Added 'IP Address Lookup'
-* Improved Channel Monitoring
+* Added 'Remove Hypesquad' to HypeSquad Changer<br>
+* Added 'IP Address Lookup'<br>
+* Improved Channel Monitoring<br>
 * Improved Inputs
 </details>
+
 
 #
 Known Issues / "Bugs"
