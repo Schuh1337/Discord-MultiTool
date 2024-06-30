@@ -7,6 +7,24 @@
 > 
 > I am not responsible for any misuse or damage caused using this tool. Users are advised to comply with the terms of the [MIT License](https://github.com/Schuh1337/Discord-MultiTool?tab=MIT-1-ov-file) and use this tool responsibly.
 
+> [!GUIDE]
+> 
+> To get started with this tool, follow these steps:
+> 
+> 1. **Download:**
+>    - If you prefer the source code, download it as a zip file. Extract the contents and navigate to the directory.
+>    - If you prefer the compiled executable (exe), download it directly.
+> 
+> 2. **For Source Code:**
+>    - Ensure Python is installed on your system.
+>    - Run `setup.py` to set up the environment and dependencies.
+> 
+> 3. **For Executable (exe):**
+>    - Simply run the downloaded executable file.
+> 
+> These steps will ensure you have the tool up and running smoothly on your system.
+
+
 > [!NOTE]
 > Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 
