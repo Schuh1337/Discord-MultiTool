@@ -28,6 +28,8 @@ Hotfix 2 - 22.06.24
 * Added 'Scrape Emojis'
 * Added 'Scrape Stickers'
 
+</details>
+
 <details>
 <summary>Hotfix 1 - 22.12.23 ~ Click to Expand</summary>
 <br>
@@ -35,7 +37,6 @@ Hotfix 2 - 22.06.24
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
 * Other minor fixes & adjustments
 
-</details>
 </details>
 
 <details>
@@ -48,6 +49,7 @@ Hotfix 2 - 22.06.24
 * Improved Inputs
 
 </details>
+
 
 
 #
