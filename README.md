@@ -13,7 +13,7 @@
 > 
 > 1. **Download:**
 >    - If you prefer the source code, download it as a zip file. Extract the contents and navigate to the directory.
->    - If you prefer the compiled executable (exe), download it directly from the [Releases](https://github.com/Schuh1337/Discord-MultiTool/releases) Section.
+>    - If you prefer the compiled executable (exe), download it directly from the [Releases](https://github.com/Schuh1337/Discord-MultiTool/releases) section.
 > 
 > 2. **For Source Code:**
 >    - Ensure [Python](https://www.python.org/downloads/) 3.10 or later is installed on your system.
