@@ -134,16 +134,19 @@ def delete_all_messages(token, channel_id):
                     if 'call' in message:
                         continue
                     if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and 'interaction_metadata' in message and message['interaction_metadata'].get('user_id') == user_id):
-                        delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
-                        delete_response = requests.delete(delete_url, headers=headers)
-                        if delete_response.status_code == 204:
-                            print(GREEN + f"[#] Successfully deleted message" + ENDC, ": " + PURPLE + message['id'] + ENDC)
-                        elif delete_response.status_code == 429:
-                            print("[#] Retrying in 5 seconds...")
-                            time.sleep(5)
-                            continue
-                        else:
-                            print(RED + f"[!] Failed to delete message" + ENDC, ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                        while True:
+                            delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
+                            delete_response = requests.delete(delete_url, headers=headers)
+                            if delete_response.status_code == 204:
+                                print(GREEN + f"[#] Successfully deleted message" + ENDC, ": " + PURPLE + message['id'] + ENDC)
+                                break
+                            elif delete_response.status_code == 429:
+                                print(RED + f"[!] Failed to delete message" + ENDC, ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                                print("[#] Retrying in 5 seconds...")
+                                time.sleep(5)
+                            else:
+                                print(RED + f"[!] Failed to delete message" + ENDC, ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                                break
             else:
                 print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
                 break
