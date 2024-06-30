@@ -3,9 +3,9 @@
 <br>
 > [!WARNING]
 > 
-> This tool is provided under the MIT license for Educational Purposes ONLY.
+> This tool is provided under the MIT License for Educational Purposes ONLY.
 > 
-> **Disclaimer:** I am not responsible for any misuse or damage caused using this tool. Users are advised to comply with the terms of the [MIT license](link-to-license) and use this tool responsibly.
+> **Disclaimer:** I am not responsible for any misuse or damage caused using this tool. Users are advised to comply with the terms of the [MIT license](https://github.com/Schuh1337/Discord-MultiTool?tab=MIT-1-ov-file) and use this tool responsibly.
 
 > [!NOTE]
 > Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
