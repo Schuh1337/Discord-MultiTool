@@ -27,7 +27,7 @@
 > Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 
 #
-### 🛠️ Updates & Changes
+> ### 🛠️ Updates & Changes
 
 Small Update - 30.06.24
 <br>
@@ -97,7 +97,7 @@ Small Update - 30.06.24
 </details>
 
 #
-### 🚨 Known Issues / "Bugs"
+> ### 🚨 Known Issues / "Bugs"
 
 * Message Reacter doesn't work with default Discord Emojis<br>
   ⮡&nbsp;&nbsp; It works if you input the actual emoji, not something like :​joy​:<br>
