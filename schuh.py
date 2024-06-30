@@ -133,7 +133,7 @@ def delete_all_messages(token, channel_id):
                     last_message_id = message['id']
                     if 'call' in message:
                         continue
-                    if message['author']['id'] == user_id or message['author']['bot']:
+                    if message['author']['id'] == user_id or message['author'].get('bot', False):
                         delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
                         delete_response = requests.delete(delete_url, headers=headers)
                         if delete_response.status_code == 204:
@@ -147,7 +147,7 @@ def delete_all_messages(token, channel_id):
             else:
                 print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
                 break
-    except Exception:
+    except Exception :
         print(RED + f"[!] Unknown error occurred." + ENDC)
 def react_to_message(message_id, emoji):
     reaction_url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"
@@ -388,7 +388,7 @@ while True:
                     delete_all_messages(user_token, channel_id)
                     print(PURPLE + "[#] All messages deleted successfully." + ENDC)
                 except Exception:
-                    print(RED + "[!] Unknown error occurred." + ENDC)
+                    print(RED + f"[!] Unknown error occurred." + ENDC)
             else:
                 print(RED + "[#] Message deletion cancelled." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
@@ -396,7 +396,7 @@ while True:
         elif mode == '8':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            confirmation = input(RED + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC)
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == "y":
                 close_all_dms(user_token)
             else:
