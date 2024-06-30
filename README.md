@@ -29,10 +29,19 @@
 #
 > ### 🛠️ Updates & Changes
 
-Small Update - 30.06.24
+Update 6 - 30.06.24
+* Added 'Message Deleter'
+* Added count displays for 'Token Payments'
+* Added additional information to 'Token Information' (Clan, Locale, Created)
+
+<details>
+<summary>Small Update - 30.06.24 ~ Click to Expand</summary>
 <br>
+
 * Removed 'Created By' in 'Webhook Information' due to discord changes
 * Added Colors to 'Token Payments' Success & Failed Values
+
+</details>
 
 <details>
 <summary>Update 5 - 29.06.24 ~ Click to Expand</summary>
