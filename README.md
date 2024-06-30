@@ -1,7 +1,7 @@
 # Discord-Tool - Schuh Rewrite
 ![Tool](https://schuh.wtf/resources/images/sr.png)
 <br>
-> [!CAUTION]
+> [!REMARK]
 > 
 > This tool is provided under the MIT License for Educational Purposes ONLY.
 > 
