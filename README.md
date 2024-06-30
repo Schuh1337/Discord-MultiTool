@@ -28,7 +28,7 @@
 
 #
 ### 🛠️ Updates & Changes
-
+<br>
 Small Update - 30.06.24
 <br>
 * Removed 'Created By' in 'Webhook Information' due to discord changes
@@ -97,7 +97,8 @@ Small Update - 30.06.24
 </details>
 
 #
-> 🚨 Known Issues / "Bugs"
+### 🚨 Known Issues / "Bugs"
+<br>
 * Message Reacter doesn't work with default Discord Emojis<br>
   ⮡&nbsp;&nbsp; It works if you input the actual emoji, not something like :​joy​:<br>
 * DM Channel Clearer only closes DMs with messages in them<br>
