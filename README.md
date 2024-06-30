@@ -30,7 +30,7 @@ Hotfix 1 - 22.12.23<br>
 * Other minor fixes & adjustments
 #
 <details>
-	<summary>Update 1 - 21.12.23 ~ Click to expand</summary>
+<summary>Update 1 - 21.12.23 ~ Click to expand</summary><br>
 * Added 'Remove Hypesquad' to HypeSquad Changer<br>
 * Added 'IP Address Lookup'<br>
 * Improved Channel Monitoring<br>
