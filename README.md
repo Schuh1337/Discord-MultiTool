@@ -51,31 +51,21 @@ Make sure that you have `VirtualTerminalLevel` set to `1` for the best experienc
 
 * Added 'Scrape Emojis'
 * Added 'Scrape Stickers'
-
 </details>
-
 <details>
 <summary>Hotfix 1 - 22.12.23 ~ Click to Expand</summary>
 <br>
-
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
 * Other minor fixes & adjustments
-
 </details>
-
 <details>
 <summary>Update 1 - 21.12.23 ~ Click to Expand</summary>
 <br>
-
 * Added 'Remove Hypesquad' to HypeSquad Changer
 * Added 'IP Address Lookup'
 * Improved Channel Monitoring
 * Improved Inputs
-
 </details>
-
-
-
 #
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis<br>
