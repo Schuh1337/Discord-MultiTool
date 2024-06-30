@@ -4,51 +4,34 @@
 This tool is made for Educational Purposes and Educational Purposes ONLY.<br>
 Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 #
-<details>
-<summary>Small Update - 30.06.24 ~ Click to Expand</summary>
+Small Update - 30.06.24
 <br>
-
 * Removed 'Created By' in 'Webhook Information' due to discord changes
 * Added Colors to 'Token Payments' Success & Failed Values
 
-</details>
-
-<details>
 <summary>Update 5 - 29.06.24 ~ Click to Expand</summary>
 <br>
-
 * Added 'Token Payments'
-
 </details>
-
 <details>
 <summary>Update 4 - 23.06.24 ~ Click to Expand</summary>
 <br>
-
 * Added 'Token Login'
-
 </details>
-
 <details>
 <summary>Update 3 - 23.06.24 ~ Click to Expand</summary>
 <br>
-
 * Added Custom Emoji support to 'Animated Status'
 * Added Choice between 'Plain Text' Statuses and 'Emoji & Text' Statuses to 'Animated Status'
-
 </details>
-
 <details>
 <summary>Hotfix 2 - 22.06.24 ~ Click to Expand</summary>
 <br>
-
 * Fixed Animated Stickers being downloaded as Static
-
 </details>
 <details>
 <summary>Update 2 - 22.06.24 ~ Click to Expand</summary>
 <br>
-
 * Added 'Scrape Emojis'
 * Added 'Scrape Stickers'
 </details>
