@@ -21,16 +21,20 @@ Update 3 - 23.06.24
 Hotfix 2 - 22.06.24
 * Fixed Animated Stickers being downloaded as Static
 #
-Update 2 - 22.06.24
+<details>
+<summary>Update 2 - 22.06.24 ~ Click to Expand</summary><br>
 * Added 'Scrape Emojis'
 * Added 'Scrape Stickers'
-#
-Hotfix 1 - 22.12.23<br>
-* Added .strip() to the validate_input function to remove leading and trailing Spaces
-* Other minor fixes & adjustments
+<details>
 #
 <details>
-<summary>Update 1 - 21.12.23 ~ Click to expand</summary><br>
+<summary>Hotfix 1 - 22.12.23 ~ Click to Expand</summary><br>
+* Added .strip() to the validate_input function to remove leading and trailing Spaces
+* Other minor fixes & adjustments
+<details>
+#
+<details>
+<summary>Update 1 - 21.12.23 ~ Click to Expand</summary><br>
 * Added 'Remove Hypesquad' to HypeSquad Changer<br>
 * Added 'IP Address Lookup'<br>
 * Improved Channel Monitoring<br>
