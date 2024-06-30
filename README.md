@@ -8,7 +8,7 @@ Small Update - 30.06.24
 <br>
 * Removed 'Created By' in 'Webhook Information' due to discord changes
 * Added Colors to 'Token Payments' Success & Failed Values
-
+<details>
 <summary>Update 5 - 29.06.24 ~ Click to Expand</summary>
 <br>
 * Added 'Token Payments'
