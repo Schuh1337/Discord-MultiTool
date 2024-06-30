@@ -29,11 +29,14 @@ Hotfix 1 - 22.12.23<br>
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
 * Other minor fixes & adjustments
 #
-Update 1 - 21.12.23<br>
+<details>
+	<summary>Update 1 - 21.12.23 | Click to expand</summary>
 * Added 'Remove Hypesquad' to HypeSquad Changer
 * Added 'IP Address Lookup'
 * Improved Channel Monitoring
 * Improved Inputs
+</details>
+
 #
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis<br>
