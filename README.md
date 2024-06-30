@@ -5,7 +5,7 @@
 > This tool is made for Educational Purposes and Educational Purposes ONLY.<br>
 > Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 #
-> [!UPDATES]
+🛠️ Updates & Changes
 
 Small Update - 30.06.24
 <br>
