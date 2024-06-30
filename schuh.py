@@ -131,11 +131,12 @@ def delete_all_messages(token, channel_id):
                     break
                 for message in messages:
                     last_message_id = message['id']
-                    if 'call' in message:
-                        continue
-                    if message['author']['id'] == user_id or message['author'].get('bot', False):
+                    
+                    if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and message['interaction_metadata'].get('user_id') == user_id):
+                        
                         delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
                         delete_response = requests.delete(delete_url, headers=headers)
+                        
                         if delete_response.status_code == 204:
                             print(GREEN + f"[#] Successfully deleted message" + ENDC, ": " + PURPLE + message['id'] + ENDC)
                         elif delete_response.status_code == 429:
@@ -147,8 +148,8 @@ def delete_all_messages(token, channel_id):
             else:
                 print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
                 break
-    except Exception :
-        print(RED + f"[!] Unknown error occurred." + ENDC)
+    except Exception as e:
+        print(RED + f"[!] Unknown error occurred: {e}" + ENDC)
 def react_to_message(message_id, emoji):
     reaction_url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"
     headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0',}
