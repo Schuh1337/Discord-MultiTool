@@ -44,7 +44,6 @@ Small Update - 30.06.24
 
 <details>
 <summary>Update 2 - 22.06.24 ~ Click to Expand</summary>
-<br>
 
 * Added 'Scrape Emojis'
 * Added 'Scrape Stickers'
@@ -53,7 +52,6 @@ Small Update - 30.06.24
 
 <details>
 <summary>Hotfix 1 - 22.12.23 ~ Click to Expand</summary>
-<br>
 
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
 * Other minor fixes & adjustments
@@ -62,7 +60,7 @@ Small Update - 30.06.24
 
 <details>
 <summary>Update 1 - 21.12.23 ~ Click to Expand</summary>
-<br>
+
 
 * Added 'Remove Hypesquad' to HypeSquad Changer
 * Added 'IP Address Lookup'
