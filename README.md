@@ -3,7 +3,7 @@
 <br>
 > [!WARNING]
 > 
-> This tool is provided under the MIT License for Educational Purposes ONLY.
+> This tool is provided for Educational Purposes ONLY, under the MIT License.
 > 
 > I am not responsible for any misuse or damage caused using this tool. Users are advised to comply with the terms of the [MIT License](https://github.com/Schuh1337/Discord-MultiTool?tab=MIT-1-ov-file) and use this tool responsibly.
 
