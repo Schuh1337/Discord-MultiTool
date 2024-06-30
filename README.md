@@ -1,13 +1,13 @@
 # Discord-Tool - Schuh Rewrite
 ![Tool](https://schuh.wtf/resources/images/sr.png)
 <br>
-> [!NOTE]
+> [!WARNING]
 > 
 > This tool is provided under the MIT License for Educational Purposes ONLY.
 > 
 > I am not responsible for any misuse or damage caused using this tool. Users are advised to comply with the terms of the [MIT License](https://github.com/Schuh1337/Discord-MultiTool?tab=MIT-1-ov-file) and use this tool responsibly.
 
-> [!USAGE]
+> [!NOTE]
 > Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
 
 #
