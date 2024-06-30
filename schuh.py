@@ -1,6 +1,6 @@
 import os, requests, time, re, json, ipaddress, asyncio
+from datetime import datetime, timedelta
 from selenium import webdriver
-from datetime import datetime
 from os import system
 GREEN = '\033[92m'
 PURPLE = '\033[95m'
@@ -17,7 +17,7 @@ def validate_input(prompt, validator, error_message):
 def parse_date(iso_date):
     try:
         parsed_date = datetime.fromisoformat(iso_date)
-        formatted_date = parsed_date.strftime('%d.%m.%y %H:%M')
+        formatted_date = parsed_date.strftime('%d.%m.%Y %H:%M')
         return formatted_date
     except ValueError:
         return "Invalid Date"
@@ -77,6 +77,11 @@ def get_num_user_guilds(token):
         return num_guilds
     except requests.exceptions.RequestException:
         return 0
+def get_created_timestamp(id):
+    timestamp = ((int(id) >> 22) + 1420070400000) / 1000
+    creation_date = datetime.fromtimestamp(timestamp)
+    date = creation_date - timedelta(hours=2)
+    return date
 def validate_token(token):
     headers = {'Authorization': token}
     try:
@@ -105,6 +110,45 @@ def close_all_dms(token):
             print(PURPLE + "[#] All DMs closed successfully." + ENDC)
     except requests.exceptions.RequestException:
         print(RED + f"[!] An error occurred. If this issue persists, please report it to schuh." + ENDC)
+def delete_all_messages(token, channel_id):
+    headers = {'Authorization': token, 'Content-Type': 'application/json'}
+    user_info = get_user_info(token)
+    if not user_info:
+        print(RED + "[!] Unknown error occurred." + ENDC)
+        return
+    user_id = user_info['id']
+    url = f'https://discord.com/api/v9/channels/{channel_id}/messages'
+    try:
+        last_message_id = None
+        while True:
+            params = {'limit': 100}
+            if last_message_id:
+                params['before'] = last_message_id
+            response = requests.get(url, headers=headers, params=params)
+            if response.status_code == 200:
+                messages = response.json()
+                if not messages:
+                    break
+                for message in messages:
+                    last_message_id = message['id']
+                    if 'call' in message:
+                        continue
+                    if message['author']['id'] == user_id or message['author']['bot']:
+                        delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
+                        delete_response = requests.delete(delete_url, headers=headers)
+                        if delete_response.status_code == 204:
+                            print(GREEN + f"[#] Successfully deleted message" + ENDC, ": " + PURPLE + message['id'] + ENDC)
+                        elif delete_response.status_code == 429:
+                            print("[#] Retrying in 5 seconds...")
+                            time.sleep(5)
+                            continue
+                        else:
+                            print(RED + f"[!] Failed to delete message" + ENDC, ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+            else:
+                print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
+                break
+    except Exception:
+        print(RED + f"[!] Unknown error occurred." + ENDC)
 def react_to_message(message_id, emoji):
     reaction_url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"
     headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0',}
@@ -198,9 +242,9 @@ system("title " + f"Schuh Rewrite    -    CTRL + C at any time to stop")
 while True:
     try:
         os.system('cls' if os.name == 'nt' else 'clear')
-        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] DM Channel Clearer\n[8] Message Reacter\n[9] Animated Status\n[10] Hypesquad Changer\n[11] IP Address Lookup\n[12] Token Information\n[13] Token Payments\n[14] Token Login\n[15] Scrape Emojis\n[16] Scrape Stickers\n\n> " + ENDC)
+        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] Message Deleter\n[8] DM Channel Clearer\n[9] Message Reacter\n[10] Animated Status\n[11] Hypesquad Changer\n[12] IP Address Lookup\n[13] Token Information\n[14] Token Payments\n[15] Token Login\n[16] Scrape Emojis\n[17] Scrape Stickers\n\n> " + ENDC)
         try:
-            if int(mode) < 0 or int(mode) > 16:
+            if int(mode) < 0 or int(mode) > 17:
                 continue
         except ValueError:
             pass
@@ -253,7 +297,7 @@ while True:
         elif mode == '4':
             os.system('cls' if os.name == 'nt' else 'clear')
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
-            confirmation = input(PURPLE + "[#] Are you sure you want to delete the webhook? (y/n): " + ENDC)
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete the webhook? (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == 'y':
                 delete_webhook(webhook_url)
             else:
@@ -332,6 +376,26 @@ while True:
         elif mode == '7':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete all messages from the provided token in this channel? (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            if confirmation == 'y':
+                try:
+                    match = re.search(r"/channels/(\d+)", channel_link)
+                    if match:
+                        channel_id = match.group(1)
+                    else:
+                        print(RED + "[!] Couldn't extract Channel ID" + ENDC)
+                    delete_all_messages(user_token, channel_id)
+                    print(PURPLE + "[#] All messages deleted successfully." + ENDC)
+                except Exception:
+                    print(RED + "[!] Unknown error occurred." + ENDC)
+            else:
+                print(RED + "[#] Message deletion cancelled." + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '8':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             confirmation = input(RED + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC)
             if confirmation.lower() == "y":
                 close_all_dms(user_token)
@@ -339,7 +403,7 @@ while True:
                 print(RED + "[#] DM closure canceled. No DMs were closed." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '8':
+        elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
@@ -364,7 +428,7 @@ while True:
                             else:
                                 print(RED + f"[!] Failed to react to message {message_id} - RSC: {status_code}" + ENDC)
                             last_message_id = message_id
-        elif mode == '9':
+        elif mode == '10':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             status_type_choice = ''
@@ -403,7 +467,7 @@ while True:
                     print(RED + f"[!] Failed to change Status - RSC: {response.status_code}" + ENDC)
                 index = (index + 1) % len(status_list)
                 time.sleep(delay)
-        elif mode == '10':
+        elif mode == '11':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance', '4': 'Remove'}
@@ -428,7 +492,7 @@ while True:
                 else:
                     print(RED + f"[!] Failed to change HypeSquad House - RSC: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
-        elif mode == '11':
+        elif mode == '12':
             os.system('cls' if os.name == 'nt' else 'clear')
             ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
             ip_data = ip_lookup(ip_address)
@@ -442,10 +506,10 @@ while True:
                 print(GRAY + f"[#] Organization: {ip_data.get("org", "N/A")}" + ENDC)
                 print(GRAY + f"[#] Location: {ip_data.get("loc", "N/A")}" + ENDC)
             else:
-                print(RED + "[!] An unknown error occurred." + ENDC)
+                print(RED + "[!] Unknown error occurred." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '12':
+        elif mode == '13':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             num_guilds = get_num_user_guilds(user_token)
@@ -481,11 +545,14 @@ while True:
                         print(GRAY + f"[#] Nitro Type: $5 Nitro" + ENDC)
                     else:
                         print(GRAY + f"[#] Nitro: No" + ENDC)
+                print(GRAY + f"[#] Created: {parse_date(str(get_created_timestamp(user_info['id'])))}" + ENDC)
+                print(GRAY + f"[#] Locale: {user_info['locale']}" + ENDC)
+                print(GRAY + f"[#] Clan: {user_info['clan']}" + ENDC)
                 print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
                 print(GRAY + f"[#] Servers: {num_guilds}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '13':
+        elif mode == '14':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             headers = {'Authorization': user_token, 'Content-Type': 'application/json'}
@@ -493,6 +560,10 @@ while True:
             if response.status_code == 200:
                 payment_history = response.json()
                 if payment_history:
+                    total_payment_count = sum(1 for payment in payment_history)
+                    successful_payments_count = sum(1 for payment in payment_history if payment['status'] == 1)
+                    failed_payments_count = sum(1 for payment in payment_history if payment['status'] == 2)
+                    print(GRAY + f"[#] Total: {total_payment_count} | Successful: {successful_payments_count} | Failed: {failed_payments_count}" + ENDC)
                     for payment in payment_history:
                         item = payment.get('description', 'Unknown')
                         date = parse_date(payment['created_at'])
@@ -513,7 +584,7 @@ while True:
                 print(RED + f"[!] Failed to retrieve payment history - RSC: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '14':
+        elif mode == '15':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = input(PURPLE + "[#] Token: " + ENDC)
             headers = {'Authorization': user_token}
@@ -529,7 +600,7 @@ while True:
             print(GREEN + "[#] Successfully logged in!" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '15':
+        elif mode == '16':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
@@ -548,7 +619,7 @@ while True:
                 print(RED + "[!] Failed to retrieve Emojis from Server." + ENDC)
                 input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '16':
+        elif mode == '17':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
