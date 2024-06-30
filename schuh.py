@@ -131,12 +131,9 @@ def delete_all_messages(token, channel_id):
                     break
                 for message in messages:
                     last_message_id = message['id']
-                    
                     if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and message['interaction_metadata'].get('user_id') == user_id):
-                        
                         delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
                         delete_response = requests.delete(delete_url, headers=headers)
-                        
                         if delete_response.status_code == 204:
                             print(GREEN + f"[#] Successfully deleted message" + ENDC, ": " + PURPLE + message['id'] + ENDC)
                         elif delete_response.status_code == 429:
