@@ -30,6 +30,9 @@
 #
 > ### 🛠️ Updates & Changes
 
+Hotfix - 30.06.24
+* Fixed big issue in 'Message Deleter'
+
 Update 6 - 30.06.24
 * Added 'Message Deleter'
 * Added count displays for 'Token Payments'
@@ -70,7 +73,7 @@ Update 6 - 30.06.24
 </details>
 
 <details>
-<summary>Hotfix 2 - 22.06.24 ~ Click to Expand</summary>
+<summary>Hotfix - 22.06.24 ~ Click to Expand</summary>
 <br>
 
 * Fixed Animated Stickers being downloaded as Static
@@ -87,7 +90,7 @@ Update 6 - 30.06.24
 </details>
 
 <details>
-<summary>Hotfix 1 - 22.12.23 ~ Click to Expand</summary>
+<summary>Hotfix - 22.12.23 ~ Click to Expand</summary>
 <br>
   
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
