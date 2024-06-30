@@ -22,8 +22,6 @@
 > 3. **For Executable (exe):**
 >    - Simply run the downloaded executable file.
 > 
-> These steps will ensure you have the tool up and running smoothly on your system.
-
 
 > [!NOTE]
 > Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)
