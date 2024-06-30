@@ -245,13 +245,6 @@ while True:
                         print(GRAY + f"[#] Avatar: {avatar_url}" + ENDC)
                     else:
                         print(GRAY + "[#] Avatar: N/A" + ENDC)
-                    created_by = webhook_info.get('user')
-                    if created_by:
-                        created_by_username = created_by.get('username', 'N/A')
-                        created_by_id = created_by.get('id', 'N/A')
-                        print(GRAY + f"[#] Created by: {created_by_username} | ID: {created_by_id}" + ENDC)
-                    else:
-                        print(GRAY + f"[#] Created by: N/A" + ENDC)
                 else:
                     print(RED + f"[!] Failed to fetch webhook information - RSC: {response.status_code}" + ENDC)
                 input(PURPLE + "[#] Press enter to return." + ENDC)
@@ -507,7 +500,7 @@ while True:
                         source = payment.get('payment_source', {})
                         country = source.get('country', 'N/A')
                         currency = payment.get('currency', '').upper() 
-                        status = "Success" if payment['status'] == 1 else "Failed"
+                        status = GREEN + "Success" + GRAY if payment['status'] == 1 else RED + "Failed" + GRAY
                         if isinstance(amount, dict):
                             amount_value = amount.get('amount', 0) / 100
                             amount_display = f"{currency} {amount_value:.2f}"
@@ -531,9 +524,8 @@ while True:
             options.add_argument("--log-level=3")
             options.add_argument("start-maximized")
             driver = webdriver.Chrome(options=options)
-            script = """function login(token) { setInterval(() => { document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"` }, 50); setTimeout(() => { location.reload(); }, 2500); }"""
             driver.get("https://discord.com/login")
-            driver.execute_script(script + f'\nlogin("{user_token}")')
+            driver.execute_script('''function login(token) { setInterval(() => { document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"` }, 50); setTimeout(() => { location.reload(); }, 2500); }''' + f'\nlogin("{user_token}")')
             print(GREEN + "[#] Successfully logged in!" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
