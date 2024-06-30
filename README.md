@@ -69,6 +69,6 @@ Make sure that you have `VirtualTerminalLevel` set to `1` for the best experienc
 #
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis<br>
-  ⮡&nbsp;&nbsp; It works if you input the actual emoji, not something like :​joy​:
+  ⮡&nbsp;&nbsp; It works if you input the actual emoji, not something like :​joy​:<br>
 * DM Channel Clearer only closes DMs with messages in them<br>
-  ⮡ &nbsp;&nbsp;Pretty sure this is a discord api limitation
+  ⮡ &nbsp;&nbsp;Pretty sure this is a discord api limitation<br>
