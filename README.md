@@ -29,6 +29,7 @@
 #
 ### 🛠️ Updates & Changes
 <br>
+
 Small Update - 30.06.24
 <br>
 * Removed 'Created By' in 'Webhook Information' due to discord changes
