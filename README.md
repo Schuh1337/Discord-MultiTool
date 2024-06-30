@@ -17,7 +17,7 @@
 > 
 > 2. **For Source Code:**
 >    - Ensure [Python](https://www.python.org/downloads/) 3.10 or later is installed on your system.
->    - Run `setup.py` to set up the environment and dependencies.
+>    - Run `setup.bat` to install the required libraries.
 > 
 > 3. **For Executable (exe):**
 >    - Simply run the downloaded executable file.
