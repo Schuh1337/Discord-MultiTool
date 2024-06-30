@@ -16,7 +16,7 @@
 >    - If you prefer the compiled executable (exe), download it directly from the [Releases](https://github.com/Schuh1337/Discord-MultiTool/releases) Section.
 > 
 > 2. **For Source Code:**
->    - Ensure [Python 3.10 or later](https://www.python.org/downloads/) is installed on your system.
+>    - Ensure [Python](https://www.python.org/downloads/) 3.10 or later is installed on your system.
 >    - Run `setup.py` to set up the environment and dependencies.
 > 
 > 3. **For Executable (exe):**
