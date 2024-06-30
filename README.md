@@ -66,6 +66,7 @@ Make sure that you have `VirtualTerminalLevel` set to `1` for the best experienc
 * Improved Channel Monitoring
 * Improved Inputs
 </details>
+
 #
 Known Issues / "Bugs"
 * Message Reacter doesn't work with default Discord Emojis<br>
