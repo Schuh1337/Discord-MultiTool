@@ -31,7 +31,7 @@
 > ### 🛠️ Updates & Changes
 
 Update 7 - 01.07.24
-* Added Friend Requests, Available Boosts & Used Boosts, and Account Standing to 'Token Information'
+* Added additional information to 'Token Information' (Friend Requests, Standing, Available & Used Boosts)
 * Improved 'Message Deleter' by adding more Error handling and better Logic
 
 <details>
