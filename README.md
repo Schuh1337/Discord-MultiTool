@@ -32,7 +32,7 @@
 
 Update 7 - 01.07.24
 * Added Friend Requests, Available Boosts & Used Boosts, and Account Standing to 'Token Information'
-* Improved 'Message Deleter' by adding more Error handling and better Logic.
+* Improved 'Message Deleter' by adding more Error handling and better Logic
 
 <details>
 <summary>Hotfix - 30.06.24 ~ Click to Expand</summary>
