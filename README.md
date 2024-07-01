@@ -30,13 +30,23 @@
 #
 > ### 🛠️ Updates & Changes
 
-Hotfix - 30.06.24
+<details>
+<summary>Hotfix - 30.06.24 ~ Click to Expand</summary>
+<br>
+
 * Fixed big issue in 'Message Deleter'
 
-Update 6 - 30.06.24
+</details>
+
+<details>
+<summary>Update 6 - 30.06.24 ~ Click to Expand</summary>
+<br>
+
 * Added 'Message Deleter'
 * Added count displays for 'Token Payments'
 * Added additional information to 'Token Information' (Clan, Locale, Created)
+
+</details>
 
 <details>
 <summary>Small Update - 30.06.24 ~ Click to Expand</summary>
