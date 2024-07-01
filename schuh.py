@@ -64,7 +64,8 @@ def get_num_user_friends(token):
         response.raise_for_status()
         friends_data = response.json()
         num_friends = len([friend for friend in friends_data if friend['type'] == 1])
-        return num_friends
+        num_friend_requests =len([friend for friend in friends_data if friend['type'] == 3])
+        return num_friends, num_friend_requests
     except requests.exceptions.RequestException:
         return 0
 def get_num_user_guilds(token):
@@ -77,6 +78,36 @@ def get_num_user_guilds(token):
         return num_guilds
     except requests.exceptions.RequestException:
         return 0
+def get_num_boosts(token):
+    headers = {'Authorization': token, 'Content-Type': 'application/json'}
+    response = requests.get('https://discord.com/api/v9/users/@me/guilds/premium/subscriptions', headers=headers)
+    if response.status_code == 200:
+        boosts = response.json()
+        available_boosts = sum(1 for boost in boosts if not boost['guild_id'])
+        used_boosts = [{'server_id': boost['guild_id']} for boost in boosts if boost['guild_id']]
+        return available_boosts, used_boosts
+    else:
+        return 0, []
+def get_account_standing(token):
+    headers = {'Authorization': token}
+    url = 'https://discord.com/api/v9/safety-hub/@me'
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        account_standing = data.get('account_standing', {})
+        state = account_standing.get('state')
+        return state
+    else:
+        return None
+def format_account_standing(value):
+    if value <= 100:
+        return "All good! (100)"
+    elif value == 75: 
+        return "Limited (75)"
+    elif value == 50:
+        return "Very Limited (50)"
+    elif value == 25:
+        return "At risk (25)"
 def get_created_timestamp(id):
     timestamp = ((int(id) >> 22) + 1420070400000) / 1000
     creation_date = datetime.fromtimestamp(timestamp)
@@ -105,26 +136,43 @@ def close_all_dms(token):
             else:
                 print(RED + f"[!] Failed to close DM {channel_id} - RSC: {response.status_code}" + ENDC)
         if not any(channel['type'] == 1 for channel in dm_channels):
-            print(RED + "[!] No DMs found to close." + ENDC)
+            print(RED + "[#] No DMs found to close." + ENDC)
         else:
             print(PURPLE + "[#] All DMs closed successfully." + ENDC)
-    except requests.exceptions.RequestException:
-        print(RED + f"[!] An error occurred. If this issue persists, please report it to schuh." + ENDC)
+    except Exception:
+        print(RED + f"[!] Unknown error occurred." + ENDC)
 def delete_all_messages(token, channel_id):
     headers = {'Authorization': token, 'Content-Type': 'application/json'}
     user_info = get_user_info(token)
     if not user_info:
-        print(RED + "[!] Unknown error occurred." + ENDC)
         return
     user_id = user_info['id']
     url = f'https://discord.com/api/v9/channels/{channel_id}/messages'
     try:
         last_message_id = None
+        messages_found = False
+        messages_deleted = False
         while True:
             params = {'limit': 100}
             if last_message_id:
                 params['before'] = last_message_id
-            response = requests.get(url, headers=headers, params=params)
+            retry_attempts = 3 
+            while retry_attempts > 0:
+                try:
+                    print(GRAY + f"[#] Fetching Messages in Channel.. - [{params}]" + ENDC)
+                    response = requests.get(url, headers=headers, params=params)
+                    response.raise_for_status()
+                    break
+                except requests.exceptions.HTTPError:
+                    print(RED + f"[!] Failed to retrieve messages due to HTTP error" + ENDC)
+                except requests.exceptions.ConnectionError:
+                    print(RED + f"[!] Failed to retrieve messages due to Connection error" + ENDC)
+                except Exception:
+                    print(RED + f"[!] Failed to retrieve messages due to Unknown error" + ENDC)
+                retry_attempts -= 1
+                if retry_attempts > 0:
+                    print("[#] Retrying in 10 seconds...")
+                    time.sleep(10)
             if response.status_code == 200:
                 messages = response.json()
                 if not messages:
@@ -134,10 +182,12 @@ def delete_all_messages(token, channel_id):
                     if 'call' in message:
                         continue
                     if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and 'interaction_metadata' in message and message['interaction_metadata'].get('user_id') == user_id):
+                        messages_found = True
                         while True:
                             delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
                             delete_response = requests.delete(delete_url, headers=headers)
                             if delete_response.status_code == 204:
+                                messages_deleted = True
                                 print(GREEN + f"[#] Successfully deleted message" + ENDC, ": " + PURPLE + message['id'] + ENDC)
                                 break
                             elif delete_response.status_code == 429:
@@ -150,6 +200,12 @@ def delete_all_messages(token, channel_id):
             else:
                 print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
                 break
+        if messages_found and messages_deleted:
+            print(GREEN + "[#] All messages from Token have been deleted." + ENDC)
+        elif not messages_found:
+            print(RED + "[#] No messages found from Token in Channel." + ENDC)
+        elif messages_found and not messages_deleted:
+            print(RED + "[!] Messages from Token in Channel were found but none were deleted?" + ENDC)
     except Exception:
         print(RED + f"[!] Unknown error occurred." + ENDC)
 def react_to_message(message_id, emoji):
@@ -389,7 +445,6 @@ while True:
                     else:
                         print(RED + "[!] Couldn't extract Channel ID" + ENDC)
                     delete_all_messages(user_token, channel_id)
-                    print(PURPLE + "[#] All messages deleted successfully." + ENDC)
                 except Exception:
                     print(RED + f"[!] Unknown error occurred." + ENDC)
             else:
@@ -515,9 +570,11 @@ while True:
         elif mode == '13':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            num_guilds = get_num_user_guilds(user_token)
-            num_friends = get_num_user_friends(user_token)
             user_info = get_user_info(user_token)
+            num_guilds = get_num_user_guilds(user_token)
+            num_friends, num_friend_requests = get_num_user_friends(user_token)
+            available_boosts, used_boosts = get_num_boosts(user_token)
+            account_standing_state = get_account_standing(user_token)
             if user_info:
                 print(GRAY + f"[#] Username: {user_info['username']}" + ENDC)
                 print(GRAY + f"[#] ID: {user_info['id']}" + ENDC)
@@ -535,6 +592,7 @@ while True:
                         print(GRAY + f"[#] MFA Enabled: Yes" + ENDC)
                     else:
                         print(GRAY + f"[#] MFA Enabled: No" + ENDC)
+                print(GRAY + f"[#] Standing: {format_account_standing(account_standing_state)}" + ENDC)
                 if 'premium_type' in user_info:
                     nitro_type = user_info['premium_type']
                     if nitro_type == 3:
@@ -543,6 +601,17 @@ while True:
                     elif nitro_type == 2:
                         print(GRAY + f"[#] Nitro: Yes" + ENDC)
                         print(GRAY + f"[#] Nitro Type: $10 Nitro" + ENDC)
+                        print(GRAY + f"[#] Available Boosts: {available_boosts}" + ENDC)
+                        if used_boosts:
+                            used_boosts_count = {}
+                            for boost in used_boosts:
+                                server_id = boost['server_id']
+                                if server_id in used_boosts_count:
+                                    used_boosts_count[server_id] += 1
+                                else:
+                                    used_boosts_count[server_id] = 1
+                            used_boosts_formatted = ' | '.join(f"{count}x - {server_id}" for server_id, count in used_boosts_count.items())
+                            print(GRAY + f"[#] Used Boosts: {used_boosts_formatted}" + ENDC)
                     elif nitro_type == 1:
                         print(GRAY + f"[#] Nitro: Yes" + ENDC)
                         print(GRAY + f"[#] Nitro Type: $5 Nitro" + ENDC)
@@ -552,13 +621,14 @@ while True:
                 print(GRAY + f"[#] Locale: {user_info['locale']}" + ENDC)
                 print(GRAY + f"[#] Clan: {user_info['clan']}" + ENDC)
                 print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
+                print(GRAY + f"[#] Friend Requests: {num_friend_requests}" + ENDC)
                 print(GRAY + f"[#] Servers: {num_guilds}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
         elif mode == '14':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            headers = {'Authorization': user_token, 'Content-Type': 'application/json'}
+            headers = {'authorization': user_token, 'Content-Type': 'application/json'}
             response = requests.get('https://discord.com/api/v9/users/@me/billing/payments', headers=headers)
             if response.status_code == 200:
                 payment_history = response.json()
@@ -590,7 +660,7 @@ while True:
         elif mode == '15':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = input(PURPLE + "[#] Token: " + ENDC)
-            headers = {'Authorization': user_token}
+            headers = {'authorization': user_token}
             print(PURPLE + "[#] Logging in with Token.." + ENDC)
             options = webdriver.ChromeOptions()
             options.add_experimental_option("detach", True)
