@@ -35,7 +35,7 @@ Update 8 - 02.07.24
 * Fixed Bug in 'Channel Monitoring'
 
 <details>
-<summary>Update 7 - 01.07.24 ~ Click to Expand</summary>
+<summary>Update 7 - 01.07.24</summary>
 <br>
 
 * Added additional information to 'Token Information' (Friend Requests, Standing, Available & Used Boosts)
@@ -44,7 +44,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Hotfix - 30.06.24 ~ Click to Expand</summary>
+<summary>Hotfix - 30.06.24</summary>
 <br>
 
 * Fixed big issue in 'Message Deleter'
@@ -52,7 +52,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Update 6 - 30.06.24 ~ Click to Expand</summary>
+<summary>Update 6 - 30.06.24</summary>
 <br>
 
 * Added 'Message Deleter'
@@ -62,7 +62,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Small Update - 30.06.24 ~ Click to Expand</summary>
+<summary>Small Update - 30.06.24</summary>
 <br>
 
 * Removed 'Created By' in 'Webhook Information' due to discord changes
@@ -71,7 +71,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Update 5 - 29.06.24 ~ Click to Expand</summary>
+<summary>Update 5 - 29.06.24</summary>
 <br>
   
 * Added 'Token Payments'
@@ -79,7 +79,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Update 4 - 23.06.24 ~ Click to Expand</summary>
+<summary>Update 4 - 23.06.24</summary>
 <br>
   
 * Added 'Token Login'
@@ -87,7 +87,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Update 3 - 23.06.24 ~ Click to Expand</summary>
+<summary>Update 3 - 23.06.24</summary>
 <br>
 
 * Added Custom Emoji support to 'Animated Status'
@@ -96,7 +96,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Hotfix - 22.06.24 ~ Click to Expand</summary>
+<summary>Hotfix - 22.06.24</summary>
 <br>
 
 * Fixed Animated Stickers being downloaded as Static
@@ -104,7 +104,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Update 2 - 22.06.24 ~ Click to Expand</summary>
+<summary>Update 2 - 22.06.24</summary>
 <br>
 
 * Added 'Scrape Emojis'
@@ -113,7 +113,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Hotfix - 22.12.23 ~ Click to Expand</summary>
+<summary>Hotfix - 22.12.23</summary>
 <br>
   
 * Added .strip() to the validate_input function to remove leading and trailing Spaces
@@ -122,7 +122,7 @@ Update 8 - 02.07.24
 </details>
 
 <details>
-<summary>Update 1 - 21.12.23 ~ Click to Expand</summary>
+<summary>Update 1 - 21.12.23</summary>
 <br>
 
 * Added 'Remove Hypesquad' to HypeSquad Changer
