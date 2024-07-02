@@ -31,7 +31,7 @@
 > ### 🛠️ Updates & Changes
 
 Update 8 - 02.07.24
-* New Menu (Old Menu will still be avaiabile under `oldmenu.py`
+* New Menu
 * Improved 'Channel Spammer'
 * Fixed Bug in 'Channel Monitoring'
 
