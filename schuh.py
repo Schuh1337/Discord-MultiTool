@@ -1,4 +1,4 @@
-import os, requests, time, re, json, ipaddress, asyncio
+import os, requests, time, re, json, ipaddress, asyncio, subprocess, ctypes
 from datetime import datetime, timedelta
 from selenium import webdriver
 from os import system
@@ -7,6 +7,12 @@ PURPLE = '\033[95m'
 RED = '\033[91m'
 GRAY = '\033[90m'
 ENDC = '\033[0m'
+GWL_STYLE = -16
+WS_SIZEBOX = 0x00040000
+WS_MAXIMIZEBOX = 0x00010000
+def set_window_style(hwnd, style):
+    current_style = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_STYLE)
+    ctypes.windll.user32.SetWindowLongW(hwnd, GWL_STYLE, current_style & ~style)
 def validate_input(prompt, validator, error_message):
     while True:
         user_input = input(prompt).strip()
@@ -210,9 +216,15 @@ def delete_all_messages(token, channel_id):
         print(RED + f"[!] Unknown error occurred." + ENDC)
 def react_to_message(message_id, emoji):
     reaction_url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"
-    headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0',}
+    headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
     response = requests.put(reaction_url, headers=headers)
     return response.status_code, response.content.decode('utf-8')
+def validate_ip(ip):
+    try:
+        ipaddress.ip_address(ip)
+        return True
+    except Exception:
+        return False
 def ip_lookup(ip):
     try:
         response = requests.get(f'https://ipinfo.io/{ip}/json')
@@ -223,11 +235,19 @@ def ip_lookup(ip):
         return None
     except ValueError:
         return None
-def validate_ip(ip):
+def ping_ip(ip, count):
     try:
-        ipaddress.ip_address(ip)
-        return True
+        process = subprocess.Popen(["ping", ip, "-n" if os.name == 'nt' else "-c", str(count)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        while True:
+            output = process.stdout.readline()
+            if process.poll() is not None and output == b'':
+                break
+            if output.strip():
+                print(GRAY + f"[#] {output.decode().strip()}" + ENDC)
+        rc = process.poll()
+        return rc == 0
     except Exception:
+        print(RED + f"[!] Unknown error occurred." + ENDC)
         return False
 def get_guild_emojis(token, server_id):
     headers = {"Authorization": token}
@@ -298,12 +318,32 @@ async def download_stickers_async(stickers, inner_sticker_dir):
     successful_downloads = sum(results)
     return successful_downloads
 system("title " + f"Schuh Rewrite    -    CTRL + C at any time to stop")
+set_window_style(ctypes.windll.kernel32.GetConsoleWindow(), WS_SIZEBOX | WS_MAXIMIZEBOX)
+menu = rf"""
+                                            _____ ________  ____  ____  __
+                                           / ___// ____/ / / / / / / / / /
+                                           \__ \/ /   / /_/ / / / / /_/ / 
+                                          ___/ / /___/ __  / /_/ / __  /  
+                               v0.0.8    /____/\____/_/ /_/\____/_/ /_/    charli <3
+                             +───────────────────────────────────────────────────────+
+                             │ [1] Webhook Spammer       │ [10] Animated Status      │
+                             │ [2] Webhook Animator      │ [11] Hypesquad Changer    │
+                             │ [3] Webhook Information   │ [12] IP Address Lookup    │
+                             │ [4] Webhook Deleter       │ [13] IP Address Pinger    │
+                             │ [5] Channel Spammer       │ [14] Token Information    │
+                             │ [6] Channel Monitoring    │ [15] Token Payments       │
+                             │ [7] Message Deleter       │ [16] Token Login          │
+                             │ [8] DM Channel Clearer    │ [17] Scrape Emojis        │
+                             │ [9] Message Reacter       │ [18] Scrape Stickers      │
+                             +───────────────────────────────────────────────────────+
+                             
+                             > """
 while True:
     try:
         os.system('cls' if os.name == 'nt' else 'clear')
-        mode = input(PURPLE + "[1] Webhook Spammer\n[2] Webhook Animator\n[3] Webhook Information\n[4] Webhook Deleter\n[5] Channel Spammer\n[6] Channel Monitoring\n[7] Message Deleter\n[8] DM Channel Clearer\n[9] Message Reacter\n[10] Animated Status\n[11] Hypesquad Changer\n[12] IP Address Lookup\n[13] Token Information\n[14] Token Payments\n[15] Token Login\n[16] Scrape Emojis\n[17] Scrape Stickers\n\n> " + ENDC)
+        mode = input(PURPLE + menu + ENDC)
         try:
-            if int(mode) < 0 or int(mode) > 17:
+            if int(mode) < 0 or int(mode) > 18:
                 continue
         except ValueError:
             pass
@@ -364,25 +404,27 @@ while True:
                 input(PURPLE + "[#] Press enter to return." + ENDC)
         elif mode == '5':
             os.system('cls' if os.name == 'nt' else 'clear')
-            message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")            
+            message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")            
+            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
-            num_messages = validate_input(PURPLE + "[#] Number of times to send the message: " + ENDC, lambda value: value.isdigit() and int(value) > 0, "[#] Invalid input. Please enter a positive integer.")
+            num_messages = validate_input(PURPLE + "[#] Number of times to send the message (0 = infinite): " + ENDC, lambda value: value.isdigit() and int(value) >= 0, "[#] Invalid Input. Please enter a non-negative integer.")
             num_messages = int(num_messages)
-            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
+            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC,  lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0,  "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
             payload = {'content': message_content}
             header = {'authorization': user_token}
-            for i in range(num_messages):
+            i = 0
+            while num_messages == 0 or i < num_messages:
                 response = requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", data=payload, headers=header)
                 if response.status_code == 200:
-                    print(GREEN + f"[#] Message {i+1}/{num_messages} sent successfully!" + ENDC, ": " + PURPLE + message_content + ENDC)
+                    print(GREEN + f"[#] Message {i + 1}{'/' + str(num_messages) if num_messages != 0 else ''} sent successfully!" + ENDC, ": " + PURPLE + message_content + ENDC)
                 else:
                     print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
                     print("[#] Retrying in 5 seconds...")
                     time.sleep(5)
+                i += 1
                 time.sleep(delay)
             input(PURPLE + "[#] Done sending. Press enter to return.")
             continue
@@ -427,7 +469,8 @@ while True:
                                                 if content: content += " "
                                                 content = GRAY + content + ENDC + RED + "[Audio]" + ENDC
                                     if 'sticker_items' in message:
-                                        content = RED + f"[Sticker]" + ENDC
+                                        if content: content += " "
+                                        content += RED + "[Sticker]" + ENDC
                                     print(GRAY + f"[#] {author}: {content}" + ENDC)
                                     processed_messages.add(message_id)
             except KeyboardInterrupt:
@@ -506,7 +549,7 @@ while True:
                     status_list.append({"emoji": emoji, "text": text, "emoji_id": emoji_id})
             delay =  validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
-            headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0', 'content-type': 'application/json'}
+            headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'content-type': 'application/json'}
             index = 0
             while True:
                 if status_type_choice == '1':
@@ -569,6 +612,13 @@ while True:
             continue
         elif mode == '13':
             os.system('cls' if os.name == 'nt' else 'clear')
+            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
+            ping_count = validate_input(PURPLE + "[#] Number of times to ping: " + ENDC, lambda x: x.isdigit() and int(x) > 0, "[#] Invalid Input. Please enter a positive integer.")
+            ping_ip(ip_address, int(ping_count))
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '14':
+            os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             user_info = get_user_info(user_token)
             num_guilds = get_num_user_guilds(user_token)
@@ -625,7 +675,7 @@ while True:
                 print(GRAY + f"[#] Servers: {num_guilds}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '14':
+        elif mode == '15':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             headers = {'authorization': user_token, 'Content-Type': 'application/json'}
@@ -657,7 +707,7 @@ while True:
                 print(RED + f"[!] Failed to retrieve payment history - RSC: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '15':
+        elif mode == '16':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = input(PURPLE + "[#] Token: " + ENDC)
             headers = {'authorization': user_token}
@@ -673,7 +723,7 @@ while True:
             print(GREEN + "[#] Successfully logged in!" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '16':
+        elif mode == '17':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
@@ -692,7 +742,7 @@ while True:
                 print(RED + "[!] Failed to retrieve Emojis from Server." + ENDC)
                 input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '17':
+        elif mode == '18':
             os.system('cls' if os.name == 'nt' else 'clear')
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
