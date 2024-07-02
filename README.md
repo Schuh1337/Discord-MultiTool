@@ -30,9 +30,19 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 7 - 01.07.24
+Update 8 - 02.07.24
+* New Menu (Old Menu will still be avaiabile under `oldmenu.py`
+* Improved 'Channel Spammer'
+* Fixed Bug in 'Channel Monitoring'
+
+<details>
+<summary>Update 7 - 01.07.24 ~ Click to Expand</summary>
+<br>
+
 * Added additional information to 'Token Information' (Friend Requests, Standing, Available & Used Boosts)
 * Improved 'Message Deleter' by adding more Error handling and better Logic
+
+</details>
 
 <details>
 <summary>Hotfix - 30.06.24 ~ Click to Expand</summary>
