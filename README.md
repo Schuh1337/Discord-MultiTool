@@ -32,8 +32,8 @@
 
 Update 9 - 03.07.24
 * Added Scroll Disabler for Menu (this was SO complex to perfectionate)
-* Internal Code Changes<br>
-[x] I'll be taking a pause of updating this, i like the state its in rn
+* Internal Code Changes
+> I'll be taking a pause of updating this, i like the state its in rn
 
 <details>
 <summary>Update 8 - 02.07.24</summary>
