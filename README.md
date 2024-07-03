@@ -1,7 +1,7 @@
 # Discord-Tool - Schuh Rewrite
 ![Tool](https://schuh.wtf/resources/images/schuhrewrite.png)
-<br>
 #
+<br>
 > [!WARNING]
 > 
 > This project is not intended for production use, and its code may not adhere to best practices or security standards. It is solely meant for educational purposes, providing examples, and encouraging experimentation.<br>
