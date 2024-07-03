@@ -1,6 +1,5 @@
 # Discord-Tool - Schuh Rewrite
 ![Tool](https://schuh.wtf/resources/images/schuhrewrite.png)
-
 <br>
 
 > [!WARNING]
