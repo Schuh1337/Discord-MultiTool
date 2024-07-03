@@ -27,7 +27,7 @@
 
 > [!NOTE]
 > Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)<br>
-> Yes, the window not being able to be maximized / resized / scrolled[in menu] is intended.
+> Yes, the window not being able to be maximized / resized / scrolled[in menu] is intended.<br>
 > Fully made from scratch.
 
 #
