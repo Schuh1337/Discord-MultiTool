@@ -30,10 +30,20 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 8 - 02.07.24
+Update 9 - 03.07.24
+* Added Scroll Disabler for Menu (this was SO complex to perfectionate)
+* Internal Code Changes
+- I'll be taking a pause of updating this, i like the state its in rn
+
+<details>
+<summary>Update 8 - 02.07.24</summary>
+<br>
+
 * New Menu
 * Improved 'Channel Spammer'
 * Fixed Bug in 'Channel Monitoring'
+
+</details>
 
 <details>
 <summary>Update 7 - 01.07.24</summary>
