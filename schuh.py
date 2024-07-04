@@ -1,4 +1,4 @@
-import os, requests, time, re, json, ipaddress, asyncio, subprocess, ctypes
+import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from datetime import datetime, timedelta
 from selenium import webdriver
 from os import system
@@ -292,27 +292,28 @@ def get_guild_emojis(token, server_id):
         return response.json()
     else:
         return None
-async def download_emoji(emoji, inner_emoji_dir):
+async def download_emoji(session, emoji, inner_emoji_dir):
     emoji_path = os.path.join(inner_emoji_dir, f"{emoji['name']}.{'gif' if emoji['animated'] else 'png'}")
     try:
-        response = requests.get(f"https://cdn.discordapp.com/emojis/{emoji['id']}.{'gif' if emoji['animated'] else 'png'}")
-        if response.status_code == 200:
-            print(GREEN + f"[#] Successfully downloaded Emoji: {emoji['name']}" + ENDC)
-            with open(emoji_path, 'wb') as f:
-                f.write(response.content)
-            return True
-        else:
-            print(RED + f"[!] Failed to download Emoji: {emoji['name']} - RSC: {response.status_code}" + ENDC)
-            return False 
+        async with session.get(f"https://cdn.discordapp.com/emojis/{emoji['id']}.{'gif' if emoji['animated'] else 'png'}") as response:
+            if response.status == 200:
+                print(GREEN + f"[#] Successfully downloaded Emoji: {emoji['name']}" + ENDC)
+                with open(emoji_path, 'wb') as f:
+                    f.write(await response.read())
+                return True
+            else:
+                print(RED + f"[!] Failed to download Emoji: {emoji['name']} - RSC: {response.status_code}" + ENDC)
+                return False 
     except Exception:
         print(RED + f"[!] Unknown error while downloading Emoji: {emoji['name']} - RSC: {response.status_code}" + ENDC)
         return False
 async def download_emoji_async(emojis, inner_emoji_dir):
     print(PURPLE + f"[#] Downloading {len(emojis)} Emojis.." + ENDC)
-    tasks = [download_emoji(emoji, inner_emoji_dir) for emoji in emojis]
-    results = await asyncio.gather(*tasks)
-    successful_downloads = sum(results)
-    return successful_downloads
+    async with aiohttp.ClientSession() as session:
+        tasks = [download_emoji(session, emoji, inner_emoji_dir) for emoji in emojis]
+        results = await asyncio.gather(*tasks)
+        successful_downloads = sum(results)
+        return successful_downloads
 def get_guild_stickers(token, server_id):
     headers = {"Authorization": token}
     response = requests.get(f"https://discord.com/api/v9/guilds/{server_id}/stickers", headers=headers)
@@ -331,28 +332,29 @@ def get_format_type(format_type):
         return 'gif'
     else:
         return None
-async def download_sticker(sticker, inner_sticker_dir):
+async def download_sticker(session, sticker, inner_sticker_dir):
     valid_filename = re.sub(r'[\\/*?:"<>|]', '', sticker['name'])
     sticker_path = os.path.join(inner_sticker_dir, f"{valid_filename}.webp")
     try:
-        response = requests.get(f"https://media.discordapp.net/stickers/{sticker['id']}.{get_format_type(sticker['format_type'])}?size=160")
-        if response.status_code == 200:
-            with open(sticker_path, 'wb') as f:
-                f.write(response.content)
-            print(GREEN + f"[#] Successfully downloaded Sticker: {sticker['name']}" + ENDC)
-            return True
-        else:
-            print(RED + f"[!] Failed to download Sticker: {sticker['name']} - RSC: {response.status_code}" + ENDC)
-            return False
+        async with session.get(f"https://media.discordapp.net/stickers/{sticker['id']}.{get_format_type(sticker['format_type'])}?size=160") as response:
+            if response.status == 200:
+                with open(sticker_path, 'wb') as f:
+                    f.write(await response.read())
+                print(GREEN + f"[#] Successfully downloaded Sticker: {sticker['name']}" + ENDC)
+                return True
+            else:
+                print(RED + f"[!] Failed to download Sticker: {sticker['name']} - RSC: {response.status_code}" + ENDC)
+                return False
     except Exception:
         print(RED + f"[!] Error downloading Sticker {sticker['name']} - RSC: {response.status_code}" + ENDC)
         return False
 async def download_stickers_async(stickers, inner_sticker_dir):
     print(PURPLE + f"[#] Downloading {len(stickers)} Stickers.." + ENDC)
-    tasks = [download_sticker(sticker, inner_sticker_dir) for sticker in stickers]
-    results = await asyncio.gather(*tasks)
-    successful_downloads = sum(results)
-    return successful_downloads
+    async with aiohttp.ClientSession() as session:
+        tasks = [download_sticker(session, sticker, inner_sticker_dir) for sticker in stickers]
+        results = await asyncio.gather(*tasks)
+        successful_downloads = sum(results)
+        return successful_downloads
 system("title " + f"Schuh Rewrite    -    CTRL + C at any time to stop")
 set_window_properties(ctypes.windll.kernel32.GetConsoleWindow(), WS_SIZEBOX | WS_MAXIMIZEBOX)
 while True:
@@ -579,7 +581,7 @@ while True:
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             status_type_choice = ''
-            status_type_choice = validate_input(PURPLE + "[#] 1. Plain Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice, please enter either 1 or 2.")
+            status_type_choice = validate_input(PURPLE + "[#] 1. Plain Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
             if status_type_choice == '1':
                 status_list_input = validate_input(PURPLE + "[#] Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 2 and all(s.strip() != '' for s in value.split(',')) and len(set(s.strip() for s in value.split(','))) == len(value.split(',')), "[#] Invalid Statuses. Please enter at least 2 unique statuses separated by commas.")
                 status_list = [status.strip() for status in status_list_input.split(',') if status.strip()]
@@ -621,8 +623,7 @@ while True:
             hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance', '4': 'Remove'}
             for option, house in hypesquad_options.items():
                 print(PURPLE + f"[#] {option}. {house}" + ENDC)
-            print() 
-            selected_option = validate_input(PURPLE + "> " + ENDC, lambda value: value in hypesquad_options, "[#] Invalid Option. Please choose a valid Option.")
+            selected_option = validate_input(PURPLE + "[#] Choice: " + ENDC, lambda value: value in hypesquad_options, "[#] Invalid Choice. Please enter either 1, 2, 3, or 4.")
             if selected_option == '4':
                 headers = {'authorization': user_token, 'content-type': 'application/json'}
                 response = requests.delete('https://discord.com/api/v9/hypesquad/online', headers=headers)
@@ -693,6 +694,8 @@ while True:
                     else:
                         print(GRAY + f"[#] MFA Enabled: No" + ENDC)
                 print(GRAY + f"[#] Standing: {format_account_standing(account_standing_state)}" + ENDC)
+                print(GRAY + f"[#] Created: {parse_date(str(get_created_timestamp(user_info['id'])))}" + ENDC)
+                print(GRAY + f"[#] Locale: {user_info['locale']}" + ENDC)
                 if 'premium_type' in user_info:
                     nitro_type = user_info['premium_type']
                     if nitro_type == 3:
@@ -717,8 +720,6 @@ while True:
                         print(GRAY + f"[#] Nitro Type: $5 Nitro" + ENDC)
                     else:
                         print(GRAY + f"[#] Nitro: No" + ENDC)
-                print(GRAY + f"[#] Created: {parse_date(str(get_created_timestamp(user_info['id'])))}" + ENDC)
-                print(GRAY + f"[#] Locale: {user_info['locale']}" + ENDC)
                 print(GRAY + f"[#] Clan: {user_info['clan']}" + ENDC)
                 print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
                 print(GRAY + f"[#] Friend Requests: {num_friend_requests}" + ENDC)
@@ -734,10 +735,7 @@ while True:
             if response.status_code == 200:
                 payment_history = response.json()
                 if payment_history:
-                    total_payment_count = sum(1 for payment in payment_history)
-                    successful_payments_count = sum(1 for payment in payment_history if payment['status'] == 1)
-                    failed_payments_count = sum(1 for payment in payment_history if payment['status'] == 2)
-                    print(GRAY + f"[#] Total: {total_payment_count} | Successful: {successful_payments_count} | Failed: {failed_payments_count}" + ENDC)
+                    print(GRAY + f"[#] Total: {sum(1 for payment in payment_history)} | Successful: {sum(1 for payment in payment_history if payment['status'] == 1)} | Failed: {sum(1 for payment in payment_history if payment['status'] == 2)}" + ENDC)
                     for payment in payment_history:
                         item = payment.get('description', 'Unknown')
                         date = parse_date(payment['created_at'])
