@@ -2,6 +2,10 @@
 ![Tool](https://schuh.wtf/resources/images/schuhrewrite.png)
 <br>
 
+> [!NOTE]
+> Supports: Windows 10, 11 [Other Versions untested]
+> Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)<br>
+
 > [!WARNING]
 > 
 > This project is not intended for production use, and its code may not adhere to best practices or security standards. It is solely meant for educational purposes, providing examples, and encouraging experimentation.<br>
@@ -13,7 +17,7 @@
 > To get started with this tool, follow these steps:
 > 
 > 1. **Download:**
->    - If you prefer the source code, download the repo as a [zip file](https://github.com/Schuh1337/Discord-MultiTool/archive/refs/heads/main.zip). Extract the contents and navigate to the directory.
+>    - If you prefer the source code, download the repo as a [zip file](https://github.com/Schuh1337/Discord-MultiTool/archive/refs/heads/main.zip). Extract the contents and navigate to the extracted directory.
 >    - If you prefer the compiled executable (exe), download it directly from the [Releases](https://github.com/Schuh1337/Discord-MultiTool/releases) section.
 > 
 > 2. **For Source Code:**
@@ -24,12 +28,6 @@
 > 3. **For Executable (exe):**
 >    - Simply run the downloaded executable file.
 > 
-
-> [!NOTE]
-> Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)<br>
->
-> Yes, the window not being able to be maximized / resized / scrolled[in menu] is intended.<br>
-> Fully made from scratch.
 
 #
 > ### 🛠️ Updates & Changes
