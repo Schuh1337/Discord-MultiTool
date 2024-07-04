@@ -4,7 +4,6 @@
 
 > [!NOTE]
 > Supports: Windows 10, 11 [Other Versions untested]
-> 
 > Make sure that you have `VirtualTerminalLevel` set to `1` for the best experience. --> [Tutorial](https://www.youtube.com/watch?v=HeJOyEw3RtM)<br>
 
 > [!WARNING]
