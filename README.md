@@ -33,10 +33,19 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 9 - 03.07.24
+Update 10 - 04.07.24
+* Made 'Scrape Emojis' & 'Scrape Stickers' about 10x faster
+* Other minor Interal Code & Layout Changes
+* > Won't be updating this for a while, i like the state its in right now (will do bugfixes n patches)
+
+<details>
+<summary>Update 9 - 03.07.24</summary>
+<br>
+
 * Added Scroll Disabler for Menu (this was SO complex to perfectionate)
 * Internal Code Changes
-> I'll be taking a pause of updating this, i like the state its in rn
+  
+</details>
 
 <details>
 <summary>Update 8 - 02.07.24</summary>
