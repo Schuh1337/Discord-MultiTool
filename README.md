@@ -36,7 +36,7 @@
 Update 10 - 04.07.24
 * Made 'Scrape Emojis' & 'Scrape Stickers' about 10x faster
 * Other minor Interal Code & Layout Changes
-* > Won't be updating this for a while, i like the state its in right now (will do bugfixes n patches)
+* > Won't be updating this for a while, i like the state its in right now (will do bugfixes n patches tho)
 
 <details>
 <summary>Update 9 - 03.07.24</summary>
