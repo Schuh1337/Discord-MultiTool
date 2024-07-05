@@ -184,7 +184,7 @@ def close_all_dms(token):
     except Exception:
         print(RED + f"[!] Unknown error occurred." + ENDC)
 def delete_all_messages(token, channel_id):
-    headers = {'Authorization': token, 'Content-Type': 'application/json'}
+    headers = {'Authorization': token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'Content-Type': 'application/json'}
     user_info = get_user_info(token)
     if not user_info:
         return
@@ -788,7 +788,6 @@ while True:
             elif emojis:
                 scs = asyncio.run(download_emoji_async(emojis, inner_emoji_dir))
                 print(PURPLE + f"[#] Successfully downloaded {scs} of {len(emojis)} Emojis.")
-                input(PURPLE + "[#] Press enter to return." + ENDC) 
             else:
                 print(RED + "[!] No Emojis found for specified Server." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
@@ -806,7 +805,6 @@ while True:
             elif stickers:
                 scs = asyncio.run(download_stickers_async(stickers, inner_sticker_dir))
                 print(PURPLE + f"[#] Successfully downloaded {scs} of {len(stickers)} Stickers.")
-                input(PURPLE + "[#] Press enter to return." + ENDC) 
             else:
                 print(RED + "[!] No Stickers found for specified Server." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
