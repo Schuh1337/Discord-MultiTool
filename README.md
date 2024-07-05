@@ -32,6 +32,9 @@
 #
 > ### 🛠️ Updates & Changes
 
+Hotfix - 05.07.24
+* Fixes
+
 Update 10 :tada: - 04.07.24
 * Made 'Scrape Emojis' & 'Scrape Stickers' about 10x faster
 * Other minor Interal Code & Layout Changes
