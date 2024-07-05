@@ -190,66 +190,64 @@ def delete_all_messages(token, channel_id):
         return
     user_id = user_info['id']
     url = f'https://discord.com/api/v9/channels/{channel_id}/messages'
-    try:
-        last_message_id = None
-        messages_found = False
-        messages_deleted = False
-        while True:
-            params = {'limit': 100}
-            if last_message_id:
-                params['before'] = last_message_id
-            retry_attempts = 3 
-            while retry_attempts > 0:
-                try:
-                    print(GRAY + f"[#] Fetching Messages in Channel.. - [{params}]" + ENDC)
-                    response = requests.get(url, headers=headers, params=params)
-                    response.raise_for_status()
-                    break
-                except requests.exceptions.HTTPError:
-                    print(RED + f"[!] Failed to retrieve messages due to HTTP error" + ENDC)
-                except requests.exceptions.ConnectionError:
-                    print(RED + f"[!] Failed to retrieve messages due to Connection error" + ENDC)
-                except Exception:
-                    print(RED + f"[!] Failed to retrieve messages due to Unknown error" + ENDC)
-                retry_attempts -= 1
-                if retry_attempts > 0:
-                    print("[#] Retrying in 10 seconds...")
-                    time.sleep(10)
-            if response.status_code == 200:
-                messages = response.json()
-                if not messages:
-                    break
-                for message in messages:
-                    last_message_id = message['id']
-                    if 'call' in message:
-                        continue
-                    if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and 'interaction_metadata' in message and message['interaction_metadata'].get('user_id') == user_id):
-                        messages_found = True
-                        while True:
-                            delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
-                            delete_response = requests.delete(delete_url, headers=headers)
-                            if delete_response.status_code == 204:
-                                messages_deleted = True
-                                print(GREEN + f"[#] Successfully deleted message" + ENDC, ": " + PURPLE + message['id'] + ENDC)
-                                break
-                            elif delete_response.status_code == 429:
-                                print(RED + f"[!] Failed to delete message" + ENDC, ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
-                                print("[#] Retrying in 5 seconds...")
-                                time.sleep(5)
-                            else:
-                                print(RED + f"[!] Failed to delete message" + ENDC, ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
-                                break
-            else:
-                print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
+    last_message_id = None
+    messages_found = False
+    messages_deleted = False
+    while True:
+        params = {'limit': 100}
+        if last_message_id:
+            params['before'] = last_message_id
+        for attempt in range(3):
+            try:
+                print(GRAY + f"[#] Fetching Messages in Channel.. - [{params}]" + ENDC)
+                response = requests.get(url, headers=headers, params=params)
+                response.raise_for_status()
                 break
-        if messages_found and messages_deleted:
-            print(GREEN + "[#] All messages from Token have been deleted." + ENDC)
-        elif not messages_found:
-            print(RED + "[#] No messages found from Token in Channel." + ENDC)
-        elif messages_found and not messages_deleted:
-            print(RED + "[!] Messages from Token in Channel were found but none were deleted?" + ENDC)
-    except Exception:
-        print(RED + f"[!] Unknown error occurred." + ENDC)
+            except requests.exceptions.HTTPError:
+                print(RED + "[!] Failed to retrieve messages due to HTTP error" + ENDC)
+            except requests.exceptions.ConnectionError:
+                print(RED + "[!] Failed to retrieve messages due to Connection error" + ENDC)
+            except Exception:
+                print(RED + f"[!] Failed to retrieve messages due to Unknown error" + ENDC)
+            if attempt < 2:
+                print("[#] Retrying in 10 seconds...")
+                time.sleep(10)
+            else:
+                print(RED + "[!] Exceeded retry attempts, aborting." + ENDC)
+                return
+        if response.status_code == 200:
+            messages = response.json()
+            if not messages:
+                break
+            for message in messages:
+                last_message_id = message['id']
+                if 'call' in message:
+                    continue
+                if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and 'interaction_metadata' in message and message['interaction_metadata'].get('user_id') == user_id):
+                    messages_found = True
+                    while True:
+                        delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
+                        delete_response = requests.delete(delete_url, headers=headers)
+                        if delete_response.status_code == 204:
+                            messages_deleted = True
+                            print(GREEN + "[#] Successfully deleted message" + ENDC + ": " + PURPLE + message['id'] + ENDC)
+                            break
+                        elif delete_response.status_code == 429:
+                            print(RED + "[!] Failed to delete message" + ENDC + ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                            print("[#] Retrying in 5 seconds...")
+                            time.sleep(5)
+                        else:
+                            print(RED + "[!] Failed to delete message" + ENDC + ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                            break
+        else:
+            print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
+            break
+    if messages_found and messages_deleted:
+        print(GREEN + "[#] All messages from Token have been deleted." + ENDC)
+    elif not messages_found:
+        print(RED + "[#] No messages found from Token in Channel." + ENDC)
+    elif messages_found and not messages_deleted:
+        print(RED + "[!] Messages from Token in Channel were found but none were deleted?" + ENDC)
 def react_to_message(message_id, emoji):
     reaction_url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"
     headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
@@ -290,6 +288,8 @@ def get_guild_emojis(token, server_id):
     response = requests.get(f"https://discord.com/api/v9/guilds/{server_id}/emojis", headers=headers)
     if response.status_code == 200:
         return response.json()
+    elif response.status_code == 404:
+        return 404
     else:
         return None
 async def download_emoji(session, emoji, inner_emoji_dir):
@@ -319,6 +319,8 @@ def get_guild_stickers(token, server_id):
     response = requests.get(f"https://discord.com/api/v9/guilds/{server_id}/stickers", headers=headers)
     if response.status_code == 200:
         return response.json()
+    elif response.status_code == 404:
+        return 404
     else:
         return None
 def get_format_type(format_type):
@@ -366,7 +368,7 @@ while True:
                                            / ___// ____/ / / / / / / / / /
                                            \__ \/ /   / /_/ / / / / /_/ / 
                                           ___/ / /___/ __  / /_/ / __  /             
-                             │ v0.0.8    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
+                             │ v0.0.9    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
                              ├───────────────────────────┬───────────────────────────┤
                              │ [1] Webhook Spammer       │ [10] Animated Status      │
                              │ [2] Webhook Animator      │ [11] Hypesquad Changer    │
@@ -781,17 +783,15 @@ while True:
             inner_emoji_dir = os.path.join("emojis", str(server_id))
             os.makedirs(inner_emoji_dir, exist_ok=True)
             emojis = get_guild_emojis(user_token, server_id)
-            if emojis:
+            if emojis == 404:
+                print(RED + "[!] Failed to retrieve Emojis for specified Server.")  
+            elif emojis:
                 scs = asyncio.run(download_emoji_async(emojis, inner_emoji_dir))
-                if scs:
-                    print(PURPLE + f"[#] Successfully downloaded {scs} of {len(emojis)} Emojis.")
-                    input(PURPLE + "[#] Press enter to return." + ENDC) 
-                else:
-                    print(RED + "[!] Unknown error while downloading Emojis." + ENDC)
-                    input(PURPLE + "[#] Press enter to return." + ENDC)
+                print(PURPLE + f"[#] Successfully downloaded {scs} of {len(emojis)} Emojis.")
+                input(PURPLE + "[#] Press enter to return." + ENDC) 
             else:
-                print(RED + "[!] Failed to retrieve Emojis from Server." + ENDC)
-                input(PURPLE + "[#] Press enter to return." + ENDC)
+                print(RED + "[!] No Emojis found for specified Server." + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
         elif mode == '18':
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -801,17 +801,15 @@ while True:
             inner_sticker_dir = os.path.join("stickers", str(server_id))
             os.makedirs(inner_sticker_dir, exist_ok=True)
             stickers = get_guild_stickers(user_token, server_id)
-            if stickers: 
+            if stickers == 404:
+                print(RED + "[!] Failed to retrieve Stickers for specified Server.")  
+            elif stickers:
                 scs = asyncio.run(download_stickers_async(stickers, inner_sticker_dir))
-                if scs:
-                    print(PURPLE + f"[#] Successfully downloaded {scs} of {len(stickers)} Stickers.")
-                    input(PURPLE + "[#] Press enter to return." + ENDC) 
-                else:
-                    print(RED + "[!] Unknown error while downloading Stickers." + ENDC)
-                    input(PURPLE + "[#] Press enter to return." + ENDC)
+                print(PURPLE + f"[#] Successfully downloaded {scs} of {len(stickers)} Stickers.")
+                input(PURPLE + "[#] Press enter to return." + ENDC) 
             else:
-                print(RED + "[!] Failed to retrieve Stickers from Server.")
-                input(PURPLE + "[#] Press enter to return." + ENDC)
+                print(RED + "[!] No Stickers found for specified Server." + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
     except KeyboardInterrupt:
         continue
