@@ -364,24 +364,24 @@ while True:
         os.system('cls' if os.name == 'nt' else 'clear')
         if scroll_disabled == False: scroll_disable()
         mode = input(PURPLE + rf"""
-                                            _____ ________  ____  ____  __
-                                           / ___// ____/ / / / / / / / / /
-                                           \__ \/ /   / /_/ / / / / /_/ / 
-                                          ___/ / /___/ __  / /_/ / __  /             
-                             │ v0.0.9    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
-                             ├───────────────────────────┬───────────────────────────┤
-                             │ [1] Webhook Spammer       │ [10] Animated Status      │
-                             │ [2] Webhook Animator      │ [11] Hypesquad Changer    │
-                             │ [3] Webhook Information   │ [12] IP Address Lookup    │
-                             │ [4] Webhook Deleter       │ [13] IP Address Pinger    │
-                             │ [5] Channel Spammer       │ [14] Token Information    │
-                             │ [6] Channel Monitoring    │ [15] Token Payments       │
-                             │ [7] Message Deleter       │ [16] Token Login          │
-                             │ [8] DM Channel Clearer    │ [17] Scrape Emojis        │
-                             │ [9] Message Reacter       │ [18] Scrape Stickers      │
-                             ├───────────────────────────┴───────────────────────────┘
-                             │
-                             └> """ + ENDC)
+                                             _____ ________  ____  ____  __
+                                            / ___// ____/ / / / / / / / / /
+                                            \__ \/ /   / /_/ / / / / /_/ / 
+                                           ___/ / /___/ __  / /_/ / __  /             
+                              │ v0.0.9    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
+                              ├───────────────────────────┬───────────────────────────┤
+                              │ [1] Webhook Spammer       │ [10] Animated Status      │
+                              │ [2] Webhook Animator      │ [11] Hypesquad Changer    │
+                              │ [3] Webhook Information   │ [12] IP Address Lookup    │
+                              │ [4] Webhook Deleter       │ [13] IP Address Pinger    │
+                              │ [5] Channel Spammer       │ [14] Token Information    │
+                              │ [6] Channel Monitoring    │ [15] Token Payments       │
+                              │ [7] Message Deleter       │ [16] Token Login          │
+                              │ [8] DM Channel Clearer    │ [17] Scrape Emojis        │
+                              │ [9] Message Reacter       │ [18] Scrape Stickers      │
+                              ├───────────────────────────┴───────────────────────────┘
+                              │
+                              └> """ + ENDC)
         try:
             if int(mode) < 0 or int(mode) > 18:
                 continue
