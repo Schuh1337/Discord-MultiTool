@@ -36,7 +36,7 @@ Update 11 - 10.07.2024
 * Added 'Nitro Expiry' to 'Token Information'
 
 <details>
-<summary>Past Updates</summary>
+<summary>Past Updates & Changes</summary>
 <br>
 
 <details>
