@@ -36,6 +36,10 @@ Update 11 - 10.07.2024
 * Added 'Nitro Expiry' to 'Token Information'
 
 <details>
+<summary>Past Updates</summary>
+<br>
+
+<details>
 <summary>Hotfix - 05.07.24</summary>
 <br>
 
@@ -48,7 +52,7 @@ Update 11 - 10.07.2024
 <br>
 
 * Made 'Scrape Emojis' & 'Scrape Stickers' about 10x faster
-* Other minor Interal Code & Layout Changes
+* Other minor Internal Code & Layout Changes
 
 </details>
 
@@ -168,6 +172,9 @@ Update 11 - 10.07.2024
 * Improved Inputs
 
 </details>
+
+</details>
+
 
 #
 > ### 🚨 Known Issues / "Bugs"
