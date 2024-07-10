@@ -31,7 +31,6 @@
 
 #
 > ### 🛠️ Updates & Changes
-> Won't be updating this for a while, i like the state its in right now (will do bugfixes n patches tho)
 
 Update 11 - 10.07.2024
 * Added 'Nitro Expiry' to 'Token Information'
