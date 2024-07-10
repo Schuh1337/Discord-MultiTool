@@ -130,6 +130,24 @@ def get_num_boosts(token):
         return available_boosts, used_boosts
     else:
         return 0, []
+def num_nitro_expiry_days(token):
+    headers = {'Authorization': token, 'Content-Type': 'application/json'}
+    response = requests.get('https://discord.com/api/v9/users/@me/billing/subscriptions', headers=headers)
+    if response.status_code == 200:
+        nitro_data = response.json()
+        current_period_end = nitro_data[0].get("current_period_end")
+        end_date = datetime.strptime(current_period_end.split('.')[0], "%Y-%m-%dT%H:%M:%S")
+        time_left = end_date - datetime.now()
+        days_left = time_left.days
+        hours_left = time_left.seconds // 3600
+        if days_left > 0:
+            return f"{days_left} Day{'s' if days_left != 1 else ''} {hours_left} Hour{'s' if hours_left != 1 else ''}"
+        elif hours_left > 0:
+            return f"{hours_left} Hour{'s' if hours_left != 1 else ''}"
+        else:
+            return "Less than an hour"
+    else:
+        return "N/A"
 def get_account_standing(token):
     headers = {'Authorization': token}
     url = 'https://discord.com/api/v9/safety-hub/@me'
@@ -368,7 +386,7 @@ while True:
                                             / ___// ____/ / / / / / / / / /
                                             \__ \/ /   / /_/ / / / / /_/ / 
                                            ___/ / /___/ __  / /_/ / __  /             
-                              │ v0.0.9    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
+                              │ v0.1.0    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
                               ├───────────────────────────┬───────────────────────────┤
                               │ [1] Webhook Spammer       │ [10] Animated Status      │
                               │ [2] Webhook Animator      │ [11] Hypesquad Changer    │
@@ -674,6 +692,7 @@ while True:
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             user_info = get_user_info(user_token)
+            if 'premium_type' in user_info: nitro_expiry = num_nitro_expiry_days(user_token)
             num_guilds = get_num_user_guilds(user_token)
             num_friends, num_friend_requests = get_num_user_friends(user_token)
             available_boosts, used_boosts = get_num_boosts(user_token)
@@ -703,25 +722,28 @@ while True:
                     if nitro_type == 3:
                         print(GRAY + f"[#] Nitro: Yes" + ENDC)
                         print(GRAY + f"[#] Nitro Type: $3 Nitro" + ENDC)
+                        print(GRAY + f"[#] Nitro Expiry: {nitro_expiry}" + ENDC)
                     elif nitro_type == 2:
                         print(GRAY + f"[#] Nitro: Yes" + ENDC)
                         print(GRAY + f"[#] Nitro Type: $10 Nitro" + ENDC)
+                        print(GRAY + f"[#] Nitro Expiry: {nitro_expiry}" + ENDC)
                         print(GRAY + f"[#] Available Boosts: {available_boosts}" + ENDC)
-                        if used_boosts:
-                            used_boosts_count = {}
-                            for boost in used_boosts:
-                                server_id = boost['server_id']
-                                if server_id in used_boosts_count:
-                                    used_boosts_count[server_id] += 1
-                                else:
-                                    used_boosts_count[server_id] = 1
-                            used_boosts_formatted = ' | '.join(f"{count}x - {server_id}" for server_id, count in used_boosts_count.items())
-                            print(GRAY + f"[#] Used Boosts: {used_boosts_formatted}" + ENDC)
                     elif nitro_type == 1:
                         print(GRAY + f"[#] Nitro: Yes" + ENDC)
                         print(GRAY + f"[#] Nitro Type: $5 Nitro" + ENDC)
+                        print(GRAY + f"[#] Nitro Expiry: {nitro_expiry}" + ENDC)
                     else:
                         print(GRAY + f"[#] Nitro: No" + ENDC)
+                    if used_boosts:
+                        used_boosts_count = {}
+                        for boost in used_boosts:
+                            server_id = boost['server_id']
+                            if server_id in used_boosts_count:
+                                used_boosts_count[server_id] += 1
+                            else:
+                                used_boosts_count[server_id] = 1
+                        used_boosts_formatted = ' | '.join(f"{count}x - {server_id}" for server_id, count in used_boosts_count.items())
+                        print(GRAY + f"[#] Active Boosts: {used_boosts_formatted}" + ENDC)
                 print(GRAY + f"[#] Clan: {user_info['clan']}" + ENDC)
                 print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
                 print(GRAY + f"[#] Friend Requests: {num_friend_requests}" + ENDC)
