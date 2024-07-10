@@ -32,12 +32,22 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 11 - 10.07.2024
-* Added 'Nitro Expiry' to 'Token Information'
+Update 12 - 11.07.2024
+* Added 'Group Chat Clearer'
+* Added 'Invite Information'
+* Menu & Code Layout Changes
 
 <details>
 <summary>Past Updates & Changes</summary>
 <br>
+
+<details>
+<summary>Update 11 - 10.07.2024</summary>
+<br>
+  
+* Added 'Nitro Expiry' to 'Token Information'
+  
+</details>
 
 <details>
 <summary>Hotfix - 05.07.24</summary>
