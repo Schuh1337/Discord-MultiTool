@@ -184,25 +184,41 @@ def close_all_dms(token):
     headers = {'Authorization': token}
     try:
         response = requests.get('https://discord.com/api/v10/users/@me/channels', headers=headers)
-        response.raise_for_status()
         dm_channels = response.json()
         for channel in dm_channels:
             if channel['type'] != 1:
                 continue
-            channel_id = channel['id']
-            response = requests.delete(f'https://discord.com/api/v10/channels/{channel_id}', headers=headers)
+            response = requests.delete(f'https://discord.com/api/v10/channels/{channel['id']}', headers=headers)
             if response.status_code == 200:
-                print(GREEN + f"[#] Closed DM {channel_id}" + ENDC)
+                print(GREEN + f"[#] Successfully closed DM" + ENDC + " : " + PURPLE + channel['id'] + ENDC)
             else:
-                print(RED + f"[!] Failed to close DM {channel_id} - RSC: {response.status_code}" + ENDC)
+                print(RED + f"[!] Failed to close DM" + ENDC + " : " + PURPLE + channel['id'] + RED + f" - RSC: {response.status_code}" + ENDC)
         if not any(channel['type'] == 1 for channel in dm_channels):
             print(RED + "[#] No DMs found to close." + ENDC)
         else:
             print(PURPLE + "[#] All DMs closed successfully." + ENDC)
     except Exception:
         print(RED + f"[!] Unknown error occurred." + ENDC)
+def leave_all_groupchats(token):
+    headers = {'Authorization': token}
+    try:
+        response = requests.get('https://discord.com/api/v10/users/@me/channels', headers=headers)
+        channels = response.json()
+        for channel in channels:
+            if channel['type'] == 3:
+                response = requests.delete(f'https://discord.com/api/v10/channels/{channel['id']}', headers=headers)
+                if response.status_code == 200:
+                    print(GREEN + f"[#] Successfully left Groupchat" + ENDC + " : " + PURPLE + channel['id'] + ENDC)
+                else:
+                    print(RED + f"[!] Failed to leave Groupchat" + ENDC + " : " + PURPLE + channel['id'] + RED + f" - RSC: {response.status_code}" + ENDC)
+        if not any(channel['type'] == 3 for channel in channels):
+            print(RED + "[#] No Groupchats found to leave." + ENDC)
+        else:
+            print(PURPLE + "[#] All Groupchats left successfully." + ENDC)
+    except Exception:
+        print(RED + f"[!] Unknown error occurred." + ENDC)
 def delete_all_messages(token, channel_id):
-    headers = {'Authorization': token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'Content-Type': 'application/json'}
+    headers = {'Authorization': token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'Content-Type': 'application/json'}
     user_info = get_user_info(token)
     if not user_info:
         return
@@ -248,14 +264,14 @@ def delete_all_messages(token, channel_id):
                         delete_response = requests.delete(delete_url, headers=headers)
                         if delete_response.status_code == 204:
                             messages_deleted = True
-                            print(GREEN + "[#] Successfully deleted message" + ENDC + ": " + PURPLE + message['id'] + ENDC)
+                            print(GREEN + "[#] Successfully deleted message" + ENDC + " : " + PURPLE + message['id'] + ENDC)
                             break
                         elif delete_response.status_code == 429:
-                            print(RED + "[!] Failed to delete message" + ENDC + ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                            print(RED + "[!] Failed to delete message" + ENDC + " : " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
                             print("[#] Retrying in 5 seconds...")
                             time.sleep(5)
                         else:
-                            print(RED + "[!] Failed to delete message" + ENDC + ": " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                            print(RED + "[!] Failed to delete message" + ENDC + " : " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
                             break
         else:
             print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
@@ -268,9 +284,50 @@ def delete_all_messages(token, channel_id):
         print(RED + "[!] Messages from Token in Channel were found but none were deleted?" + ENDC)
 def react_to_message(message_id, emoji):
     reaction_url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"
-    headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+    headers = {'authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
     response = requests.put(reaction_url, headers=headers)
     return response.status_code, response.content.decode('utf-8')
+def get_discord_invite_info(invite_url):
+    match = re.search(r"(?:https?://)?(?:www\.)?(discord\.gg|discord\.com/invite)/(?:invite/)?([a-zA-Z0-9]+)", invite_url)
+    invite_code = match.group(2)
+    url = f"https://discord.com/api/v10/invites/{invite_code}?with_counts=true"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        print(GRAY + f"[#] Invite Code: {data.get('code')}" + ENDC)
+        expires_at = data.get('expires_at')
+        if expires_at:
+            expiration_time = datetime.fromisoformat(expires_at[:-6]) + timedelta(hours=2)
+            current_time = datetime.now()
+            time_left = expiration_time - current_time
+            days_left = time_left.days
+            hours_left = time_left.seconds // 3600
+            if days_left > 0:
+                print(GRAY + f"[#] Expires in: {days_left} Day{'s' if days_left != 1 else ''} {hours_left} Hour{'s' if hours_left != 1 else ''}" + ENDC)
+            elif hours_left > 0:
+                print(GRAY + f"[#] Expires in: {hours_left} Hour{'s' if hours_left != 1 else ''}" + ENDC)
+            else:
+                print(GRAY + f"[#] Expires in: Less than an hour" + ENDC)
+        else:
+            print(GRAY + f"[#] Expires in: Never" + ENDC)
+        inviter = data.get('inviter', {})
+        if inviter:
+            print(GRAY + f"[#] Inviter: {inviter.get('username', 'N/A')}" + ENDC)
+            print(GRAY + f"[#] Inviter ID: {inviter.get('id', 'N/A')}" + ENDC)
+        guild = data.get('guild', {})
+        print(GRAY + f"[#] Name: {guild.get('name', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] ID: {guild.get('id', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Description: {guild.get('description', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Verification Level: {guild.get('verification_level', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Vanity: {guild.get('vanity_url_code', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Boosts: {guild.get('premium_subscription_count', 'N/A')}" + ENDC)
+        channel = data.get('channel', {})
+        print(GRAY + f"[#] Channel: {channel.get('name', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Channel ID: {channel.get('id', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Member Count: {data.get('approximate_member_count', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Online Count: {data.get('approximate_presence_count', 'N/A')}" + ENDC)
+    else:
+        print(RED + f"[!] Failed to retrieve information - RSC: {response.status_code}" + ENDC)
 def validate_ip(ip):
     try:
         ipaddress.ip_address(ip)
@@ -386,22 +443,23 @@ while True:
                                             / ___// ____/ / / / / / / / / /
                                             \__ \/ /   / /_/ / / / / /_/ / 
                                            ___/ / /___/ __  / /_/ / __  /             
-                              │ v0.1.0    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
+                              │ v0.1.1    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
                               ├───────────────────────────┬───────────────────────────┤
-                              │ [1] Webhook Spammer       │ [10] Animated Status      │
-                              │ [2] Webhook Animator      │ [11] Hypesquad Changer    │
-                              │ [3] Webhook Information   │ [12] IP Address Lookup    │
-                              │ [4] Webhook Deleter       │ [13] IP Address Pinger    │
-                              │ [5] Channel Spammer       │ [14] Token Information    │
-                              │ [6] Channel Monitoring    │ [15] Token Payments       │
-                              │ [7] Message Deleter       │ [16] Token Login          │
-                              │ [8] DM Channel Clearer    │ [17] Scrape Emojis        │
-                              │ [9] Message Reacter       │ [18] Scrape Stickers      │
+                              │ [1] Webhook Spammer       │ [11] IP Address Lookup    │
+                              │ [2] Webhook Animator      │ [12] IP Address Pinger    │
+                              │ [3] Webhook Information   │ [13] Animated Status      │
+                              │ [4] Webhook Deleter       │ [14] Hypesquad Changer    │
+                              │ [5] Channel Spammer       │ [15] Invite Information   │
+                              │ [6] Channel Monitoring    │ [16] Token Information    │
+                              │ [7] DM Channel Clearer    │ [17] Token Payments       │
+                              │ [8] Group Chat Clearer    │ [18] Token Login          │
+                              │ [9] Message Deleter       │ [19] Scrape Emojis        │
+                              │ [10] Message Reacter      │ [20] Scrape Stickers      │
                               ├───────────────────────────┴───────────────────────────┘
                               │
                               └> """ + ENDC)
         try:
-            if int(mode) < 0 or int(mode) > 18:
+            if int(mode) < 0 or int(mode) > 20:
                 continue
         except ValueError:
             pass
@@ -482,7 +540,7 @@ while True:
             while num_messages == 0 or i < num_messages:
                 response = requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", data=payload, headers=header)
                 if response.status_code == 200:
-                    print(GREEN + f"[#] Message {i + 1}{'/' + str(num_messages) if num_messages != 0 else ''} sent successfully!" + ENDC, ": " + PURPLE + message_content + ENDC)
+                    print(GREEN + f"[#] Message {i + 1}{'/' + str(num_messages) if num_messages != 0 else ''} sent successfully!" + ENDC + " : " + PURPLE + message_content + ENDC)
                 else:
                     print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
                     print("[#] Retrying in 5 seconds...")
@@ -498,7 +556,7 @@ while True:
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
-            headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+            headers = {'authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
             params = {'limit': 1}
             print(GREEN + "[#] Monitoring Channel. Press Ctrl + C to stop." + ENDC)
             processed_messages = set()
@@ -543,6 +601,28 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            if confirmation.lower() == "y":
+                close_all_dms(user_token)
+            else:
+                print(RED + "[#] DM closure canceled. No DMs were closed." + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '8':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to leave all Groupchats for the provided token?\n[#] This will not close DMs.\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            if confirmation.lower() == "y":
+                leave_all_groupchats(user_token)
+            else:
+                print(RED + "[#] Groupchat leaving canceled. No Groupchats were left." + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '9':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete all messages from the provided token in this channel? (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation == 'y':
@@ -559,18 +639,7 @@ while True:
                 print(RED + "[#] Message deletion cancelled." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '8':
-            os.system('cls' if os.name == 'nt' else 'clear')
-            if scroll_disabled == True: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
-            if confirmation.lower() == "y":
-                close_all_dms(user_token)
-            else:
-                print(RED + "[#] DM closure canceled. No DMs were closed." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
-            continue
-        elif mode == '9':
+        elif mode == '10':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -596,7 +665,33 @@ while True:
                             else:
                                 print(RED + f"[!] Failed to react to message {message_id} - RSC: {status_code}" + ENDC)
                             last_message_id = message_id
-        elif mode == '10':
+        elif mode == '11':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
+            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
+            ip_data = ip_lookup(ip_address)
+            if ip_data is not None:
+                print(GRAY + f"[#] City: {ip_data.get("city", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Region: {ip_data.get("region", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Country: {ip_data.get("country", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Postal: {ip_data.get("postal", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Timezone: {ip_data.get("timezone", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Hostname: {ip_data.get("hostname", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Organization: {ip_data.get("org", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Location: {ip_data.get("loc", "N/A")}" + ENDC)
+            else:
+                print(RED + "[!] Unknown error occurred." + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '12':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
+            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
+            ping_count = validate_input(PURPLE + "[#] Number of times to ping: " + ENDC, lambda x: x.isdigit() and int(x) > 0, "[#] Invalid Input. Please enter a positive integer.")
+            ping_ip(ip_address, int(ping_count))
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '13':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -617,7 +712,7 @@ while True:
                     status_list.append({"emoji": emoji, "text": text, "emoji_id": emoji_id})
             delay =  validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
-            headers = {'authorization': user_token, 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'content-type': 'application/json'}
+            headers = {'authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'content-type': 'application/json'}
             index = 0
             while True:
                 if status_type_choice == '1':
@@ -636,7 +731,7 @@ while True:
                     print(RED + f"[!] Failed to change Status - RSC: {response.status_code}" + ENDC)
                 index = (index + 1) % len(status_list)
                 time.sleep(delay)
-        elif mode == '11':
+        elif mode == '14':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -661,33 +756,14 @@ while True:
                 else:
                     print(RED + f"[!] Failed to change HypeSquad House - RSC: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
-        elif mode == '12':
+        elif mode == '15':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
-            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
-            ip_data = ip_lookup(ip_address)
-            if ip_data is not None:
-                print(GRAY + f"[#] City: {ip_data.get("city", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Region: {ip_data.get("region", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Country: {ip_data.get("country", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Postal: {ip_data.get("postal", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Timezone: {ip_data.get("timezone", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Hostname: {ip_data.get("hostname", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Organization: {ip_data.get("org", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Location: {ip_data.get("loc", "N/A")}" + ENDC)
-            else:
-                print(RED + "[!] Unknown error occurred." + ENDC)
+            invite = validate_input(PURPLE + "[#] Server Invite: " + ENDC, lambda x: re.search(r"(?:https?://)?discord\.gg/(?:invite/)?([a-zA-Z0-9]+)", x), "[#] Invalid Invite. Please check the invite and try again." )
+            get_discord_invite_info(invite)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '13':
-            os.system('cls' if os.name == 'nt' else 'clear')
-            if scroll_disabled == True: scroll_enable()
-            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
-            ping_count = validate_input(PURPLE + "[#] Number of times to ping: " + ENDC, lambda x: x.isdigit() and int(x) > 0, "[#] Invalid Input. Please enter a positive integer.")
-            ping_ip(ip_address, int(ping_count))
-            input(PURPLE + "[#] Press enter to return." + ENDC)
-            continue
-        elif mode == '14':
+        elif mode == '16':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -750,7 +826,7 @@ while True:
                 print(GRAY + f"[#] Servers: {num_guilds}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '15':
+        elif mode == '17':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -780,7 +856,7 @@ while True:
                 print(RED + f"[!] Failed to retrieve payment history - RSC: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '16':
+        elif mode == '18':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = input(PURPLE + "[#] Token: " + ENDC)
@@ -797,7 +873,7 @@ while True:
             print(GREEN + "[#] Successfully logged in!" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '17':
+        elif mode == '19':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -814,7 +890,7 @@ while True:
                 print(RED + "[!] No Emojis found for specified Server." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '18':
+        elif mode == '20':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
