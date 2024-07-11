@@ -32,10 +32,20 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 12 - 11.07.2024
+Update 13 - 12.07.2024 
+* Renamed 'Invite Information' to 'Server Lookup
+  ⮡&nbsp;&nbsp; Added Choice between 'Server ID' and 'Server Invite' for Lookup Types<br>
+* Added Total Spent to 'Token Payments'
+  
+<details>
+<summary>Update 12 - 11.07.2024</summary>
+<br>
+
 * Added 'Group Chat Clearer'
 * Added 'Invite Information'
 * Menu & Code Layout Changes
+
+</details>
 
 <details>
 <summary>Past Updates & Changes</summary>
