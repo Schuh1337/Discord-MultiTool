@@ -33,7 +33,7 @@
 > ### 🛠️ Updates & Changes
 
 Update 13 - 12.07.2024 
-* Renamed 'Invite Information' to 'Server Lookup
+* Renamed 'Invite Information' to 'Server Lookup<br>
   ⮡&nbsp;&nbsp; Added Choice between 'Server ID' and 'Server Invite' for Lookup Types<br>
 * Added Total Spent to 'Token Payments'
   
