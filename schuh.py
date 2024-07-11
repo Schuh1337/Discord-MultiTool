@@ -63,7 +63,7 @@ def parse_date(iso_date):
         return formatted_date
     except ValueError:
         return "Invalid Date"
-def send_discord_webhook(url, content):
+def send_webhook(url, content):
     data = {'content': content}
     response = requests.post(url, json=data)
     if response.status_code == 204:
@@ -287,11 +287,10 @@ def react_to_message(message_id, emoji):
     headers = {'authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
     response = requests.put(reaction_url, headers=headers)
     return response.status_code, response.content.decode('utf-8')
-def get_discord_invite_info(invite_url):
+def get_invite_info(invite_url):
     match = re.search(r"(?:https?://)?(?:www\.)?(discord\.gg|discord\.com/invite)/(?:invite/)?([a-zA-Z0-9]+)", invite_url)
     invite_code = match.group(2)
-    url = f"https://discord.com/api/v10/invites/{invite_code}?with_counts=true"
-    response = requests.get(url)
+    response = requests.get(f"https://discord.com/api/v10/invites/{invite_code}?with_counts=true")
     if response.status_code == 200:
         data = response.json()
         print(GRAY + f"[#] Invite Code: {data.get('code')}" + ENDC)
@@ -326,6 +325,34 @@ def get_discord_invite_info(invite_url):
         print(GRAY + f"[#] Channel ID: {channel.get('id', 'N/A')}" + ENDC)
         print(GRAY + f"[#] Member Count: {data.get('approximate_member_count', 'N/A')}" + ENDC)
         print(GRAY + f"[#] Online Count: {data.get('approximate_presence_count', 'N/A')}" + ENDC)
+    else:
+        print(RED + f"[!] Failed to retrieve information - RSC: {response.status_code}" + ENDC)
+def get_serverid_info(token, id):
+    headers = {'Authorization': token, 'Content-Type': 'application/json'}
+    response = requests.get(f"https://discord.com/api/v10/guilds/{id}?with_counts=true", headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        channels = requests.get(f"https://discord.com/api/v10/guilds/{id}/channels", headers=headers)
+        owner_info = requests.get(f"https://discord.com/api/v10/users/{data.get('owner_id', 'N/A')}", headers=headers)
+        print(GRAY + f"[#] Name: {data.get('name', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] ID: {data.get('id', 'N/A')}" + ENDC)
+        if owner_info.status_code == 200:
+            owner_data = owner_info.json()
+            print(GRAY + f"[#] Owner: {owner_data.get('username', 'N/A')}" + ENDC)
+        else:
+            print(GRAY + "[#] Owner: N/A" + ENDC)
+        print(GRAY + f"[#] Owner ID: {data.get('owner_id', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Description: {data.get('description', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Verification Level: {data.get('verification_level', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Vanity: {data.get('vanity_url_code', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Boosts: {data.get('premium_subscription_count', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Boost Level: {data.get('premium_tier', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Member Count: {data.get('approximate_member_count', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Online Count: {data.get('approximate_presence_count', 'N/A')}" + ENDC)
+        print(GRAY + f"[#] Channel Count: {len(channels.json()) if channels.status_code == 200 else 'N/A'}" + ENDC)
+        print(GRAY + f"[#] Emoji Count: {len(data.get('emojis', []))}" + ENDC)
+        print(GRAY + f"[#] Sticker Count: {len(data.get('stickers', []))}" + ENDC)
+        print(GRAY + f"[#] Role Count: {len(data.get('roles', []))}" + ENDC)
     else:
         print(RED + f"[!] Failed to retrieve information - RSC: {response.status_code}" + ENDC)
 def validate_ip(ip):
@@ -443,13 +470,13 @@ while True:
                                              / ___// ____/ / / / / / / / / /
                                              \__ \/ /   / /_/ / / / / /_/ / 
                                             ___/ / /___/ __  / /_/ / __  /             
-                               │ v0.1.1    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
+                               │ v0.1.2    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
                                ├───────────────────────────┬───────────────────────────┤
                                │ [1] Webhook Spammer       │ [11] IP Address Lookup    │
                                │ [2] Webhook Animator      │ [12] IP Address Pinger    │
                                │ [3] Webhook Information   │ [13] Animated Status      │
                                │ [4] Webhook Deleter       │ [14] Hypesquad Changer    │
-                               │ [5] Channel Spammer       │ [15] Invite Information   │
+                               │ [5] Channel Spammer       │ [15] Server Lookup        │
                                │ [6] Channel Monitoring    │ [16] Token Information    │
                                │ [7] DM Channel Clearer    │ [17] Token Payments       │
                                │ [8] Group Chat Clearer    │ [18] Token Login          │
@@ -471,7 +498,7 @@ while True:
             delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
             while True:
-                send_discord_webhook(webhook_url, message_content)
+                send_webhook(webhook_url, message_content)
                 time.sleep(delay)
         elif mode == '2':
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -484,12 +511,12 @@ while True:
                 for i in range(1, len(message_content) + 1):
                     if message_content[i-1] != ' ':
                         animated_message = message_content[:i]
-                        send_discord_webhook(webhook_url, animated_message)
+                        send_webhook(webhook_url, animated_message)
                         time.sleep(delay)
                 for i in range(len(message_content) - 1, 0, -1):
                     if message_content[i-1] != ' ':
                         animated_message = message_content[:i]
-                        send_discord_webhook(webhook_url, animated_message)
+                        send_webhook(webhook_url, animated_message)
                         time.sleep(delay)
         elif mode == '3':
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -695,12 +722,12 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            status_type_choice = ''
-            status_type_choice = validate_input(PURPLE + "[#] 1. Plain Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
-            if status_type_choice == '1':
+            type = ''
+            type = validate_input(PURPLE + "[#] 1. Plain Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
+            if type == '1':
                 status_list_input = validate_input(PURPLE + "[#] Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 2 and all(s.strip() != '' for s in value.split(',')) and len(set(s.strip() for s in value.split(','))) == len(value.split(',')), "[#] Invalid Statuses. Please enter at least 2 unique statuses separated by commas.")
                 status_list = [status.strip() for status in status_list_input.split(',') if status.strip()]
-            elif status_type_choice == '2':
+            elif type == '2':
                 emoji_status_pairs_input = validate_input(PURPLE + "[#] Statuses (e.g., <:en:eid> - Status1, <:en2:eid2> - Status2): " + ENDC, lambda value: all(len(pair.split('-')) == 2 and pair.split('-')[0].strip().startswith('<:') and len(set(pair.split('-')[1].strip() for pair in value.split(','))) == len(value.split(',')) for pair in value.split(',')), "[#] Invalid Emoji & Text pairs. Please enter at least 2 unique pairs in the correct format.")
                 emoji_status_pairs = [pair.strip() for pair in emoji_status_pairs_input.split(',') if pair.strip()]
                 status_list = []
@@ -715,11 +742,11 @@ while True:
             headers = {'authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'content-type': 'application/json'}
             index = 0
             while True:
-                if status_type_choice == '1':
+                if type == '1':
                     status = status_list[index]
                     payload = {'custom_status': {'text': status}}
                     status_message = status
-                elif status_type_choice == '2':
+                elif type == '2':
                     emoji_text_pair = status_list[index]
                     payload = {'custom_status': {'text': emoji_text_pair['text'], 'emoji_name': emoji_text_pair['emoji'].split(':')[1], 'emoji_id': emoji_text_pair['emoji_id']}}
                     status_message = f"[{emoji_text_pair['emoji_id']}] {emoji_text_pair['text']}"
@@ -759,8 +786,14 @@ while True:
         elif mode == '15':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
-            invite = validate_input(PURPLE + "[#] Server Invite: " + ENDC, lambda x: re.search(r"(?:https?://)?discord\.gg/(?:invite/)?([a-zA-Z0-9]+)", x), "[#] Invalid Invite. Please check the invite and try again." )
-            get_discord_invite_info(invite)
+            type = validate_input(PURPLE + "[#] 1. Server ID\n[#] 2. Server Invite\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
+            if type == '1':
+                user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+                server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
+                get_serverid_info(user_token, server_id)
+            elif type == '2':
+                invite = validate_input(PURPLE + "[#] Server Invite: " + ENDC, lambda x: re.search(r"(?:https?://)?discord\.gg/(?:invite/)?([a-zA-Z0-9]+)", x), "[#] Invalid Invite. Please check the invite and try again." )
+                get_invite_info(invite)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
         elif mode == '16':
@@ -828,21 +861,34 @@ while True:
             continue
         elif mode == '17':
             os.system('cls' if os.name == 'nt' else 'clear')
-            if scroll_disabled == True: scroll_enable()
+            if scroll_disabled: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             headers = {'authorization': user_token, 'Content-Type': 'application/json'}
             response = requests.get('https://discord.com/api/v9/users/@me/billing/payments', headers=headers)
             if response.status_code == 200:
                 payment_history = response.json()
                 if payment_history:
-                    print(GRAY + f"[#] Total: {sum(1 for payment in payment_history)} | Successful: {sum(1 for payment in payment_history if payment['status'] == 1)} | Failed: {sum(1 for payment in payment_history if payment['status'] == 2)}" + ENDC)
+                    total_per_currency = {}
+                    for payment in payment_history:
+                        if payment['status'] == 1:
+                            amount = payment.get('amount', {})
+                            currency = payment.get('currency', '').upper()
+                            if isinstance(amount, dict):
+                                amount_value = amount.get('amount', 0) / 100
+                            else:
+                                amount_value = amount / 100
+                            if currency in total_per_currency:
+                                total_per_currency[currency] += amount_value
+                            else:
+                                total_per_currency[currency] = amount_value
+                    print(GRAY + f"[#] Total: {sum(1 for payment in payment_history)} | Successful: {sum(1 for payment in payment_history if payment['status'] == 1)} | Failed: {sum(1 for payment in payment_history if payment['status'] == 2)} | Spent: {" ".join([f"{currency} {total:.2f}" for currency, total in sorted(total_per_currency.items(), key=lambda x: x[1], reverse=True)])}" + ENDC)
                     for payment in payment_history:
                         item = payment.get('description', 'Unknown')
                         date = parse_date(payment['created_at'])
                         amount = payment.get('amount', {})
                         source = payment.get('payment_source', {})
                         country = source.get('country', 'N/A')
-                        currency = payment.get('currency', '').upper() 
+                        currency = payment.get('currency', '').upper()
                         status = GREEN + "Success" + GRAY if payment['status'] == 1 else RED + "Failed" + GRAY
                         if isinstance(amount, dict):
                             amount_value = amount.get('amount', 0) / 100
