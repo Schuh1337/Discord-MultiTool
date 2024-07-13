@@ -36,7 +36,11 @@ Update 13 - 12.07.2024
 * Renamed 'Invite Information' to 'Server Lookup'<br>
   ⮡&nbsp;&nbsp; Added Choice between 'Server ID' and 'Server Invite' for Lookup Types<br>
 * Added Total Spent to 'Token Payments'
-  
+
+<details>
+<summary>Past Updates & Changes</summary>
+<br>
+
 <details>
 <summary>Update 12 - 11.07.2024</summary>
 <br>
@@ -46,10 +50,6 @@ Update 13 - 12.07.2024
 * Menu & Code Layout Changes
 
 </details>
-
-<details>
-<summary>Past Updates & Changes</summary>
-<br>
 
 <details>
 <summary>Update 11 - 10.07.2024</summary>
