@@ -470,18 +470,18 @@ while True:
                                              / ___// ____/ / / / / / / / / /
                                              \__ \/ /   / /_/ / / / / /_/ / 
                                             ___/ / /___/ __  / /_/ / __  /             
-                               │ v0.1.2    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
+                               │ v0.1.3    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
                                ├───────────────────────────┬───────────────────────────┤
                                │ [1] Webhook Spammer       │ [11] IP Address Lookup    │
-                               │ [2] Webhook Animator      │ [12] IP Address Pinger    │
-                               │ [3] Webhook Information   │ [13] Animated Status      │
-                               │ [4] Webhook Deleter       │ [14] Hypesquad Changer    │
-                               │ [5] Channel Spammer       │ [15] Server Lookup        │
-                               │ [6] Channel Monitoring    │ [16] Token Information    │
-                               │ [7] DM Channel Clearer    │ [17] Token Payments       │
-                               │ [8] Group Chat Clearer    │ [18] Token Login          │
-                               │ [9] Message Deleter       │ [19] Scrape Emojis        │
-                               │ [10] Message Reacter      │ [20] Scrape Stickers      │
+                               │ [2] Webhook Information   │ [12] IP Address Pinger    │
+                               │ [3] Webhook Deleter       │ [13] Hypesquad Changer    │
+                               │ [4] Channel Spammer       │ [14] Server Lookup        │
+                               │ [5] Channel Monitoring    │ [15] Get Your Token       │
+                               │ [6] DM Channel Clearer    │ [16] Token Information    │
+                               │ [7] Group Chat Clearer    │ [17] Token Payments       │
+                               │ [8] Message Deleter       │ [18] Token Login          │
+                               │ [9] Message Reacter       │ [19] Scrape Emojis        │
+                               │ [10] Animated Status      │ [20] Scrape Stickers      │
                                ├───────────────────────────┴───────────────────────────┘
                                │
                                └> """ + ENDC)
@@ -503,24 +503,6 @@ while True:
         elif mode == '2':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
-            message_content = validate_input(PURPLE + "[#] Message you want to spam and animate: " + ENDC, lambda content: len(content) >= 2, "[#] Message too short. Please enter a message with at least 2 characters.")            
-            webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
-            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
-            delay = float(delay)
-            while True:
-                for i in range(1, len(message_content) + 1):
-                    if message_content[i-1] != ' ':
-                        animated_message = message_content[:i]
-                        send_webhook(webhook_url, animated_message)
-                        time.sleep(delay)
-                for i in range(len(message_content) - 1, 0, -1):
-                    if message_content[i-1] != ' ':
-                        animated_message = message_content[:i]
-                        send_webhook(webhook_url, animated_message)
-                        time.sleep(delay)
-        elif mode == '3':
-            os.system('cls' if os.name == 'nt' else 'clear')
-            if scroll_disabled == True: scroll_enable()
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
             try:
                 response = requests.get(webhook_url)
@@ -539,7 +521,7 @@ while True:
                 input(PURPLE + "[#] Press enter to return." + ENDC)
             except json.JSONDecodeError:
                 pass
-        elif mode == '4':
+        elif mode == '3':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
@@ -549,7 +531,7 @@ while True:
             else:
                 print(RED + "[#] Webhook deletion cancelled." + ENDC)
                 input(PURPLE + "[#] Press enter to return." + ENDC)
-        elif mode == '5':
+        elif mode == '4':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")
@@ -576,7 +558,7 @@ while True:
                 time.sleep(delay)
             input(PURPLE + "[#] Done sending. Press enter to return.")
             continue
-        elif mode == '6':
+        elif mode == '5':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -624,7 +606,7 @@ while True:
                                     processed_messages.add(message_id)
             except KeyboardInterrupt:
                 pass
-        elif mode == '7':
+        elif mode == '6':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -635,7 +617,7 @@ while True:
                 print(RED + "[#] DM closure canceled. No DMs were closed." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '8':
+        elif mode == '7':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -646,7 +628,7 @@ while True:
                 print(RED + "[#] Groupchat leaving canceled. No Groupchats were left." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '9':
+        elif mode == '8':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -666,7 +648,7 @@ while True:
                 print(RED + "[#] Message deletion cancelled." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
-        elif mode == '10':
+        elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -692,33 +674,7 @@ while True:
                             else:
                                 print(RED + f"[!] Failed to react to message {message_id} - RSC: {status_code}" + ENDC)
                             last_message_id = message_id
-        elif mode == '11':
-            os.system('cls' if os.name == 'nt' else 'clear')
-            if scroll_disabled == True: scroll_enable()
-            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
-            ip_data = ip_lookup(ip_address)
-            if ip_data is not None:
-                print(GRAY + f"[#] City: {ip_data.get("city", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Region: {ip_data.get("region", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Country: {ip_data.get("country", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Postal: {ip_data.get("postal", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Timezone: {ip_data.get("timezone", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Hostname: {ip_data.get("hostname", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Organization: {ip_data.get("org", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Location: {ip_data.get("loc", "N/A")}" + ENDC)
-            else:
-                print(RED + "[!] Unknown error occurred." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
-            continue
-        elif mode == '12':
-            os.system('cls' if os.name == 'nt' else 'clear')
-            if scroll_disabled == True: scroll_enable()
-            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
-            ping_count = validate_input(PURPLE + "[#] Number of times to ping: " + ENDC, lambda x: x.isdigit() and int(x) > 0, "[#] Invalid Input. Please enter a positive integer.")
-            ping_ip(ip_address, int(ping_count))
-            input(PURPLE + "[#] Press enter to return." + ENDC)
-            continue
-        elif mode == '13':
+        elif mode == '10':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -758,7 +714,33 @@ while True:
                     print(RED + f"[!] Failed to change Status - RSC: {response.status_code}" + ENDC)
                 index = (index + 1) % len(status_list)
                 time.sleep(delay)
-        elif mode == '14':
+        elif mode == '11':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
+            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
+            ip_data = ip_lookup(ip_address)
+            if ip_data is not None:
+                print(GRAY + f"[#] City: {ip_data.get("city", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Region: {ip_data.get("region", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Country: {ip_data.get("country", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Postal: {ip_data.get("postal", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Timezone: {ip_data.get("timezone", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Hostname: {ip_data.get("hostname", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Organization: {ip_data.get("org", "N/A")}" + ENDC)
+                print(GRAY + f"[#] Location: {ip_data.get("loc", "N/A")}" + ENDC)
+            else:
+                print(RED + "[!] Unknown error occurred." + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '12':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
+            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
+            ping_count = validate_input(PURPLE + "[#] Number of times to ping: " + ENDC, lambda x: x.isdigit() and int(x) > 0, "[#] Invalid Input. Please enter a positive integer.")
+            ping_ip(ip_address, int(ping_count))
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '13':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
@@ -783,7 +765,7 @@ while True:
                 else:
                     print(RED + f"[!] Failed to change HypeSquad House - RSC: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
-        elif mode == '15':
+        elif mode == '14':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             type = validate_input(PURPLE + "[#] 1. Server ID\n[#] 2. Server Invite\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
@@ -794,6 +776,32 @@ while True:
             elif type == '2':
                 invite = validate_input(PURPLE + "[#] Server Invite: " + ENDC, lambda x: re.search(r"(?:https?://)?discord\.gg/(?:invite/)?([a-zA-Z0-9]+)", x), "[#] Invalid Invite. Please check the invite and try again." )
                 get_invite_info(invite)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '15':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled == True: scroll_enable()
+            email = validate_input(PURPLE + "[#] Email: " + ENDC, lambda x: re.match(r"[^@]+@[^@]+\.[^@]+", x), "[#] Invalid Email. Please check the email and try again.")
+            password = validate_input(PURPLE + "[#] Password: " + ENDC, lambda x: len(x) > 0, "[#] Invalid Password. Password cannot be empty.")
+            payload = {'email': email, 'password': password}
+            response = requests.post("https://discord.com/api/v9/auth/login", json=payload)
+            if response.status_code == 200:
+                if response.json()["mfa"] == True:
+                    token = response.json()["ticket"]
+                    mfa = validate_input(PURPLE + "[#] MFA Code: " + ENDC, lambda x: len(x) > 0, "[#] Invalid MFA Code. MFA Code cannot be empty.")
+                    payload = {'code': mfa, 'ticket': token}
+                    response2 = requests.post("https://discord.com/api/v9/auth/mfa/totp", json=payload)
+                    print(GRAY + f"[#] User ID: {response.json()["user_id"]}\n[#] Token: {response2.json()["token"]}" + ENDC)
+                else:
+                    print(GRAY + f"[#] User ID: {response.json()["user_id"]}\n[#] Token: {response.json()["token"]}" + ENDC)
+            elif response.status_code == 400:
+                errors = response.json().get("errors", {})
+                if any(errors.get(key, {}).get("_errors") for key in ["login", "password"]):
+                    print(RED + "[!] Email or Password is invalid.")
+                else:
+                    print(RED + "[!] Unknown error occurred." + ENDC)
+            else:
+                print(RED + "[!] Unknown error occurred." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
         elif mode == '16':
