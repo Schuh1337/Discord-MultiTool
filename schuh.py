@@ -791,7 +791,15 @@ while True:
                     mfa = validate_input(PURPLE + "[#] MFA Code: " + ENDC, lambda x: len(x) > 0, "[#] Invalid MFA Code. MFA Code cannot be empty.")
                     payload = {'code': mfa, 'ticket': token}
                     response2 = requests.post("https://discord.com/api/v9/auth/mfa/totp", json=payload)
-                    print(GRAY + f"[#] User ID: {response.json()["user_id"]}\n[#] Token: {response2.json()["token"]}" + ENDC)
+                    if response2.status_code == 200:
+                        print(GRAY + f"[#] User ID: {response.json()["user_id"]}\n[#] Token: {response2.json()["token"]}" + ENDC)
+                    elif response2.status_code == 400:
+                        if response2.json().get("code") == 60008:
+                            print(RED + "[!] Invalid two-factor code." + ENDC)
+                        else:
+                            print(RED + "[!] Unknown error occurred." + ENDC)
+                    else:
+                        print(RED + "[!] Unknown error occurred." + ENDC)
                 else:
                     print(GRAY + f"[#] User ID: {response.json()["user_id"]}\n[#] Token: {response.json()["token"]}" + ENDC)
             elif response.status_code == 400:
