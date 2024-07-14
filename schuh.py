@@ -656,7 +656,7 @@ while True:
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
-            emoji = validate_input(PURPLE + "[#] Emoji string (must be in the format <:name:id>): " + ENDC, lambda e: re.match(r'<:(.*?):(\d+)>', e), "[#] Invalid Emoji string. Please check the format and try again.")
+            emoji = validate_input(PURPLE + "[#] Emoji String (eg., <:en:eid>): " + ENDC, lambda e: re.match(r'<:(.*?):(\d+)>', e), "[#] Invalid Emoji string. Please check the format and try again.")
             last_message_id = None
             while True:
                 response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=1", headers={'authorization': user_token})
