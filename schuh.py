@@ -282,10 +282,11 @@ def delete_all_messages(token, channel_id):
         print(RED + "[#] No messages found from Token in Channel." + ENDC)
     elif messages_found and not messages_deleted:
         print(RED + "[!] Messages from Token in Channel were found but none were deleted?" + ENDC)
-def react_to_message(message_id, emoji):
-    reaction_url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me"
-    headers = {'authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
-    response = requests.put(reaction_url, headers=headers)
+def react_to_message(channel_id, message_id, emoji, user_token):
+    emoji_match = re.match(r'<:(.*?):(\d+)>', emoji)
+    if emoji_match: emoji_name = emoji_match.group(1); emoji_id = emoji_match.group(2); emoji = f"{emoji_name}:{emoji_id}"
+    headers = {'Authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+    response = requests.put(f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me", headers=headers)
     return response.status_code, response.content.decode('utf-8')
 def get_invite_info(invite_url):
     match = re.search(r"(?:https?://)?(?:www\.)?(discord\.gg|discord\.com/invite)/(?:invite/)?([a-zA-Z0-9]+)", invite_url)
@@ -655,7 +656,7 @@ while True:
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
-            emoji = validate_input(PURPLE + "[#] Emoji string (without angle brackets): " + ENDC, lambda e: len(e) > 0, "[#] Emoji string cannot be empty.")
+            emoji = validate_input(PURPLE + "[#] Emoji string (must be in the format <:name:id>): " + ENDC, lambda e: re.match(r'<:(.*?):(\d+)>', e), "[#] Invalid Emoji string. Please check the format and try again.")
             last_message_id = None
             while True:
                 response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=1", headers={'authorization': user_token})
@@ -668,7 +669,7 @@ while True:
                     if 'content' in message:
                         message_id = message['id']
                         if last_message_id is None or message_id > last_message_id:
-                            status_code, response_content = react_to_message(message_id, emoji)
+                            status_code, response_content = react_to_message(channel_id, message_id, emoji, user_token)
                             if status_code == 204:
                                 print(GREEN + f"[#] Reacted to message" + ENDC, ": " + PURPLE + message_id + ENDC)
                             else:
