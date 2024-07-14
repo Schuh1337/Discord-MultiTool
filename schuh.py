@@ -795,7 +795,7 @@ while True:
                         print(GRAY + f"[#] User ID: {response.json()["user_id"]}\n[#] Token: {response2.json()["token"]}" + ENDC)
                     elif response2.status_code == 400:
                         if response2.json().get("code") == 60008:
-                            print(RED + "[!] Invalid two-factor code." + ENDC)
+                            print(RED + "[!] Invalid MFA code." + ENDC)
                         else:
                             print(RED + "[!] Unknown error occurred." + ENDC)
                     else:
