@@ -32,6 +32,9 @@
 #
 > ### 🛠️ Updates & Changes
 
+Hotfix - 15.07.24
+* Small "Fix" for 'Message Reacter'
+
 Update 14 - 14.07.24
 * Removed 'Webhook Animator' - Useless & Bad
 * Added 'Get Your Token'
