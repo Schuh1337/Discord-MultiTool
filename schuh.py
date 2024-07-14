@@ -786,7 +786,7 @@ while True:
             payload = {'email': email, 'password': password}
             response = requests.post("https://discord.com/api/v9/auth/login", json=payload)
             if response.status_code == 200:
-                if response.json()["mfa"] == True:
+                if response.json().get("mfa") and response.json()["mfa"] == True:
                     token = response.json()["ticket"]
                     mfa = validate_input(PURPLE + "[#] MFA Code: " + ENDC, lambda x: len(x) > 0, "[#] Invalid MFA Code. MFA Code cannot be empty.")
                     payload = {'code': mfa, 'ticket': token}
