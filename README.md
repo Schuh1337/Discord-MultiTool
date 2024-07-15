@@ -34,6 +34,9 @@
 #
 > ### 🛠️ Updates & Changes
 
+Bugfix - 15.07.24
+* Fixed Code Issue causing 'Token Information' to crash when Token has no Nitro (i didnt have any tkns without nitro so i didnt find out early.. rich people issue!!)
+
 Hotfix - 15.07.24
 * Small "Fix" for 'Message Reacter'
 
