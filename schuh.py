@@ -1,5 +1,6 @@
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from datetime import datetime, timedelta
+from selenium.common import exceptions
 from selenium import webdriver
 from os import system
 GREEN = '\033[92m'
@@ -47,8 +48,7 @@ def scroll_enable():
         original_window.Right -= scrollbar_width
     ctypes.windll.kernel32.SetConsoleWindowInfo(handle, True, ctypes.byref(original_window))
 def set_window_properties(hwnd, style):
-    current_style = ctypes.windll.user32.GetWindowLongW(hwnd, GWL_STYLE)
-    ctypes.windll.user32.SetWindowLongW(hwnd, GWL_STYLE, current_style & ~style)
+    ctypes.windll.user32.SetWindowLongW(hwnd, GWL_STYLE, ctypes.windll.user32.GetWindowLongW(hwnd, GWL_STYLE) & ~style)
 def validate_input(prompt, validator, error_message):
     while True:
         user_input = input(prompt).strip()
@@ -91,43 +91,31 @@ def validate_webhook(url):
         return False
 def get_user_info(token):
     headers = {'Authorization': token}
-    try:
-        response = requests.get('https://discord.com/api/v10/users/@me', headers=headers)
-        response.raise_for_status()
-        user_data = response.json()
-        return user_data
-    except requests.exceptions.RequestException:
+    response = requests.get('https://discord.com/api/v10/users/@me', headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
         print(RED + f"[!] Failed to fetch token information." + ENDC)
         return None
 def get_num_user_friends(token):
     headers = {'Authorization': token}
-    try:
-        response = requests.get('https://discord.com/api/v10/users/@me/relationships', headers=headers)
-        response.raise_for_status()
-        friends_data = response.json()
-        num_friends = len([friend for friend in friends_data if friend['type'] == 1])
-        num_friend_requests =len([friend for friend in friends_data if friend['type'] == 3])
-        return num_friends, num_friend_requests
-    except requests.exceptions.RequestException:
-        return 0
+    response = requests.get('https://discord.com/api/v10/users/@me/relationships', headers=headers)
+    if response.status_code == 200:
+        return len([friend for friend in response.json() if friend['type'] == 1]), len([friend for friend in response.json() if friend['type'] == 3])
+    else:
+        return 0, 0
 def get_num_user_guilds(token):
     headers = {'Authorization': token}
-    try:
-        response = requests.get('https://discord.com/api/v10/users/@me/guilds', headers=headers)
-        response.raise_for_status()
-        guilds_data = response.json()
-        num_guilds = len(guilds_data)
-        return num_guilds
-    except requests.exceptions.RequestException:
+    response = requests.get('https://discord.com/api/v10/users/@me/guilds', headers=headers)
+    if response.status_code == 200:
+        return len(response.json())
+    else:
         return 0
 def get_num_boosts(token):
     headers = {'Authorization': token, 'Content-Type': 'application/json'}
     response = requests.get('https://discord.com/api/v9/users/@me/guilds/premium/subscriptions', headers=headers)
     if response.status_code == 200:
-        boosts = response.json()
-        available_boosts = sum(1 for boost in boosts if not boost['guild_id'])
-        used_boosts = [{'server_id': boost['guild_id']} for boost in boosts if boost['guild_id']]
-        return available_boosts, used_boosts
+        return sum(1 for boost in response.json() if not boost['guild_id']), [{'server_id': boost['guild_id']} for boost in response.json() if boost['guild_id']]
     else:
         return 0, []
 def num_nitro_expiry_days(token):
@@ -153,13 +141,9 @@ def num_nitro_expiry_days(token):
         return "N/A"
 def get_account_standing(token):
     headers = {'Authorization': token}
-    url = 'https://discord.com/api/v9/safety-hub/@me'
-    response = requests.get(url, headers=headers)
+    response = requests.get('https://discord.com/api/v9/safety-hub/@me', headers=headers)
     if response.status_code == 200:
-        data = response.json()
-        account_standing = data.get('account_standing', {})
-        state = account_standing.get('state')
-        return state
+        return response.json().get('account_standing', {}).get('state')
     else:
         return None
 def format_account_standing(value):
@@ -226,7 +210,6 @@ def delete_all_messages(token, channel_id):
     if not user_info:
         return
     user_id = user_info['id']
-    url = f'https://discord.com/api/v9/channels/{channel_id}/messages'
     last_message_id = None
     messages_found = False
     messages_deleted = False
@@ -236,8 +219,8 @@ def delete_all_messages(token, channel_id):
             params['before'] = last_message_id
         for attempt in range(3):
             try:
-                print(GRAY + f"[#] Fetching Messages in Channel.. - [{params}]" + ENDC)
-                response = requests.get(url, headers=headers, params=params)
+                print(GRAY + f"[#] Fetching Messages in Channel.. - {params}" + ENDC)
+                response = requests.get(f'https://discord.com/api/v9/channels/{channel_id}/messages', headers=headers, params=params)
                 response.raise_for_status()
                 break
             except requests.exceptions.HTTPError:
@@ -263,8 +246,7 @@ def delete_all_messages(token, channel_id):
                 if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and 'interaction_metadata' in message and message['interaction_metadata'].get('user_id') == user_id):
                     messages_found = True
                     while True:
-                        delete_url = f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}'
-                        delete_response = requests.delete(delete_url, headers=headers)
+                        delete_response = requests.delete(f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}', headers=headers)
                         if delete_response.status_code == 204:
                             messages_deleted = True
                             print(GREEN + "[#] Successfully deleted message" + ENDC + " : " + PURPLE + message['id'] + ENDC)
@@ -529,7 +511,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete the webhook? (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete the webhook?\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == 'y':
                 delete_webhook(webhook_url)
             else:
@@ -548,7 +530,7 @@ while True:
             delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC,  lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0,  "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
             payload = {'content': message_content}
-            header = {'authorization': user_token}
+            header = {'Authorization': user_token}
             i = 0
             while num_messages == 0 or i < num_messages:
                 response = requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", data=payload, headers=header)
@@ -560,7 +542,7 @@ while True:
                     time.sleep(5)
                 i += 1
                 time.sleep(delay)
-            input(PURPLE + "[#] Done sending. Press enter to return.")
+            input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
         elif mode == '5':
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -569,7 +551,7 @@ while True:
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
             channel_id = channel_id_match.group(1) if channel_id_match else None
-            headers = {'authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+            headers = {'Authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
             params = {'limit': 1}
             print(GREEN + "[#] Monitoring Channel. Press Ctrl + C to stop." + ENDC)
             processed_messages = set()
@@ -587,22 +569,16 @@ while True:
                                     author = message['author']['username']
                                     content = message['content']
                                     if 'bot' in message['author'] and message['author']['bot']:
-                                        author = author + " [BOT]"
+                                        author += " [BOT]"
                                     if 'attachments' in message:
                                         for attachment in message['attachments']:
                                             filename = attachment['filename']
-                                            if filename.endswith(('.jpg', '.jpeg', '.png')):
+                                            if filename.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.gif', '.gifv', '.mp4', '.webm', '.mov', '.mp3', '.wav', '.ogg')):
                                                 if content: content += " "
-                                                content = GRAY + content + ENDC + RED + "[Image]" + ENDC
-                                            elif filename.endswith(('.gif')):
-                                                if content: content += " "
-                                                content = GRAY + content + ENDC + RED + "[GIF]" + ENDC                                                
-                                            elif filename.endswith(('.mp4', '.webm', '.mov')):
-                                                if content: content += " "
-                                                content = GRAY + content + ENDC + RED + "[Video]" + ENDC
-                                            elif filename.endswith(('.mp3', '.wav', '.ogg')):
-                                                if content: content += " "
-                                                content = GRAY + content + ENDC + RED + "[Audio]" + ENDC
+                                                for exts, label in {('.jpg', '.jpeg', '.png', '.webp'): "[Image]", ('.gif', 'gifv'): "[GIF]", ('.mp4', '.webm', '.mov'): "[Video]", ('.mp3', '.wav', '.ogg'): "[Audio]"}.items():
+                                                    if filename.lower().endswith(exts):
+                                                        content += RED + label + ENDC
+                                                        break
                                     if 'sticker_items' in message:
                                         if content: content += " "
                                         content += RED + "[Sticker]" + ENDC
@@ -637,14 +613,14 @@ while True:
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete all messages from the provided token in this channel? (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete all messages from the provided token in this channel?\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation == 'y':
                 try:
                     match = re.search(r"/channels/(\d+)", channel_link)
                     if match:
                         channel_id = match.group(1)
                     else:
-                        print(RED + "[!] Couldn't extract Channel ID" + ENDC)
+                        print(RED + "[!] Couldn't extract Channel ID." + ENDC)
                     delete_all_messages(user_token, channel_id)
                 except Exception:
                     print(RED + f"[!] Unknown error occurred." + ENDC)
@@ -661,8 +637,9 @@ while True:
             channel_id = channel_id_match.group(1) if channel_id_match else None
             emoji = validate_input(PURPLE + "[#] Emoji String (eg., <:en:eid>): " + ENDC, lambda e: re.match(r'<:(.*?):(\d+)>', e), "[#] Invalid Emoji String. Please check the format and try again.")
             last_message_id = None
+            headers = {'Authorization': user_token}
             while True:
-                response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=1", headers={'authorization': user_token})
+                response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=1", headers=headers)
                 if response.status_code != 200:
                     print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
                     input(PURPLE + "[#] Press enter to return." + ENDC)
@@ -699,7 +676,7 @@ while True:
                     status_list.append({"emoji": emoji, "text": text, "emoji_id": emoji_id})
             delay =  validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
             delay = float(delay)
-            headers = {'authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'content-type': 'application/json'}
+            headers = {'Authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'content-type': 'application/json'}
             index = 0
             while True:
                 if type == '1':
@@ -746,29 +723,24 @@ while True:
             continue
         elif mode == '13':
             os.system('cls' if os.name == 'nt' else 'clear')
-            if scroll_disabled == True: scroll_enable()
+            if scroll_disabled: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance', '4': 'Remove'}
             for option, house in hypesquad_options.items():
                 print(PURPLE + f"[#] {option}. {house}" + ENDC)
-            selected_option = validate_input(PURPLE + "[#] Choice: " + ENDC, lambda value: value in hypesquad_options, "[#] Invalid Choice. Please enter either 1, 2, 3, or 4.")
+            selected_option = validate_input(PURPLE + "[#] Choice: " + ENDC, lambda x: x in hypesquad_options, "[#] Invalid Choice. Please enter either 1, 2, 3, or 4.")
+            headers = {'Authorization': user_token, 'content-type': 'application/json'}
             if selected_option == '4':
-                headers = {'authorization': user_token, 'content-type': 'application/json'}
                 response = requests.delete('https://discord.com/api/v9/hypesquad/online', headers=headers)
-                if response.status_code == 204:
-                    print(GREEN + "[#] Successfully removed HypeSquad House." + ENDC)
-                else:
-                    print(RED + f"[!] Failed to remove HypeSquad House - RSC: {response.status_code}" + ENDC)
             else:
-                hypesquad_house = hypesquad_options[selected_option]
-                headers = {'authorization': user_token, 'content-type': 'application/json'}
                 payload = {'house_id': selected_option}
                 response = requests.post('https://discord.com/api/v9/hypesquad/online', json=payload, headers=headers)
-                if response.status_code == 204:
-                    print(GREEN + f"[#] Successfully changed HypeSquad House to {hypesquad_house}." + ENDC)
-                else:
-                    print(RED + f"[!] Failed to change HypeSquad House - RSC: {response.status_code}" + ENDC)
+            if response.status_code == 204:
+                print(GREEN + f"[#] {"Successfully removed HypeSquad House." if selected_option == '4' else f"Successfully changed HypeSquad House to {hypesquad_options[selected_option]}."}" + ENDC)
+            else:
+                print(RED + f"[!] {"Failed to remove HypeSquad House" if selected_option == '4' else "Failed to change Hypesquad House"} - RSC: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
         elif mode == '14':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
@@ -821,59 +793,37 @@ while True:
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             user_info = get_user_info(user_token)
-            if 'premium_type' in user_info and user_info['premium_type'] > 0: 
-                nitro_expiry = num_nitro_expiry_days(user_token)
             num_guilds = get_num_user_guilds(user_token)
             num_friends, num_friend_requests = get_num_user_friends(user_token)
             available_boosts, used_boosts = get_num_boosts(user_token)
             account_standing_state = get_account_standing(user_token)
+            if 'premium_type' in user_info and user_info['premium_type'] > 0: 
+                nitro_expiry = num_nitro_expiry_days(user_token)
             if user_info:
                 print(GRAY + f"[#] Username: {user_info['username']}" + ENDC)
                 print(GRAY + f"[#] ID: {user_info['id']}" + ENDC)
-                print(GRAY + f"[#] Email: {user_info['email']}" + ENDC)
-                if 'verified' in user_info:
-                    verified = user_info['verified']
-                    if verified:
-                        print(GRAY + f"[#] Email Verified: Yes" + ENDC)
-                    else:
-                        print(GRAY + f"[#] Email Verified: No" + ENDC)
+                print(GRAY + f"[#] Email: {user_info.get('email', 'N/A')}" + ENDC)
+                print(GRAY + f"[#] Email Verified: {'Yes' if user_info.get('verified') else 'No'}" + ENDC)
                 print(GRAY + f"[#] Phone: {user_info.get('phone', 'N/A')}" + ENDC)
-                if 'mfa_enabled' in user_info:
-                    mfa_enabled = user_info['mfa_enabled']
-                    if mfa_enabled:
-                        print(GRAY + f"[#] MFA Enabled: Yes" + ENDC)
-                    else:
-                        print(GRAY + f"[#] MFA Enabled: No" + ENDC)
+                print(GRAY + f"[#] MFA Enabled: {'Yes' if user_info.get('mfa_enabled') else 'No'}" + ENDC)
                 print(GRAY + f"[#] Standing: {format_account_standing(account_standing_state)}" + ENDC)
                 print(GRAY + f"[#] Created: {parse_date(str(get_created_timestamp(user_info['id'])))}" + ENDC)
                 print(GRAY + f"[#] Locale: {user_info['locale']}" + ENDC)
-                if 'premium_type' in user_info:
-                    nitro_type = user_info['premium_type']
-                    if nitro_type == 3:
-                        print(GRAY + f"[#] Nitro: Yes" + ENDC)
-                        print(GRAY + f"[#] Nitro Type: $3 Nitro" + ENDC)
-                        print(GRAY + f"[#] Nitro Expiry: {nitro_expiry}" + ENDC)
-                    elif nitro_type == 2:
-                        print(GRAY + f"[#] Nitro: Yes" + ENDC)
-                        print(GRAY + f"[#] Nitro Type: $10 Nitro" + ENDC)
-                        print(GRAY + f"[#] Nitro Expiry: {nitro_expiry}" + ENDC)
-                        print(GRAY + f"[#] Available Boosts: {available_boosts}" + ENDC)
-                    elif nitro_type == 1:
-                        print(GRAY + f"[#] Nitro: Yes" + ENDC)
-                        print(GRAY + f"[#] Nitro Type: $5 Nitro" + ENDC)
-                        print(GRAY + f"[#] Nitro Expiry: {nitro_expiry}" + ENDC)
-                    else:
-                        print(GRAY + f"[#] Nitro: No" + ENDC)
-                    if used_boosts:
-                        used_boosts_count = {}
-                        for boost in used_boosts:
-                            server_id = boost['server_id']
-                            if server_id in used_boosts_count:
-                                used_boosts_count[server_id] += 1
-                            else:
-                                used_boosts_count[server_id] = 1
-                        used_boosts_formatted = ' | '.join(f"{count}x - {server_id}" for server_id, count in used_boosts_count.items())
-                        print(GRAY + f"[#] Active Boosts: {used_boosts_formatted}" + ENDC)
+                if 'premium_type' in user_info and user_info['premium_type'] > 0:
+                    print(GRAY + f"[#] Nitro: Yes" + ENDC)
+                    print(GRAY + f"[#] Nitro Type: { {3: '$3 Nitro', 2: '$10 Nitro', 1: '$5 Nitro'}[user_info['premium_type']] }" + ENDC)
+                    print(GRAY + f"[#] Nitro Expiry: {nitro_expiry}" + ENDC)
+                else:
+                    print(GRAY + f"[#] Nitro: No" + ENDC)
+                if user_info['premium_type'] == 2 or available_boosts > 0: 
+                    print(GRAY + f"[#] Available Boosts: {available_boosts}" + ENDC)
+                if used_boosts:
+                    used_boosts_count = {}
+                    for boost in used_boosts:
+                        server_id = boost['server_id']
+                        used_boosts_count[server_id] = used_boosts_count.get(server_id, 0) + 1
+                    used_boosts_formatted = ' | '.join(f"{count}x - {server_id}" for server_id, count in used_boosts_count.items())
+                    print(GRAY + f"[#] Active Boosts: {used_boosts_formatted}" + ENDC)
                 print(GRAY + f"[#] Clan: {user_info['clan']}" + ENDC)
                 print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
                 print(GRAY + f"[#] Friend Requests: {num_friend_requests}" + ENDC)
@@ -884,7 +834,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            headers = {'authorization': user_token, 'Content-Type': 'application/json'}
+            headers = {'Authorization': user_token, 'Content-Type': 'application/json'}
             response = requests.get('https://discord.com/api/v9/users/@me/billing/payments', headers=headers)
             if response.status_code == 200:
                 payment_history = response.json()
@@ -894,29 +844,16 @@ while True:
                         if payment['status'] == 1:
                             amount = payment.get('amount', {})
                             currency = payment.get('currency', '').upper()
-                            if isinstance(amount, dict):
-                                amount_value = amount.get('amount', 0) / 100
-                            else:
-                                amount_value = amount / 100
-                            if currency in total_per_currency:
-                                total_per_currency[currency] += amount_value
-                            else:
-                                total_per_currency[currency] = amount_value
-                    print(GRAY + f"[#] Total: {sum(1 for payment in payment_history)} | Successful: {sum(1 for payment in payment_history if payment['status'] == 1)} | Failed: {sum(1 for payment in payment_history if payment['status'] == 2)} | Spent: {" ".join([f"{currency} {total:.2f}" for currency, total in sorted(total_per_currency.items(), key=lambda x: x[1], reverse=True)])}" + ENDC)
+                            amount_value = (amount.get('amount', 0) if isinstance(amount, dict) else amount) / 100
+                            total_per_currency[currency] = total_per_currency.get(currency, 0) + amount_value
+                    print(GRAY + f"[#] Total: {len(payment_history)} | Successful: {sum(1 for p in payment_history if p['status'] == 1)} | Failed: {sum(1 for p in payment_history if p['status'] == 2)} | Spent: {' '.join([f'{currency} {total:.2f}' for currency, total in sorted(total_per_currency.items(), key=lambda x: x[1], reverse=True)])}" + ENDC)
                     for payment in payment_history:
-                        item = payment.get('description', 'Unknown')
-                        date = parse_date(payment['created_at'])
                         amount = payment.get('amount', {})
                         source = payment.get('payment_source', {})
-                        country = source.get('country', 'N/A')
                         currency = payment.get('currency', '').upper()
-                        status = GREEN + "Success" + GRAY if payment['status'] == 1 else RED + "Failed" + GRAY
-                        if isinstance(amount, dict):
-                            amount_value = amount.get('amount', 0) / 100
-                            amount_display = f"{currency} {amount_value:.2f}"
-                        else:
-                            amount_display = f"{currency} {amount / 100:.2f}"
-                        print(GRAY + f"[#] Item: {item} | Amount: {amount_display} | Status: {status} | Country: {country} | Date: {date}" + ENDC)
+                        amount_value = (amount.get('amount', 0) if isinstance(amount, dict) else amount) / 100
+                        amount_display = f"{currency} {amount_value:.2f}"
+                        print(GRAY + f"[#] Item: {payment.get('description', 'Unknown')} | Amount: {amount_display} | Status: {GREEN + "Success" + GRAY if payment['status'] == 1 else RED + "Failed" + GRAY} | Country: {source.get('country', 'N/A')} | Date: {parse_date(payment['created_at'])}" + ENDC)
                 else:
                     print(RED + "[#] No payment history found." + ENDC)
             else:
@@ -926,18 +863,23 @@ while True:
         elif mode == '18':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
-            user_token = input(PURPLE + "[#] Token: " + ENDC)
-            headers = {'authorization': user_token}
-            print(PURPLE + "[#] Logging in with Token.." + ENDC)
+            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            headers = {'Authorization': user_token}
+            print(PURPLE + '[#] Logging in with Token..' + ENDC)
             options = webdriver.ChromeOptions()
             options.add_experimental_option("detach", True)
             options.add_experimental_option("excludeSwitches", ['enable-logging'])
             options.add_argument("--log-level=3")
             options.add_argument("start-maximized")
-            driver = webdriver.Chrome(options=options)
-            driver.get("https://discord.com/login")
-            driver.execute_script('''function login(token) { setInterval(() => { document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"` }, 50); setTimeout(() => { location.reload(); }, 2500); }''' + f'\nlogin("{user_token}")')
-            print(GREEN + "[#] Successfully logged in!" + ENDC)
+            try:
+                driver = webdriver.Chrome(options=options)
+                driver.get("https://discord.com/login")
+                driver.execute_script('''function login(token) { setInterval(() => { document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"` }, 50); setTimeout(() => { location.reload(); }, 2500); }''' + f'\nlogin("{user_token}")')                
+                print(GREEN + "[#] Successfully logged in!" + ENDC)
+            except exceptions.WebDriverException:
+                print(RED + f"[!] WebDriverException occurred:" + ENDC)
+            except Exception:
+                print(RED + "[!] Unknown error occurred." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
         elif mode == '19':
