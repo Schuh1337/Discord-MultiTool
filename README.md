@@ -1,5 +1,6 @@
 # Discord-Tool - Schuh Rewrite
-<img src="https://schuh.wtf/resources/images/schuhrewrite.png" alt="Preview">
+<a id="Preview"></a>
+![image](https://schuh.wtf/resources/images/schuhrewrite.png)
 
 > [!NOTE]
 > Supports: Windows 10, 11 [Other Versions untested]<br>
