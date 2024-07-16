@@ -1,9 +1,14 @@
 # Discord-Tool - Schuh Rewrite
 <img src="https://schuh.wtf/resources/images/schuhrewrite.png">
 <p align="center">
-<img src=https://img.shields.io/badge/working-green />
-<img src=https://img.shields.io/badge/safe-green />
-<img src=https://img.shields.io/badge/approved-green />
+  <a href="https://github.com/Schuh1337/Discord-MultiTool/tree/main?tab=MIT">
+    <img src="https://img.shields.io/badge/License-MIT-important">
+  </a>
+  <a href="https://www.python.org/downloads">
+    <img src="https://img.shields.io/badge/Python-3.12.4-informational.svg">
+  </a>
+  <img src="https://img.shields.io/badge/Size-57.8 KB-informational.svg">
+  <img src="https://img.shields.io/badge/Lines-922-informational.svg">
 </p>
 <br>
 
@@ -17,7 +22,7 @@
 > 
 > This project is not intended for production use, and its code may not adhere to best practices or security standards. It is solely meant for educational purposes, providing examples, and encouraging experimentation.<br>
 >
-> I am not responsible for any misuse or damage caused using this tool. Users are advised to comply with the terms of the [MIT License](https://github.com/Schuh1337/Discord-MultiTool?tab=MIT-1-ov-file) and use this tool responsibly.
+> I am not responsible for any misuse or damage caused using this tool. Users are advised to comply with the terms of the [MIT License](https://github.com/Schuh1337/Discord-MultiTool/tree/main?tab=MIT) and use this tool responsibly.
 
 > [!TIP]
 > 
