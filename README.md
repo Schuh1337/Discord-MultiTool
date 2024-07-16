@@ -1,6 +1,6 @@
 # Discord-Tool - Schuh Rewrite
 <a id="Preview"></a>
-![image](https://schuh.wtf/resources/images/schuhrewritespin.gif)
+![image](https://schuh.wtf/resources/images/schuhrewrite.png)
 
 > [!NOTE]
 > Supports: Windows 10, 11 [Other Versions untested]<br>
