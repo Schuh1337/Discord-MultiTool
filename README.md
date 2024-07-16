@@ -1,5 +1,5 @@
 # Discord-Tool - Schuh Rewrite
-<img src="https://schuh.wtf/resources/images/schuhrewrite.ong">
+<img src="https://schuh.wtf/resources/images/schuhrewrite.png">
 <br>
 
 > [!NOTE]
