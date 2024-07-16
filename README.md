@@ -1,5 +1,10 @@
 # Discord-Tool - Schuh Rewrite
 <img src="https://schuh.wtf/resources/images/schuhrewrite.png">
+<p align="center">
+<img src=https://img.shields.io/badge/working-green />
+<img src=https://img.shields.io/badge/safe-green />
+<img src=https://img.shields.io/badge/approved-green />
+</p>
 <br>
 
 > [!NOTE]
