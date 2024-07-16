@@ -34,19 +34,40 @@
 #
 > ### 🛠️ Updates & Changes
 
-Bugfix - 15.07.24
-* Fixed Code Issue causing 'Token Information' to crash when Token has no Nitro
-
-Hotfix - 15.07.24
-* Small "Fix" for 'Message Reacter'
-
-Update 14 - 14.07.24
-* Removed 'Webhook Animator' - Useless & Bad
-* Added 'Get Your Token'
+Update 15 - 16.07.2024
+* Overall Code Optimizations
+  ⮡&nbsp;&nbsp; More Compact & Readable Code<br>
+  ⮡&nbsp;&nbsp; Some more Error Handling for some Functions<br>
+  ⮡&nbsp;&nbsp; Improved some Inputs<br>
 
 <details>
 <summary>Past Updates & Changes</summary>
 <br>
+
+<details>
+<summary>Bugfix - 15.07.24</summary>
+<br>
+  
+* Fixed Code Issue causing 'Token Information' to crash when Token has no Nitro
+
+</details>
+
+<details>
+<summary>Hotfix - 15.07.24</summary>
+<br>
+
+* Small "Fix" for 'Message Reacter'
+  
+</details>
+
+<details>
+<summary>Update 14 - 14.07.24</summary>
+<br>
+
+* Removed 'Webhook Animator' - Useless & Bad
+* Added 'Get Your Token'
+
+</details>
 
 <details>
 <summary>Update 13 - 12.07.2024 </summary>
