@@ -35,6 +35,7 @@
 > ### 🛠️ Updates & Changes
 
 Update 15 - 16.07.2024
+
 * Overall Code Optimizations<br>
   ⮡&nbsp;&nbsp; More Compact & Readable Code<br>
   ⮡&nbsp;&nbsp; Some more Error Handling for some Functions<br>
