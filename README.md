@@ -1,15 +1,5 @@
 # Discord-Tool - Schuh Rewrite
 <img src="https://schuh.wtf/resources/images/schuhrewrite.png">
-<p align="center">
-  <a href="https://github.com/Schuh1337/Discord-MultiTool/tree/main?tab=MIT">
-    <img src="https://img.shields.io/badge/License-MIT-important">
-  </a>
-  <a href="https://www.python.org/downloads">
-    <img src="https://img.shields.io/badge/Python-3.12.4-informational.svg">
-  </a>
-  <img src="https://img.shields.io/badge/Size-57.8 KB-informational.svg">
-  <img src="https://img.shields.io/badge/Lines-922-informational.svg">
-</p>
 <br>
 
 > [!NOTE]
