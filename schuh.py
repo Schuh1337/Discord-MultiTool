@@ -1,3 +1,7 @@
+##########################################
+# github.com/Schuh1337/Discord-MultiTool #
+# schuh.wtf/schuhrewrite | made by Schuh #
+##########################################
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from datetime import datetime, timedelta
 from selenium.common import exceptions
@@ -61,7 +65,7 @@ def parse_date(iso_date):
         parsed_date = datetime.fromisoformat(iso_date)
         formatted_date = parsed_date.strftime('%d.%m.%Y %H:%M')
         return formatted_date
-    except ValueError:
+    except (Exception, ValueError):
         return "Invalid Date"
 def send_webhook(url, content):
     data = {'content': content}
@@ -90,7 +94,7 @@ def validate_webhook(url):
     except (requests.RequestException, ValueError):
         return False
 def get_user_info(token):
-    headers = {'Authorization': token}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get('https://discord.com/api/v10/users/@me', headers=headers)
     if response.status_code == 200:
         return response.json()
@@ -98,84 +102,77 @@ def get_user_info(token):
         print(RED + f"[!] Failed to fetch token information." + ENDC)
         return None
 def get_num_user_friends(token):
-    headers = {'Authorization': token}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get('https://discord.com/api/v10/users/@me/relationships', headers=headers)
     if response.status_code == 200:
-        return len([friend for friend in response.json() if friend['type'] == 1]), len([friend for friend in response.json() if friend['type'] == 3])
+        return len([friend for friend in response.json() if friend['type'] == 1]), len([friend for friend in response.json() if friend['type'] == 2]), len([friend for friend in response.json() if friend['type'] == 3])
     else:
-        return 0, 0
+        return "N/A", "N/A", "N/A"
 def get_num_user_guilds(token):
-    headers = {'Authorization': token}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get('https://discord.com/api/v10/users/@me/guilds', headers=headers)
     if response.status_code == 200:
         return len(response.json())
     else:
         return 0
 def get_num_boosts(token):
-    headers = {'Authorization': token, 'Content-Type': 'application/json'}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get('https://discord.com/api/v9/users/@me/guilds/premium/subscriptions', headers=headers)
     if response.status_code == 200:
         return sum(1 for boost in response.json() if not boost['guild_id']), [{'server_id': boost['guild_id']} for boost in response.json() if boost['guild_id']]
     else:
         return 0, []
 def num_nitro_expiry_days(token):
-    headers = {'Authorization': token, 'Content-Type': 'application/json'}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get('https://discord.com/api/v9/users/@me/billing/subscriptions', headers=headers)
     if response.status_code == 200:
         nitro_data = response.json()
         if nitro_data:
-            current_period_end = nitro_data[0].get("current_period_end")
-            end_date = datetime.strptime(current_period_end.split('.')[0], "%Y-%m-%dT%H:%M:%S")
+            end_date = datetime.strptime(nitro_data[0].get("current_period_end").split('.')[0], "%Y-%m-%dT%H:%M:%S")
             time_left = end_date - datetime.now()
-            days_left = time_left.days
-            hours_left = time_left.seconds // 3600
+            days_left, remainder = divmod(time_left.seconds + time_left.days * 86400, 86400)
+            hours_left, _ = divmod(remainder, 3600)
             if days_left > 0:
                 return f"{days_left} Day{'s' if days_left != 1 else ''} {hours_left} Hour{'s' if hours_left != 1 else ''}"
             elif hours_left > 0:
                 return f"{hours_left} Hour{'s' if hours_left != 1 else ''}"
             else:
                 return "Less than an hour"
-        else:
-            return "No Nitro"
-    else:
-        return "N/A"
+        return "No Nitro"
+    return "N/A"
 def get_account_standing(token):
-    headers = {'Authorization': token}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get('https://discord.com/api/v9/safety-hub/@me', headers=headers)
     if response.status_code == 200:
         return response.json().get('account_standing', {}).get('state')
     else:
         return None
 def format_account_standing(value):
-    if value <= 100:
-        return "All good! (100)"
-    elif value == 75: 
-        return "Limited (75)"
-    elif value == 50:
-        return "Very Limited (50)"
-    elif value == 25:
-        return "At risk (25)"
+    if value is None: return "N/A"
+    return {
+        100: "All good! (100)",
+        75: "Limited (75)",
+        50: "Very Limited (50)",
+        25: "At risk (25)"
+    }.get(value, "N/A" if value <= 100 else "N/A")
 def get_created_timestamp(id):
-    timestamp = ((int(id) >> 22) + 1420070400000) / 1000
-    creation_date = datetime.fromtimestamp(timestamp)
-    date = creation_date - timedelta(hours=2)
-    return date
+    return datetime.fromtimestamp(((int(id) >> 22) + 1420070400000) / 1000) - timedelta(hours=2)
 def validate_token(token):
-    headers = {'Authorization': token}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     try:
         response = requests.get('https://discord.com/api/v10/users/@me', headers=headers)
         return response.status_code == 200
     except requests.exceptions.RequestException:
         return False
 def close_all_dms(token):
-    headers = {'Authorization': token}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     try:
         response = requests.get('https://discord.com/api/v10/users/@me/channels', headers=headers)
         dm_channels = response.json()
         for channel in dm_channels:
             if channel['type'] != 1:
                 continue
-            response = requests.delete(f'https://discord.com/api/v10/channels/{channel['id']}', headers=headers)
+            response = requests.delete(f"https://discord.com/api/v10/channels/{channel['id']}", headers=headers)
             if response.status_code == 200:
                 print(GREEN + f"[#] Successfully closed DM" + ENDC + " : " + PURPLE + channel['id'] + ENDC)
             else:
@@ -187,13 +184,13 @@ def close_all_dms(token):
     except Exception:
         print(RED + f"[!] Unknown error occurred." + ENDC)
 def leave_all_groupchats(token):
-    headers = {'Authorization': token}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     try:
         response = requests.get('https://discord.com/api/v10/users/@me/channels', headers=headers)
         channels = response.json()
         for channel in channels:
             if channel['type'] == 3:
-                response = requests.delete(f'https://discord.com/api/v10/channels/{channel['id']}', headers=headers)
+                response = requests.delete(f"https://discord.com/api/v10/channels/{channel['id']}", headers=headers)
                 if response.status_code == 200:
                     print(GREEN + f"[#] Successfully left Groupchat" + ENDC + " : " + PURPLE + channel['id'] + ENDC)
                 else:
@@ -205,7 +202,7 @@ def leave_all_groupchats(token):
     except Exception:
         print(RED + f"[!] Unknown error occurred." + ENDC)
 def delete_all_messages(token, channel_id):
-    headers = {'Authorization': token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'Content-Type': 'application/json'}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     user_info = get_user_info(token)
     if not user_info:
         return
@@ -246,7 +243,7 @@ def delete_all_messages(token, channel_id):
                 if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and 'interaction_metadata' in message and message['interaction_metadata'].get('user_id') == user_id):
                     messages_found = True
                     while True:
-                        delete_response = requests.delete(f'https://discord.com/api/v9/channels/{channel_id}/messages/{message["id"]}', headers=headers)
+                        delete_response = requests.delete(f"https://discord.com/api/v9/channels/{channel_id}/messages/{message['id']}", headers=headers)
                         if delete_response.status_code == 204:
                             messages_deleted = True
                             print(GREEN + "[#] Successfully deleted message" + ENDC + " : " + PURPLE + message['id'] + ENDC)
@@ -267,10 +264,10 @@ def delete_all_messages(token, channel_id):
         print(RED + "[#] No messages found from Token in Channel." + ENDC)
     elif messages_found and not messages_deleted:
         print(RED + "[!] Messages from Token in Channel were found but none were deleted?" + ENDC)
-def react_to_message(channel_id, message_id, emoji, user_token):
+def react_to_message(channel_id, message_id, emoji, token):
     emoji_match = re.match(r'<:(.*?):(\d+)>', emoji)
     if emoji_match: emoji_name = emoji_match.group(1); emoji_id = emoji_match.group(2); emoji = f"{emoji_name}:{emoji_id}"
-    headers = {'Authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.put(f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me", headers=headers)
     return response.status_code, response.content.decode('utf-8')
 def get_invite_info(invite_url):
@@ -314,7 +311,7 @@ def get_invite_info(invite_url):
     else:
         print(RED + f"[!] Failed to retrieve information - RSC: {response.status_code}" + ENDC)
 def get_serverid_info(token, id):
-    headers = {'Authorization': token, 'Content-Type': 'application/json'}
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get(f"https://discord.com/api/v10/guilds/{id}?with_counts=true", headers=headers)
     if response.status_code == 200:
         data = response.json()
@@ -351,11 +348,8 @@ def ip_lookup(ip):
     try:
         response = requests.get(f'https://ipinfo.io/{ip}/json')
         response.raise_for_status()
-        data = response.json()
-        return data
-    except requests.exceptions.RequestException:
-        return None
-    except ValueError:
+        return response.json()
+    except (requests.exceptions.RequestException, ValueError):
         return None
 def ping_ip(ip, count):
     try:
@@ -372,7 +366,7 @@ def ping_ip(ip, count):
         print(RED + f"[!] Unknown error occurred." + ENDC)
         return False
 def get_guild_emojis(token, server_id):
-    headers = {"Authorization": token}
+    headers = {"Authorization": token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get(f"https://discord.com/api/v9/guilds/{server_id}/emojis", headers=headers)
     if response.status_code == 200:
         return response.json()
@@ -403,7 +397,7 @@ async def download_emoji_async(emojis, inner_emoji_dir):
         successful_downloads = sum(results)
         return successful_downloads
 def get_guild_stickers(token, server_id):
-    headers = {"Authorization": token}
+    headers = {"Authorization": token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get(f"https://discord.com/api/v9/guilds/{server_id}/stickers", headers=headers)
     if response.status_code == 200:
         return response.json()
@@ -421,7 +415,7 @@ def get_format_type(format_type):
     elif format_type == 4:
         return 'gif'
     else:
-        return None
+        return 'webp'
 async def download_sticker(session, sticker, inner_sticker_dir):
     valid_filename = re.sub(r'[\\/*?:"<>|]', '', sticker['name'])
     sticker_path = os.path.join(inner_sticker_dir, f"{valid_filename}.webp")
@@ -456,7 +450,7 @@ while True:
                                              / ___// ____/ / / / / / / / / /
                                              \__ \/ /   / /_/ / / / / /_/ / 
                                             ___/ / /___/ __  / /_/ / __  /             
-                               │ v0.1.4    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
+                               │ v0.1.5    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
                                ├───────────────────────────┬───────────────────────────┤
                                │ [1] Webhook Spammer       │ [11] IP Address Lookup    │
                                │ [2] Webhook Information   │ [12] IP Address Pinger    │
@@ -481,7 +475,7 @@ while True:
             if scroll_disabled == True: scroll_enable()
             message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")            
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
-            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
+            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid Delay. Please enter a positive number.")
             delay = float(delay)
             while True:
                 send_webhook(webhook_url, message_content)
@@ -522,12 +516,12 @@ while True:
             if scroll_disabled == True: scroll_enable()
             message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
-            channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
-            channel_id = channel_id_match.group(1) if channel_id_match else None
+            channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
+            channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
+            channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
             num_messages = validate_input(PURPLE + "[#] Number of times to send the message (0 = infinite): " + ENDC, lambda value: value.isdigit() and int(value) >= 0, "[#] Invalid Input. Please enter a non-negative integer.")
             num_messages = int(num_messages)
-            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC,  lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0,  "[#] Invalid delay. Please enter a positive number.")
+            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC,  lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0,  "[#] Invalid Delay. Please enter a positive number.")
             delay = float(delay)
             payload = {'content': message_content}
             header = {'Authorization': user_token}
@@ -548,10 +542,10 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
-            channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
-            channel_id = channel_id_match.group(1) if channel_id_match else None
-            headers = {'Authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+            channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
+            channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
+            channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
+            headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
             params = {'limit': 1}
             print(GREEN + "[#] Monitoring Channel. Press Ctrl + C to stop." + ENDC)
             processed_messages = set()
@@ -612,15 +606,12 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
+            channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
+            channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
+            channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
             confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete all messages from the provided token in this channel?\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation == 'y':
                 try:
-                    match = re.search(r"/channels/(\d+)", channel_link)
-                    if match:
-                        channel_id = match.group(1)
-                    else:
-                        print(RED + "[!] Couldn't extract Channel ID." + ENDC)
                     delete_all_messages(user_token, channel_id)
                 except Exception:
                     print(RED + f"[!] Unknown error occurred." + ENDC)
@@ -632,12 +623,12 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_link = validate_input(PURPLE + "[#] Channel Link: " + ENDC, lambda link: re.search(r'/channels/(\d+)/', link), "[#] Invalid Channel Link. Please check the link and try again.")
-            channel_id_match = re.search(r'/channels/(\d+)/', channel_link)
-            channel_id = channel_id_match.group(1) if channel_id_match else None
+            channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
+            channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
+            channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
             emoji = validate_input(PURPLE + "[#] Emoji String (eg., <:en:eid>): " + ENDC, lambda e: re.match(r'<:(.*?):(\d+)>', e), "[#] Invalid Emoji String. Please check the format and try again.")
             last_message_id = None
-            headers = {'Authorization': user_token}
+            headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
             while True:
                 response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=1", headers=headers)
                 if response.status_code != 200:
@@ -659,8 +650,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            type = ''
-            type = validate_input(PURPLE + "[#] 1. Plain Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
+            type = validate_input(PURPLE + "[#] 1. Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
             if type == '1':
                 status_list_input = validate_input(PURPLE + "[#] Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 2 and all(s.strip() != '' for s in value.split(',')) and len(set(s.strip() for s in value.split(','))) == len(value.split(',')), "[#] Invalid Statuses. Please enter at least 2 unique statuses separated by commas.")
                 status_list = [status.strip() for status in status_list_input.split(',') if status.strip()]
@@ -674,9 +664,9 @@ while True:
                     text = emoji_text_pair[1].strip()
                     emoji_id = emoji.split(':')[2][:-1]
                     status_list.append({"emoji": emoji, "text": text, "emoji_id": emoji_id})
-            delay =  validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid delay. Please enter a positive number.")
+            delay =  validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid Delay. Please enter a positive number.")
             delay = float(delay)
-            headers = {'Authorization': user_token, 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 'content-type': 'application/json'}
+            headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
             index = 0
             while True:
                 if type == '1':
@@ -701,14 +691,14 @@ while True:
             ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
             ip_data = ip_lookup(ip_address)
             if ip_data is not None:
-                print(GRAY + f"[#] City: {ip_data.get("city", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Region: {ip_data.get("region", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Country: {ip_data.get("country", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Postal: {ip_data.get("postal", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Timezone: {ip_data.get("timezone", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Hostname: {ip_data.get("hostname", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Organization: {ip_data.get("org", "N/A")}" + ENDC)
-                print(GRAY + f"[#] Location: {ip_data.get("loc", "N/A")}" + ENDC)
+                print(GRAY + f"[#] City: {ip_data.get('city', 'N/A')}" + ENDC)
+                print(GRAY + f"[#] Region: {ip_data.get('egion', 'N/A')}" + ENDC)
+                print(GRAY + f"[#] Country: {ip_data.get('country', 'N/A')}" + ENDC)
+                print(GRAY + f"[#] Postal: {ip_data.get('postal', 'N/A')}" + ENDC)
+                print(GRAY + f"[#] Timezone: {ip_data.get('timezone', 'N/A')}" + ENDC)
+                print(GRAY + f"[#] Hostname: {ip_data.get('hostname', 'N/A')}" + ENDC)
+                print(GRAY + f"[#] Organization: {ip_data.get('org', 'N/A')}" + ENDC)
+                print(GRAY + f"[#] Location: {ip_data.get('loc', 'N/A')}" + ENDC)
             else:
                 print(RED + "[!] Unknown error occurred." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
@@ -729,16 +719,16 @@ while True:
             for option, house in hypesquad_options.items():
                 print(PURPLE + f"[#] {option}. {house}" + ENDC)
             selected_option = validate_input(PURPLE + "[#] Choice: " + ENDC, lambda x: x in hypesquad_options, "[#] Invalid Choice. Please enter either 1, 2, 3, or 4.")
-            headers = {'Authorization': user_token, 'content-type': 'application/json'}
+            headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
             if selected_option == '4':
                 response = requests.delete('https://discord.com/api/v9/hypesquad/online', headers=headers)
             else:
                 payload = {'house_id': selected_option}
                 response = requests.post('https://discord.com/api/v9/hypesquad/online', json=payload, headers=headers)
             if response.status_code == 204:
-                print(GREEN + f"[#] {"Successfully removed HypeSquad House." if selected_option == '4' else f"Successfully changed HypeSquad House to {hypesquad_options[selected_option]}."}" + ENDC)
+                print(GREEN + f"[#] {'Successfully removed HypeSquad House.' if selected_option == '4' else f'Successfully changed HypeSquad House to {hypesquad_options[selected_option]}.'}" + ENDC)
             else:
-                print(RED + f"[!] {"Failed to remove HypeSquad House" if selected_option == '4' else "Failed to change Hypesquad House"} - RSC: {response.status_code}" + ENDC)
+                print(RED + f"[!] {'Failed to remove HypeSquad House' if selected_option == '4' else 'Failed to change Hypesquad House'} - RSC: {response.status_code}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
         elif mode == '14':
@@ -762,13 +752,13 @@ while True:
             payload = {'email': email, 'password': password}
             response = requests.post("https://discord.com/api/v9/auth/login", json=payload)
             if response.status_code == 200:
-                if response.json().get("mfa") and response.json()["mfa"] == True:
-                    token = response.json()["ticket"]
+                if response.json().get('mfa') and response.json()['mfa'] == True:
+                    token = response.json()['ticket']
                     mfa = validate_input(PURPLE + "[#] MFA Code: " + ENDC, lambda x: len(x) > 0, "[#] Invalid MFA Code. MFA Code cannot be empty.")
                     payload = {'code': mfa, 'ticket': token}
                     response2 = requests.post("https://discord.com/api/v9/auth/mfa/totp", json=payload)
                     if response2.status_code == 200:
-                        print(GRAY + f"[#] User ID: {response.json()["user_id"]}\n[#] Token: {response2.json()["token"]}" + ENDC)
+                        print(GRAY + f"[#] User ID: {response.json()['user_id']}\n[#] Token: {response2.json()['token']}" + ENDC)
                     elif response2.status_code == 400:
                         if response2.json().get("code") == 60008:
                             print(RED + "[!] Invalid MFA code." + ENDC)
@@ -777,7 +767,7 @@ while True:
                     else:
                         print(RED + "[!] Unknown error occurred." + ENDC)
                 else:
-                    print(GRAY + f"[#] User ID: {response.json()["user_id"]}\n[#] Token: {response.json()["token"]}" + ENDC)
+                    print(GRAY + f"[#] User ID: {response.json()['user_id']}\n[#] Token: {response.json()['token']}" + ENDC)
             elif response.status_code == 400:
                 errors = response.json().get("errors", {})
                 if any(errors.get(key, {}).get("_errors") for key in ["login", "password"]):
@@ -794,7 +784,7 @@ while True:
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             user_info = get_user_info(user_token)
             num_guilds = get_num_user_guilds(user_token)
-            num_friends, num_friend_requests = get_num_user_friends(user_token)
+            num_friends, num_blocked_users, num_friend_requests = get_num_user_friends(user_token)
             available_boosts, used_boosts = get_num_boosts(user_token)
             account_standing_state = get_account_standing(user_token)
             if 'premium_type' in user_info and user_info['premium_type'] > 0: 
@@ -802,16 +792,18 @@ while True:
             if user_info:
                 print(GRAY + f"[#] Username: {user_info['username']}" + ENDC)
                 print(GRAY + f"[#] ID: {user_info['id']}" + ENDC)
+                print(GRAY + f"[#] Locked: {'Yes' if ('flags' in user_info and (user_info['flags'] & (1 << 20)) != 0) else 'No'}" + ENDC)
                 print(GRAY + f"[#] Email: {user_info.get('email', 'N/A')}" + ENDC)
                 print(GRAY + f"[#] Email Verified: {'Yes' if user_info.get('verified') else 'No'}" + ENDC)
                 print(GRAY + f"[#] Phone: {user_info.get('phone', 'N/A')}" + ENDC)
                 print(GRAY + f"[#] MFA Enabled: {'Yes' if user_info.get('mfa_enabled') else 'No'}" + ENDC)
+                print(GRAY + f"[#] Auth Types: {', '.join({1: 'Keys', 2: 'App', 3: 'SMS'}.get(auth_type, 'N/A') for auth_type in user_info['authenticator_types']) if user_info['authenticator_types'] else 'None'}")
                 print(GRAY + f"[#] Standing: {format_account_standing(account_standing_state)}" + ENDC)
-                print(GRAY + f"[#] Created: {parse_date(str(get_created_timestamp(user_info['id'])))}" + ENDC)
-                print(GRAY + f"[#] Locale: {user_info['locale']}" + ENDC)
+                print(GRAY + f"[#] Created: {parse_date(str(datetime.fromtimestamp(((int(user_info['id']) >> 22) + 1420070400000) / 1000) - timedelta(hours=2)))}" + ENDC)
+                print(GRAY + f"[#] Locale: {({'id': 'Indonesian', 'da': 'Danish', 'de': 'German', 'en-GB': 'English, UK', 'en-US': 'English, US', 'es-ES': 'Spanish', 'es-419': 'Spanish, LATAM', 'fr': 'French', 'hr': 'Croatian', 'it': 'Italian', 'lt': 'Lithuanian', 'hu': 'Hungarian', 'nl': 'Dutch', 'no': 'Norwegian', 'pl': 'Polish', 'pt-BR': 'Portuguese, Brazilian', 'ro': 'Romanian, Romania', 'fi': 'Finnish', 'sv-SE': 'Swedish', 'vi': 'Vietnamese', 'tr': 'Turkish', 'cs': 'Czech', 'el': 'Greek', 'bg': 'Bulgarian', 'ru': 'Russian', 'uk': 'Ukrainian', 'hi': 'Hindi', 'th': 'Thai', 'zh-CN': 'Chinese, China', 'ja': 'Japanese', 'zh-TW': 'Chinese, Taiwan', 'ko': 'Korean'}).get(user_info['locale'], user_info['locale'])}" + ENDC)
                 if 'premium_type' in user_info and user_info['premium_type'] > 0:
                     print(GRAY + f"[#] Nitro: Yes" + ENDC)
-                    print(GRAY + f"[#] Nitro Type: { {3: '$3 Nitro', 2: '$10 Nitro', 1: '$5 Nitro'}[user_info['premium_type']] }" + ENDC)
+                    print(GRAY + f"[#] Nitro Type: { { 1: '$5 Nitro', 2: '$10 Nitro', 3: '$3 Nitro'}[user_info['premium_type']] }" + ENDC)
                     print(GRAY + f"[#] Nitro Expiry: {nitro_expiry}" + ENDC)
                 else:
                     print(GRAY + f"[#] Nitro: No" + ENDC)
@@ -824,8 +816,10 @@ while True:
                         used_boosts_count[server_id] = used_boosts_count.get(server_id, 0) + 1
                     used_boosts_formatted = ' | '.join(f"{count}x - {server_id}" for server_id, count in used_boosts_count.items())
                     print(GRAY + f"[#] Active Boosts: {used_boosts_formatted}" + ENDC)
-                print(GRAY + f"[#] Clan: {user_info['clan']}" + ENDC)
+                print(GRAY + f"[#] NSFW Allowed: {'Yes' if user_info['nsfw_allowed'] else 'No'}" + ENDC)
+                print(GRAY + f"[#] Clan: {user_info['clan']['tag'] if user_info['clan'] else 'None'}" + ENDC)
                 print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
+                print(GRAY + f"[#] Blocked Users: {num_blocked_users}" + ENDC)
                 print(GRAY + f"[#] Friend Requests: {num_friend_requests}" + ENDC)
                 print(GRAY + f"[#] Servers: {num_guilds}" + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
@@ -834,7 +828,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            headers = {'Authorization': user_token, 'Content-Type': 'application/json'}
+            headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
             response = requests.get('https://discord.com/api/v9/users/@me/billing/payments', headers=headers)
             if response.status_code == 200:
                 payment_history = response.json()
@@ -853,7 +847,7 @@ while True:
                         currency = payment.get('currency', '').upper()
                         amount_value = (amount.get('amount', 0) if isinstance(amount, dict) else amount) / 100
                         amount_display = f"{currency} {amount_value:.2f}"
-                        print(GRAY + f"[#] Item: {payment.get('description', 'Unknown')} | Amount: {amount_display} | Status: {GREEN + "Success" + GRAY if payment['status'] == 1 else RED + "Failed" + GRAY} | Country: {source.get('country', 'N/A')} | Date: {parse_date(payment['created_at'])}" + ENDC)
+                        print(GRAY + f"[#] Item: {payment.get('description', 'Unknown')} | Amount: {amount_display} | Status: {GREEN + 'Success' + GRAY if payment['status'] == 1 else RED + 'Failed' + GRAY} | Country: {source.get('country', 'N/A')} | Date: {parse_date(payment['created_at'])}" + ENDC)
                 else:
                     print(RED + "[#] No payment history found." + ENDC)
             else:
@@ -864,7 +858,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            headers = {'Authorization': user_token}
+            headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
             print(PURPLE + '[#] Logging in with Token..' + ENDC)
             options = webdriver.ChromeOptions()
             options.add_experimental_option("detach", True)
@@ -877,7 +871,7 @@ while True:
                 driver.execute_script('''function login(token) { setInterval(() => { document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"` }, 50); setTimeout(() => { location.reload(); }, 2500); }''' + f'\nlogin("{user_token}")')                
                 print(GREEN + "[#] Successfully logged in!" + ENDC)
             except exceptions.WebDriverException:
-                print(RED + f"[!] WebDriverException occurred:" + ENDC)
+                print(RED + f"[!] WebDriverException occurred." + ENDC)
             except Exception:
                 print(RED + "[!] Unknown error occurred." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
