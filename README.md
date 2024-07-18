@@ -33,16 +33,29 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 15 - 16.07.2024
+Update 16 - 18.07.2024
 
+* Added 'Blocked Users', 'Auth Types', 'NSFW Allowed', 'Locked' to 'Token Information'
+* Added 'Locale' formatting for 'Token Information' (en-GB -> English, UK)
+* Made 'Channel Link:' inputs accept channel links and channel id (and renamed 'Channel Link:' -> 'Channel:')
+* More Code optimizations / Error handling
+* Fixed "f-string unmatched" Errors for older Python versions
+* "Better" Headers (I got told to) (Credits [XVirus](https://github.com/DXVVAY/Xvirus-Tools/))
+
+<details>
+<summary>Past Updates & Changes</summary>
+<br>
+
+<details>
+<summary>Update 15 - 16.07.2024</summary>
+<br>
+  
 * Overall Code Optimizations<br>
   ⮡&nbsp;&nbsp; More Compact & Readable Code<br>
   ⮡&nbsp;&nbsp; Some more Error Handling for some Functions<br>
   ⮡&nbsp;&nbsp; Improved some Inputs<br>
 
-<details>
-<summary>Past Updates & Changes</summary>
-<br>
+</details>
 
 <details>
 <summary>Bugfix - 15.07.24</summary>
@@ -241,3 +254,8 @@ Update 15 - 16.07.2024
   ⮡&nbsp;&nbsp; It works if you input the actual emoji, not something like :​joy​:<br>
 * DM Channel Clearer only closes DMs with messages in them<br>
   ⮡ &nbsp;&nbsp;Pretty sure this is a discord api limitation<br>
+
+#
+> ### Credits
+
+* [XVirus](https://github.com/DXVVAY/Xvirus-Tools/) - Request Headers
