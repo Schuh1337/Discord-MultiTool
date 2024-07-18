@@ -40,7 +40,7 @@ Update 16 - 18.07.2024
 * Made 'Channel Link:' inputs accept channel links and channel id (and renamed 'Channel Link:' -> 'Channel:')
 * More Code optimizations / Error handling
 * Fixed "f-string unmatched" Errors for older Python versions
-* "Better" Headers (I got told to) (Credits [XVirus](https://github.com/DXVVAY/Xvirus-Tools/))
+* "Better" Request Headers (I got told to) (Credits [XVirus](https://github.com/DXVVAY/Xvirus-Tools/))
 
 <details>
 <summary>Past Updates & Changes</summary>
