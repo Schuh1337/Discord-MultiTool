@@ -256,6 +256,6 @@ Update 16 - 18.07.2024
   ⮡ &nbsp;&nbsp;Pretty sure this is a discord api limitation<br>
 
 #
-> ### Credits
+> ### 🎓 Credits
 
 * [XVirus](https://github.com/DXVVAY/Xvirus-Tools/) - Request Headers
