@@ -140,6 +140,17 @@ def num_nitro_expiry_days(token):
                 return "Less than an hour"
         return "No Nitro"
     return "N/A"
+def get_account_locked(token):
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
+    payload = {'settings': "IikKJwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYA=="}
+    response = requests.patch('https://discord.com/api/v9/users/@me/settings-proto/1', json=payload, headers=headers)
+    if response.status_code == 403:
+        if 'code' in response.json() and response.json()['code'] == 40002:
+            return True
+        else:
+            return False
+    else:
+        return False
 def get_account_standing(token):
     headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     response = requests.get('https://discord.com/api/v9/safety-hub/@me', headers=headers)
@@ -147,16 +158,6 @@ def get_account_standing(token):
         return response.json().get('account_standing', {}).get('state')
     else:
         return None
-def format_account_standing(value):
-    if value is None: return "N/A"
-    return {
-        100: "All good! (100)",
-        75: "Limited (75)",
-        50: "Very Limited (50)",
-        25: "At risk (25)"
-    }.get(value, "N/A" if value <= 100 else "N/A")
-def get_created_timestamp(id):
-    return datetime.fromtimestamp(((int(id) >> 22) + 1420070400000) / 1000) - timedelta(hours=2)
 def validate_token(token):
     headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
     try:
@@ -783,22 +784,23 @@ while True:
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             user_info = get_user_info(user_token)
+            account_locked_state = get_account_locked(user_token)
+            account_standing_state = get_account_standing(user_token)
             num_guilds = get_num_user_guilds(user_token)
             num_friends, num_blocked_users, num_friend_requests = get_num_user_friends(user_token)
             available_boosts, used_boosts = get_num_boosts(user_token)
-            account_standing_state = get_account_standing(user_token)
-            if 'premium_type' in user_info and user_info['premium_type'] > 0: 
+            if 'premium_type' in user_info and user_info['premium_type'] > 0:
                 nitro_expiry = num_nitro_expiry_days(user_token)
             if user_info:
                 print(GRAY + f"[#] Username: {user_info['username']}" + ENDC)
                 print(GRAY + f"[#] ID: {user_info['id']}" + ENDC)
-                print(GRAY + f"[#] Locked: {'Yes' if ('flags' in user_info and (user_info['flags'] & (1 << 20)) != 0) else 'No'}" + ENDC)
                 print(GRAY + f"[#] Email: {user_info.get('email', 'N/A')}" + ENDC)
                 print(GRAY + f"[#] Email Verified: {'Yes' if user_info.get('verified') else 'No'}" + ENDC)
                 print(GRAY + f"[#] Phone: {user_info.get('phone', 'N/A')}" + ENDC)
                 print(GRAY + f"[#] MFA Enabled: {'Yes' if user_info.get('mfa_enabled') else 'No'}" + ENDC)
                 print(GRAY + f"[#] Auth Types: {', '.join({1: 'Keys', 2: 'App', 3: 'SMS'}.get(auth_type, 'N/A') for auth_type in user_info['authenticator_types']) if user_info['authenticator_types'] else 'None'}")
-                print(GRAY + f"[#] Standing: {format_account_standing(account_standing_state)}" + ENDC)
+                print(GRAY + f"[#] Locked: {'Yes' if account_locked_state else 'No'}" + ENDC)
+                print(GRAY + f"[#] Standing: {('N/A' if account_standing_state is None else {100: 'All good! (100)', 75: 'Limited (75)', 50: 'Very Limited (50)', 25: 'At risk (25)'}.get(account_standing_state, 'N/A' if account_standing_state > 100 else 'N/A'))}" + ENDC)
                 print(GRAY + f"[#] Created: {parse_date(str(datetime.fromtimestamp(((int(user_info['id']) >> 22) + 1420070400000) / 1000) - timedelta(hours=2)))}" + ENDC)
                 print(GRAY + f"[#] Locale: {({'id': 'Indonesian', 'da': 'Danish', 'de': 'German', 'en-GB': 'English, UK', 'en-US': 'English, US', 'es-ES': 'Spanish', 'es-419': 'Spanish, LATAM', 'fr': 'French', 'hr': 'Croatian', 'it': 'Italian', 'lt': 'Lithuanian', 'hu': 'Hungarian', 'nl': 'Dutch', 'no': 'Norwegian', 'pl': 'Polish', 'pt-BR': 'Portuguese, Brazilian', 'ro': 'Romanian, Romania', 'fi': 'Finnish', 'sv-SE': 'Swedish', 'vi': 'Vietnamese', 'tr': 'Turkish', 'cs': 'Czech', 'el': 'Greek', 'bg': 'Bulgarian', 'ru': 'Russian', 'uk': 'Ukrainian', 'hi': 'Hindi', 'th': 'Thai', 'zh-CN': 'Chinese, China', 'ja': 'Japanese', 'zh-TW': 'Chinese, Taiwan', 'ko': 'Korean'}).get(user_info['locale'], user_info['locale'])}" + ENDC)
                 if 'premium_type' in user_info and user_info['premium_type'] > 0:
@@ -816,7 +818,7 @@ while True:
                         used_boosts_count[server_id] = used_boosts_count.get(server_id, 0) + 1
                     used_boosts_formatted = ' | '.join(f"{count}x - {server_id}" for server_id, count in used_boosts_count.items())
                     print(GRAY + f"[#] Active Boosts: {used_boosts_formatted}" + ENDC)
-                print(GRAY + f"[#] NSFW Allowed: {'Yes' if user_info['nsfw_allowed'] else 'No'}" + ENDC)
+                print(GRAY + f"[#] NSFW Allowed: {'Yes' if user_info.get('nsfw_allowed') else 'No'}" + ENDC)
                 print(GRAY + f"[#] Clan: {user_info['clan']['tag'] if user_info['clan'] else 'None'}" + ENDC)
                 print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
                 print(GRAY + f"[#] Blocked Users: {num_blocked_users}" + ENDC)
