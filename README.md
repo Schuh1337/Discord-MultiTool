@@ -33,6 +33,10 @@
 #
 > ### 🛠️ Updates & Changes
 
+Hotifx 2 - 19.07.24
+
+* "Fixed" 'Server Lookup' get Info by Invite
+
 Hotfix - 19.07.24
 
 * Better & More Reliable way of checking if Account is Locked
