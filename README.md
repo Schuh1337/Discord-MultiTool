@@ -33,7 +33,11 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 16 - 18.07.2024
+Hotfix - 19.07.24
+
+* Better & More Reliable way of checking if Account is Locked
+
+Update 16 - 18.07.24
 
 * Added 'Blocked Users', 'Auth Types', 'NSFW Allowed', 'Locked' to 'Token Information'
 * Added 'Locale' formatting for 'Token Information' (en-GB -> English, UK)
@@ -47,7 +51,7 @@ Update 16 - 18.07.2024
 <br>
 
 <details>
-<summary>Update 15 - 16.07.2024</summary>
+<summary>Update 15 - 16.07.24</summary>
 <br>
   
 * Overall Code Optimizations<br>
