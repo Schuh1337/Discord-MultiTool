@@ -49,7 +49,7 @@ Update 17 - 23.07.24
 <br>
 
 <details>
-<summary>Hotifx 2 - 19.07.24</summary>#
+<summary>Hotifx 2 - 19.07.24</summary>
 <br>
 
 * "Fixed" 'Server Lookup' get Info by Invite
