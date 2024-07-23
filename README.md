@@ -2,8 +2,8 @@
 ![image](https://schuh.wtf/resources/images/schuhrewrite.png)
 
 > [!IMPORTANT]
-> Skids are stealing this Tool, rebranding it (changing the big ascii text), and selling it (lol)
-> If you bought this you got scammed.
+> Skids are stealing this Tool, rebranding it (changing the big ascii text), and selling it. (lol)<br>
+> If you bought this you got scammed.<br>
 > If you are one of the skids, Stop being a lazy thief. Write your own code instead of stealing other people's work. It's pathetic and won't get you anywhere.
 
 > [!NOTE]
