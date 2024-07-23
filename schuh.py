@@ -2,6 +2,7 @@
 # github.com/Schuh1337/Discord-MultiTool #
 # schuh.wtf/schuhrewrite | made by Schuh #
 ##########################################
+vers = "v0.1.6"
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from datetime import datetime, timedelta
 from selenium.common import exceptions
@@ -451,7 +452,7 @@ while True:
                                              / ___// ____/ / / / / / / / / /
                                              \__ \/ /   / /_/ / / / / /_/ / 
                                             ___/ / /___/ __  / /_/ / __  /             
-                               │ v0.1.5    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
+                               │ {vers}    /____/\____/_/ /_/\____/_/ /_/    charli <3 │
                                ├───────────────────────────┬───────────────────────────┤
                                │ [1] Webhook Spammer       │ [11] IP Address Lookup    │
                                │ [2] Webhook Information   │ [12] IP Address Pinger    │
@@ -467,11 +468,49 @@ while True:
                                │
                                └> """ + ENDC)
         try:
-            if int(mode) < 0 or int(mode) > 20:
+            if int(mode) < -1 or int(mode) > 20:
                 continue
         except ValueError:
             pass
-        if mode == '1': 
+        if mode == '0':
+            os.system('cls' if os.name == 'nt' else 'clear')
+            if scroll_disabled: scroll_enable()
+            print(PURPLE + "[#] Getting Latest Version.." + ENDC)
+            response = requests.get("https://api.github.com/repos/Schuh1337/Discord-MultiTool/releases/latest")
+            if response.status_code == 200:
+                latest_version = response.json().get('tag_name')
+                if latest_version:
+                    print(GRAY + f"[#] Current Version: {vers}" + ENDC)
+                    print(GRAY + f"[#] Latest Version: {latest_version}" + ENDC)
+                    try:
+                        current_ver = re.match(r'^[\d\.]+', vers.lstrip('v')).group(0)
+                        latest_ver = re.match(r'^[\d\.]+', latest_version.lstrip('v')).group(0)
+                        if current_ver < latest_ver:
+                            comparison_result = 1
+                        elif current_ver > latest_ver:
+                            comparison_result = 2
+                        else:
+                            current_label = re.sub(r'^[\d\.]+', '', vers).strip('-')
+                            latest_label = re.sub(r'^[\d\.]+', '', latest_version).strip('-')
+                            if current_label < latest_label:
+                                comparison_result = 1
+                            elif current_label > latest_label:
+                                comparison_result = 2
+                            else:
+                                comparison_result = 2
+                    except Exception:
+                        comparison_result = 2
+                    if comparison_result == 1:
+                        print(RED + f"[#] Not on Latest Version!\n[>] Latest download (EXE): https://github.com/Schuh1337/Discord-MultiTool/releases/download/{latest_version}/schuh.exe\n[>] Latest download (SRC): https://github.com/Schuh1337/Discord-MultiTool/archive/refs/heads/main.zip" + ENDC)
+                    elif comparison_result == 2:
+                        print(GREEN + f"[#] On Latest Version!" + ENDC)
+                else:
+                    print(RED + f"[!] Unknown error occurred." + ENDC)
+            else:
+                print(RED + f"[!] Failed to fetch latest version - RSC: {response.status_code}" + ENDC)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
+        elif mode == '1': 
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")            
