@@ -41,7 +41,7 @@
 > ### 🛠️ Updates & Changes
 
 Update 17 - 23.07.24
-* Added Option 0 (Doesn't really have a Name)
+* Added Option 0 (Doesn't really have a Name)<br>
   ⮡&nbsp;&nbsp; Checks if Current Version is Up-to-Date<br>
 
 <details>
