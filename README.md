@@ -1,6 +1,11 @@
 # Discord-Tool - Schuh Rewrite
 ![image](https://schuh.wtf/resources/images/schuhrewrite.png)
 
+> [!IMPORTANT]
+> Skids are stealing this Tool, rebranding it (changing the big ascii text), and selling it (lol)
+> If you bought this you got scammed.
+> If you are one of the skids, Stop being a lazy thief. Write your own code instead of stealing other people's work. It's pathetic and won't get you anywhere.
+
 > [!NOTE]
 > Supports: Windows 10, 11 [Other Versions untested]<br>
 > Star the Repo for more amazing Updates in the Future.<br>
