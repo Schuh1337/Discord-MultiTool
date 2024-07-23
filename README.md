@@ -40,15 +40,33 @@
 #
 > ### 🛠️ Updates & Changes
 
-Hotifx 2 - 19.07.24
+Update 17 - 23.07.24
+* Added Option 0 (Doesn't really have a Name)
+  ⮡&nbsp;&nbsp; Checks if Current Version is Up-to-Date<br>
+
+<details>
+<summary>Past Updates & Changes</summary>
+<br>
+
+<details>
+<summary>Hotifx 2 - 19.07.24</summary>#
+<br>
 
 * "Fixed" 'Server Lookup' get Info by Invite
 
-Hotfix - 19.07.24
+</details>
+
+<details>
+<summary>Hotfix - 19.07.24</summary>
+<br>
 
 * Better & More Reliable way of checking if Account is Locked
 
-Update 16 - 18.07.24
+</details>
+
+<details>
+<summary>Update 16 - 18.07.24</summary>
+<br>
 
 * Added 'Blocked Users', 'Auth Types', 'NSFW Allowed', 'Locked' to 'Token Information'
 * Added 'Locale' formatting for 'Token Information' (en-GB -> English, UK)
@@ -57,9 +75,7 @@ Update 16 - 18.07.24
 * Fixed "f-string unmatched" Errors for older Python versions
 * "Better" Request Headers (I got told to) (Credits [XVirus](https://github.com/DXVVAY/Xvirus-Tools/))
 
-<details>
-<summary>Past Updates & Changes</summary>
-<br>
+</details>
 
 <details>
 <summary>Update 15 - 16.07.24</summary>
