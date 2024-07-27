@@ -663,8 +663,8 @@ while True:
         elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
-            type = validate_input(PURPLE + "[#] 1. Everyone\n[#] 2. Me Only\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            type = validate_input(PURPLE + "[#] 1. Everyone\n[#] 2. Me Only\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
             while type == '2':
                 user_info = get_user_info(user_token)
                 if not user_info:
