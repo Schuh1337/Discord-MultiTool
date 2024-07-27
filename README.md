@@ -41,7 +41,7 @@
 > ### 🛠️ Updates & Changes
 
 Update 18 - 27.07.24
-* Added Choice to 'Message Reactor'
+* Added Choice to 'Message Reactor'<br>
   ⮡&nbsp;&nbsp; 'Everyone' -> Will React to Everyones Messages<br>
   ⮡&nbsp;&nbsp; 'Me Only' -> Will only React to Messages of the Token<br>
 
