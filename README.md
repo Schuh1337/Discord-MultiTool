@@ -40,13 +40,23 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 17 - 23.07.24
-* Added Option 0 (Doesn't really have a Name)<br>
-  ⮡&nbsp;&nbsp; Checks if Current Version is Up-to-Date<br>
+Update 18 - 27.07.24
+* Added Choice to 'Message Reactor'
+  ⮡&nbsp;&nbsp; 'Everyone' -> Will React to Everyones Messages<br>
+  ⮡&nbsp;&nbsp; 'Me Only' -> Will only React to Messages of the Token<br>
 
 <details>
 <summary>Past Updates & Changes</summary>
 <br>
+
+<details>
+<summary>Update 17 - 23.07.24</summary>
+<br>
+
+* Added Option 0 (Doesn't really have a Name)<br>
+  ⮡&nbsp;&nbsp; Checks if Current Version is Up-to-Date<br>
+
+</details>
 
 <details>
 <summary>Hotifx 2 - 19.07.24</summary>
