@@ -2,7 +2,7 @@
 # github.com/Schuh1337/Discord-MultiTool #
 # schuh.wtf/schuhrewrite | made by Schuh #
 ##########################################
-vers = "v0.1.7"
+vers = "v0.1.8"
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from datetime import datetime, timedelta
 from selenium.common import exceptions
@@ -266,13 +266,38 @@ def delete_all_messages(token, channel_id):
         print(RED + "[#] No messages found from Token in Channel." + ENDC)
     elif messages_found and not messages_deleted:
         print(RED + "[!] Messages from Token in Channel were found but none were deleted?" + ENDC)
-def react_to_message(channel_id, message_id, emoji, token):
+# checkpoint
+def react_to_messages(token, type):
+    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6ImVuIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEyNy4wLjAuMCBTYWZhcmkvNTM3LjM2IiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTI3LjAuMC4wIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIiOiIiLCJyZWZlcnJpbmdfZG9tYWluIjoiIiwicmVmZXJyZXJfY3VycmVudCI6IiIsInJlZmVycmluZ19kb21haW5fY3VycmVudCI6IiIsInJlbGVhc2VfY2hhbm5lbCI6InN0YWJsZSIsImNsaWVudF9idWlsZF9udW1iZXIiOjMxMzM0NCwiY2xpZW50X2V2ZW50X3NvdXJjZSI6bnVsbH0='}
+    user_info = get_user_info(user_token)
+    if not user_info:
+        return
+    channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
+    channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
+    channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
+    emoji = validate_input(PURPLE + "[#] Emoji String (eg., <:en:eid>): " + ENDC, lambda e: re.match(r'<a?:(.*?):(\d+)>', e), "[#] Invalid Emoji String. Please check the format and try again.")
     emoji_match = re.match(r'<(a?):(.*?):(\d+)>', emoji)
     if emoji_match: animated = emoji_match.group(1); emoji_name = emoji_match.group(2); emoji_id = emoji_match.group(3); emoji = f"{emoji_name}:{emoji_id}"
     encoded_emoji = emoji.replace(':', '%3A')
-    headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
-    response = requests.put(f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{encoded_emoji}/@me", headers=headers)
-    return response.status_code
+    use_super_reaction = validate_input(PURPLE + "[#] Use super reactions?\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n']") if 'premium_type' in user_info and user_info['premium_type'] > 0 else "n"
+    last_message_id = None
+    while True:
+        response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=3", headers=headers)
+        if response.status_code != 200:
+            print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
+            break
+        messages = response.json()
+        for message in messages:
+            if 'content' in message:
+                message_id = message['id']
+                if type == '1' or (type == '2' and message['author']['id'] == user_info['id']):
+                    if last_message_id is None or message_id > last_message_id:
+                        response = requests.put(f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{encoded_emoji}/@me{'?type=1' if use_super_reaction.lower() == "y" else ''}", headers=headers)
+                        if response.status_code == 204:
+                            print(GREEN + f"[#] Reacted to message" + ENDC, ": " + PURPLE + message_id + ENDC)
+                        else:
+                            print(RED + f"[!] Failed to react to message {message_id} - RSC: {response.status_code}" + ENDC)
+                        last_message_id = message_id
 def get_invite_info(invite_url):
     match = re.search(r"(?:https?://)?(?:www\.)?(discord\.gg|discord\.com/invite)/(?:invite/)?([a-zA-Z0-9]+)", invite_url)
     invite_code = match.group(2)
@@ -546,7 +571,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete the webhook?\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete the webhook?\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == 'y':
                 delete_webhook(webhook_url)
             else:
@@ -625,7 +650,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == "y":
                 close_all_dms(user_token)
             else:
@@ -636,7 +661,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to leave all Groupchats for the provided token?\n[#] This will not close DMs.\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to leave all Groupchats for the provided token?\n[#] This will not close DMs.\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == "y":
                 leave_all_groupchats(user_token)
             else:
@@ -650,7 +675,7 @@ while True:
             channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
             channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete all messages from the provided token in this channel?\n[#] (y/n): " + ENDC, lambda v: v in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete all messages from the provided token in this channel?\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation == 'y':
                 try:
                     delete_all_messages(user_token, channel_id)
@@ -660,43 +685,15 @@ while True:
                 print(RED + "[#] Message deletion cancelled." + ENDC)
             input(PURPLE + "[#] Press enter to return." + ENDC)
             continue
+        # checkpoint
         elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
             user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
             type = validate_input(PURPLE + "[#] 1. Everyone\n[#] 2. Me Only\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
-            while type == '2':
-                user_info = get_user_info(user_token)
-                if not user_info:
-                    input(PURPLE + "[#] Press enter to retry." + ENDC)
-                    continue
-                else: 
-                    user_id = user_info['id']
-                    break
-            channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
-            channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
-            channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
-            emoji = validate_input(PURPLE + "[#] Emoji String (eg., <:en:eid>): " + ENDC, lambda e: re.match(r'<a?:(.*?):(\d+)>', e), "[#] Invalid Emoji String. Please check the format and try again.")
-            last_message_id = None
-            headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDE2Iiwib3NfdmVyc2lvbiI6IjEwLjAuMTkwNDUiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6InN2IiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV09XNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIGRpc2NvcmQvMS4wLjkwMTYgQ2hyb21lLzEwOC4wLjUzNTkuMjE1IEVsZWN0cm9uLzIyLjMuMTIgU2FmYXJpLzUzNy4zNiIsImJyb3dzZXJfdmVyc2lvbiI6IjIyLjMuMTIiLCJjbGllbnRfYnVpbGRfbnVtYmVyIjoyMTg2MDQsIm5hdGl2ZV9idWlsZF9udW1iZXIiOjM1MjM2LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='}
-            while True:
-                response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=3", headers=headers)
-                if response.status_code != 200:
-                    print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
-                    input(PURPLE + "[#] Press enter to return." + ENDC)
-                    break
-                messages = response.json()
-                for message in messages:
-                    if 'content' in message:
-                        message_id = message['id']
-                        if type == '1' or (type == '2' and message['author']['id'] == user_id):
-                            if last_message_id is None or message_id > last_message_id:
-                                status_code, response_content = react_to_message(channel_id, message_id, emoji, user_token)
-                                if status_code == 204:
-                                    print(GREEN + f"[#] Reacted to message" + ENDC, ": " + PURPLE + message_id + ENDC)
-                                else:
-                                    print(RED + f"[!] Failed to react to message {message_id} - RSC: {status_code}" + ENDC)
-                                last_message_id = message_id
+            react_to_messages(user_token, type)
+            input(PURPLE + "[#] Press enter to return." + ENDC)
+            continue
         elif mode == '10':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled == True: scroll_enable()
