@@ -40,14 +40,23 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 18 - 27.07.24
-* Added Choice to 'Message Reactor'<br>
-  ⮡&nbsp;&nbsp; 'Everyone' -> Will React to Everyones Messages<br>
-  ⮡&nbsp;&nbsp; 'Me Only' -> Will only React to Messages of the Token<br>
+Update 19 - 30.07.24
+* Added 'Use Super Reactions?" Choice to 'Message Reacter'
+* Small Improvents
 
 <details>
 <summary>Past Updates & Changes</summary>
 <br>
+
+<details>
+<summary>Update 18 - 27.07.24</summary>
+<br>
+
+* Added Choice to 'Message Reactor'<br>
+  ⮡&nbsp;&nbsp; 'Everyone' -> Will React to Everyones Messages<br>
+  ⮡&nbsp;&nbsp; 'Me Only' -> Will only React to Messages of the Token<br>
+  
+</details>
 
 <details>
 <summary>Update 17 - 23.07.24</summary>
