@@ -41,13 +41,21 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 19 - 30.07.24
-* Added 'Use Super Reactions?" Choice to 'Message Reacter'
-* Small Improvents
+Update 20 🎉 - 02.08.24
+* Added Type Hints and Updated Syntax
 
 <details>
 <summary>Past Updates & Changes</summary>
 <br>
+
+<details>
+<summary>Update 19 - 30.07.24</summary>
+<br>
+  
+* Added 'Use Super Reactions?" Choice to 'Message Reacter'
+* Small Improvents
+  
+</details>
 
 <details>
 <summary>Update 18 - 27.07.24</summary>
@@ -93,7 +101,7 @@ Update 19 - 30.07.24
 * Made 'Channel Link:' inputs accept channel links and channel id (and renamed 'Channel Link:' -> 'Channel:')
 * More Code optimizations / Error handling
 * Fixed "f-string unmatched" Errors for older Python versions
-* "Better" Request Headers (I got told to) (Credits [XVirus](https://github.com/DXVVAY/Xvirus-Tools/))
+* "Better" Request Headers
 
 </details>
 
@@ -305,8 +313,3 @@ Update 19 - 30.07.24
   ⮡&nbsp;&nbsp; It works if you input the actual emoji, not something like :​joy​:<br>
 * DM Channel Clearer only closes DMs with messages in them<br>
   ⮡ &nbsp;&nbsp;Pretty sure this is a discord api limitation<br>
-
-#
-> ### 🎓 Credits
-
-* [XVirus](https://github.com/DXVVAY/Xvirus-Tools/) - Request Headers
