@@ -41,12 +41,20 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 20 🎉 - 02.08.24
-* Added Type Hints and Updated Syntax
+Update 21 - 03.08.24
+* New overall UI Color (Gradient) AD99AD <-> 6A0D91
 
 <details>
 <summary>Past Updates & Changes</summary>
 <br>
+
+<details>
+<summary>Update 20 🎉 - 02.08.24</summary>
+<br>
+
+* Added Type Hints and Updated Syntax
+
+</details>
 
 <details>
 <summary>Update 19 - 30.07.24</summary>
