@@ -2,7 +2,7 @@
 # github.com/Schuh1337/Discord-MultiTool #
 # schuh.wtf/schuhrewrite | made by Schuh #
 ##########################################
-vers = "v0.1.9"
+vers = "v0.2.0"
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from typing import Dict, List, Tuple, Union, Optional
 from datetime import datetime, timedelta
@@ -73,7 +73,7 @@ def send_webhook(url, content) -> None:
     data = {'content': content}
     response = requests.post(url, json=data)
     if response.status_code == 204:
-        print(GREEN + "[#] Message sent successfully!" + ENDC, ": " + PURPLE + content + ENDC)
+        print(GREEN + "[#] Message sent successfully!" + ENDC, ": " + gradient_text(content) + ENDC)
     else:
         print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
         print("[#] Retrying in 5 seconds...")
@@ -82,11 +82,11 @@ def delete_webhook(url) -> None:
     response = requests.delete(url)
     if response.status_code == 204:
         print(GREEN + "[#] Webhook deleted successfully!" + ENDC)
-        input(PURPLE + "[#] Press enter to return." + ENDC)
+        input(gradient_text("[#] Press enter to return."))
         return True
     else:
         print(RED + f"[!] Failed to delete webhook - RSC: {response.status_code}" + ENDC)
-        input(PURPLE + "[#] Press enter to return." + ENDC)
+        input(gradient_text("[#] Press enter to return."))
         return False
 def validate_webhook(url) -> bool:
     try:
@@ -177,13 +177,13 @@ def close_all_dms(token) -> None:
                 continue
             response = requests.delete(f"https://discord.com/api/v10/channels/{channel['id']}", headers=headers)
             if response.status_code == 200:
-                print(GREEN + "[#] Successfully closed DM" + ENDC + " : " + PURPLE + channel['id'] + ENDC)
+                print(GREEN + "[#] Successfully closed DM" + ENDC + " : " + gradient_text(channel['id']) + ENDC)
             else:
-                print(RED + "[!] Failed to close DM" + ENDC + " : " + PURPLE + channel['id'] + RED + f" - RSC: {response.status_code}" + ENDC)
+                print(RED + "[!] Failed to close DM" + ENDC + " : " + gradient_text(channel['id']) + RED + f" - RSC: {response.status_code}" + ENDC)
         if not any(channel['type'] == 1 for channel in dm_channels):
             print(RED + "[#] No DMs found to close." + ENDC)
         else:
-            print(PURPLE + "[#] All DMs closed successfully." + ENDC)
+            print(gradient_text("[#] All DMs closed successfully."))
     except Exception:
         print(RED + "[!] Unknown error occurred." + ENDC)
 def leave_all_groupchats(token) -> None:
@@ -195,13 +195,13 @@ def leave_all_groupchats(token) -> None:
             if channel['type'] == 3:
                 response = requests.delete(f"https://discord.com/api/v10/channels/{channel['id']}", headers=headers)
                 if response.status_code == 200:
-                    print(GREEN + "[#] Successfully left Groupchat" + ENDC + " : " + PURPLE + channel['id'] + ENDC)
+                    print(GREEN + "[#] Successfully left Groupchat" + ENDC + " : " + gradient_text(channel['id']) + ENDC)
                 else:
-                    print(RED + "[!] Failed to leave Groupchat" + ENDC + " : " + PURPLE + channel['id'] + RED + f" - RSC: {response.status_code}" + ENDC)
+                    print(RED + "[!] Failed to leave Groupchat" + ENDC + " : " + gradient_text(channel['id']) + RED + f" - RSC: {response.status_code}" + ENDC)
         if not any(channel['type'] == 3 for channel in channels):
             print(RED + "[#] No Groupchats found to leave." + ENDC)
         else:
-            print(PURPLE + "[#] All Groupchats left successfully." + ENDC)
+            print(gradient_text("[#] All Groupchats left successfully."))
     except Exception:
         print(RED + "[!] Unknown error occurred." + ENDC)
 def delete_all_messages(token, channel_id) -> None:
@@ -249,14 +249,14 @@ def delete_all_messages(token, channel_id) -> None:
                         delete_response = requests.delete(f"https://discord.com/api/v9/channels/{channel_id}/messages/{message['id']}", headers=headers)
                         if delete_response.status_code == 204:
                             messages_deleted = True
-                            print(GREEN + "[#] Successfully deleted message" + ENDC + " : " + PURPLE + message['id'] + ENDC)
+                            print(GREEN + "[#] Successfully deleted message" + ENDC + " : " + gradient_text(message['id']) + ENDC)
                             break
                         elif delete_response.status_code == 429:
-                            print(RED + "[!] Failed to delete message" + ENDC + " : " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                            print(RED + "[!] Failed to delete message" + ENDC + " : " + gradient_text(message['id']) + RED + f" - RSC: {delete_response.status_code}" + ENDC)
                             print("[#] Retrying in 5 seconds...")
                             time.sleep(5)
                         else:
-                            print(RED + "[!] Failed to delete message" + ENDC + " : " + PURPLE + message['id'] + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                            print(RED + "[!] Failed to delete message" + ENDC + " : " + gradient_text(message['id']) + RED + f" - RSC: {delete_response.status_code}" + ENDC)
                             break
         else:
             print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
@@ -272,14 +272,14 @@ def react_to_messages(token, type) -> None:
     user_info = get_user_info(user_token)
     if not user_info:
         return
-    channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
+    channel_linkorid = validate_input(gradient_text("[#] Channel: "), lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
     channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
     channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
-    emoji = validate_input(PURPLE + "[#] Emoji String (eg., <:en:eid>): " + ENDC, lambda e: re.match(r'<a?:(.*?):(\d+)>', e), "[#] Invalid Emoji String. Please check the format and try again.")
+    emoji = validate_input(gradient_text("[#] Emoji String (eg., <:en:eid>): "), lambda e: re.match(r'<a?:(.*?):(\d+)>', e), "[#] Invalid Emoji String. Please check the format and try again.")
     emoji_match = re.match(r'<(a?):(.*?):(\d+)>', emoji)
     if emoji_match: emoji_name = emoji_match.group(2); emoji_id = emoji_match.group(3); emoji = f"{emoji_name}:{emoji_id}"
     encoded_emoji = emoji.replace(':', '%3A')
-    use_super_reaction = validate_input(PURPLE + "[#] Use Super Reactions?\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n']") if 'premium_type' in user_info and user_info['premium_type'] > 0 else "n"
+    use_super_reaction = validate_input(gradient_text("[#] Use Super Reactions?\n[#] (y/n): ") + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n']") if 'premium_type' in user_info and user_info['premium_type'] > 0 else "n"
     last_message_id = None
     while True:
         response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=3", headers=headers)
@@ -294,13 +294,13 @@ def react_to_messages(token, type) -> None:
                     if last_message_id is None or message_id > last_message_id:
                         response = requests.put(f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}/reactions/{encoded_emoji}/@me{'?type=1' if use_super_reaction.lower() == 'y' else ''}", headers=headers)
                         if response.status_code == 204:
-                            print(GREEN + "[#] Reacted to message" + ENDC, ": " + PURPLE + message_id + ENDC)
+                            print(GREEN + "[#] Reacted to message" + ENDC, ": " + gradient_text(message_id) + ENDC)
                         else:
                             print(RED + f"[!] Failed to react to message {message_id} - RSC: {response.status_code}" + ENDC)
                         last_message_id = message_id
 def get_invite_info(invite_url) -> None:
     match = re.search(r"(?:https?://)?(?:www\.)?(discord\.gg|discord\.com/invite)/(?:invite/)?([a-zA-Z0-9]+)", invite_url)
-    invite_code = match.group(2)
+    invite_code = match.group(2) if match else invite_url
     response = requests.get(f"https://discord.com/api/v10/invites/{invite_code}?with_counts=true")
     if response.status_code == 200:
         data = response.json()
@@ -418,7 +418,7 @@ async def download_emoji(session, emoji, inner_emoji_dir) -> bool:
         print(RED + f"[!] Unknown error while downloading Emoji: {emoji['name']} - RSC: {response.status_code}" + ENDC)
         return False
 async def download_emoji_async(emojis, inner_emoji_dir) -> int:
-    print(PURPLE + f"[#] Downloading {len(emojis)} Emojis.." + ENDC)
+    print(gradient_text(f"[#] Downloading {len(emojis)} Emojis.."))
     async with aiohttp.ClientSession() as session:
         tasks = [download_emoji(session, emoji, inner_emoji_dir) for emoji in emojis]
         results = await asyncio.gather(*tasks)
@@ -461,7 +461,7 @@ async def download_sticker(session, sticker, inner_sticker_dir) -> bool:
         print(RED + f"[!] Error downloading Sticker {sticker['name']} - RSC: {response.status_code}" + ENDC)
         return False
 async def download_stickers_async(stickers, inner_sticker_dir) -> str:
-    print(PURPLE + f"[#] Downloading {len(stickers)} Stickers.." + ENDC)
+    print(gradient_text(f"[#] Downloading {len(stickers)} Stickers.."))
     async with aiohttp.ClientSession() as session:
         tasks = [download_sticker(session, sticker, inner_sticker_dir) for sticker in stickers]
         results = await asyncio.gather(*tasks)
@@ -469,11 +469,25 @@ async def download_stickers_async(stickers, inner_sticker_dir) -> str:
         return successful_downloads
 system("title " + "Schuh Rewrite    -    CTRL + C at any time to stop")
 set_window_properties(ctypes.windll.kernel32.GetConsoleWindow(), WS_SIZEBOX | WS_MAXIMIZEBOX)
+def gradient_text(text, start_color = "AD99AD", end_color = "6A0D91") -> str:
+    start_color_rgb = tuple(int(start_color[i:i+2], 16) for i in (0, 2, 4))
+    end_color_rgb = tuple(int(end_color[i:i+2], 16) for i in (0, 2, 4))
+    steps = len(text)
+    r_step = (end_color_rgb[0] - start_color_rgb[0]) / steps
+    g_step = (end_color_rgb[1] - start_color_rgb[1]) / steps
+    b_step = (end_color_rgb[2] - start_color_rgb[2]) / steps
+    gradient_text = ""
+    for i, char in enumerate(text):
+        r = int(start_color_rgb[0] + (r_step * i))
+        g = int(start_color_rgb[1] + (g_step * i))
+        b = int(start_color_rgb[2] + (b_step * i))
+        gradient_text += f"\033[38;2;{r};{g};{b}m{char}"
+    return gradient_text + ENDC
 while True:
     try:
         os.system('cls' if os.name == 'nt' else 'clear')
         if not scroll_disabled: scroll_disable()
-        mode = input(PURPLE + rf"""
+        mode = input(gradient_text(rf"""
                                               _____ ________  ____  ____  __
                                              / ___// ____/ / / / / / / / / /
                                              \__ \/ /   / /_/ / / / / /_/ /
@@ -492,7 +506,7 @@ while True:
                                │ [10] Animated Status      │ [20] Scrape Stickers      │
                                ├───────────────────────────┴───────────────────────────┘
                                │
-                               └> """ + ENDC)
+                               └> """))
         try:
             if int(mode) < -1 or int(mode) > 20:
                 continue
@@ -501,7 +515,7 @@ while True:
         if mode == '0':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            print(PURPLE + "[#] Getting Latest Version.." + ENDC)
+            print(gradient_text("[#] Getting Latest Version.."))
             response = requests.get("https://api.github.com/repos/Schuh1337/Discord-MultiTool/releases/latest")
             if response.status_code == 200:
                 latest_version = response.json().get('tag_name')
@@ -539,14 +553,14 @@ while True:
                     print(RED + "[!] Unknown error occurred." + ENDC)
             else:
                 print(RED + f"[!] Failed to fetch latest version - RSC: {response.status_code}" + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '1':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")
-            webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
-            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid Delay. Please enter a positive number.")
+            message_content = validate_input(gradient_text("[#] Message you want to spam: ") + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")
+            webhook_url = validate_input(gradient_text("[#] Webhook URL: ") + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
+            delay = validate_input(gradient_text("[#] Delay (in seconds): ") + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid Delay. Please enter a positive number.")
             delay = float(delay)
             while True:
                 send_webhook(webhook_url, message_content)
@@ -554,7 +568,7 @@ while True:
         elif mode == '2':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
+            webhook_url = validate_input(gradient_text("[#] Webhook URL: "), validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
             try:
                 response = requests.get(webhook_url)
                 if response.status_code == 200:
@@ -569,30 +583,30 @@ while True:
                         print(GRAY + "[#] Avatar: N/A" + ENDC)
                 else:
                     print(RED + f"[!] Failed to fetch webhook information - RSC: {response.status_code}" + ENDC)
-                input(PURPLE + "[#] Press enter to return." + ENDC)
+                input(gradient_text("[#] Press enter to return."))
             except json.JSONDecodeError:
                 pass
         elif mode == '3':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            webhook_url = validate_input(PURPLE + "[#] Webhook URL: " + ENDC, validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete the webhook?\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            webhook_url = validate_input(gradient_text("[#] Webhook URL: "), validate_webhook, "[#] Invalid webhook URL. Please check the URL and try again.")
+            confirmation = validate_input(gradient_text("[#] Are you sure you want to delete the webhook?\n[#] (y/n): "), lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == 'y':
                 delete_webhook(webhook_url)
             else:
                 print(RED + "[#] Webhook deletion cancelled." + ENDC)
-                input(PURPLE + "[#] Press enter to return." + ENDC)
+                input(gradient_text("[#] Press enter to return."))
         elif mode == '4':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            message_content = validate_input(PURPLE + "[#] Message you want to spam: " + ENDC, lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
+            message_content = validate_input(gradient_text("[#] Message you want to spam: "), lambda content: len(content) >= 1, "[#] Message too short. Please enter a message with at least 1 character.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+            channel_linkorid = validate_input(gradient_text("[#] Channel: "), lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
             channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
-            num_messages = validate_input(PURPLE + "[#] Number of times to send the message (0 = infinite): " + ENDC, lambda value: value.isdigit() and int(value) >= 0, "[#] Invalid Input. Please enter a non-negative integer.")
+            num_messages = validate_input(gradient_text("[#] Number of times to send the message (0 = infinite): "), lambda value: value.isdigit() and int(value) >= 0, "[#] Invalid Input. Please enter a non-negative integer.")
             num_messages = int(num_messages)
-            delay = validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC,  lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0,  "[#] Invalid Delay. Please enter a positive number.")
+            delay = validate_input(gradient_text("[#] Delay (in seconds): "),  lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0,  "[#] Invalid Delay. Please enter a positive number.")
             delay = float(delay)
             payload = {'content': message_content}
             header = {'Authorization': user_token}
@@ -600,20 +614,20 @@ while True:
             while num_messages == 0 or i < num_messages:
                 response = requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", data=payload, headers=header)
                 if response.status_code == 200:
-                    print(GREEN + f"[#] Message {i + 1}{'/' + str(num_messages) if num_messages != 0 else ''} sent successfully!" + ENDC + " : " + PURPLE + message_content + ENDC)
+                    print(GREEN + f"[#] Message {i + 1}{'/' + str(num_messages) if num_messages != 0 else ''} sent successfully!" + ENDC + " : " + gradient_text(message_content) + ENDC)
                 else:
                     print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
                     print("[#] Retrying in 5 seconds...")
                     time.sleep(5)
                 i += 1
                 time.sleep(delay)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '5':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+            channel_linkorid = validate_input(gradient_text("[#] Channel: "), lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
             channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
             headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6ImVuIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEyNy4wLjAuMCBTYWZhcmkvNTM3LjM2IiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTI3LjAuMC4wIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIiOiIiLCJyZWZlcnJpbmdfZG9tYWluIjoiIiwicmVmZXJyZXJfY3VycmVudCI6IiIsInJlZmVycmluZ19kb21haW5fY3VycmVudCI6IiIsInJlbGVhc2VfY2hhbm5lbCI6InN0YWJsZSIsImNsaWVudF9idWlsZF9udW1iZXIiOjMxMzM0NCwiY2xpZW50X2V2ZW50X3NvdXJjZSI6bnVsbH0='}
@@ -654,33 +668,33 @@ while True:
         elif mode == '6':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+            confirmation = validate_input(gradient_text("[#] Are you sure you want to close all DMs for the provided token?\n[#] This will not leave group chats.\n[#] (y/n): "), lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == "y":
                 close_all_dms(user_token)
             else:
                 print(RED + "[#] DM closure canceled. No DMs were closed." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '7':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to leave all Groupchats for the provided token?\n[#] This will not close DMs.\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+            confirmation = validate_input(gradient_text("[#] Are you sure you want to leave all Groupchats for the provided token?\n[#] This will not close DMs.\n[#] (y/n): "), lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation.lower() == "y":
                 leave_all_groupchats(user_token)
             else:
                 print(RED + "[#] Groupchat leaving canceled. No Groupchats were left." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '8':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            channel_linkorid = validate_input(PURPLE + "[#] Channel: " + ENDC, lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+            channel_linkorid = validate_input(gradient_text("[#] Channel: "), lambda x: re.search(r'/channels/(\d+)/', x) or x.isdigit(), "[#] Invalid Input. Please enter a valid channel link or id.")
             channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
             channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
-            confirmation = validate_input(PURPLE + "[#] Are you sure you want to delete all messages from the provided token in this channel?\n[#] (y/n): " + ENDC, lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
+            confirmation = validate_input(gradient_text("[#] Are you sure you want to delete all messages from the provided token in this channel?\n[#] (y/n): "), lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
             if confirmation == 'y':
                 try:
                     delete_all_messages(user_token, channel_id)
@@ -688,26 +702,26 @@ while True:
                     print(RED + "[!] Unknown error occurred." + ENDC)
             else:
                 print(RED + "[#] Message deletion cancelled." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '9':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            type = validate_input(PURPLE + "[#] 1. Everyone\n[#] 2. Me Only\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+            type = validate_input(gradient_text("[#] 1. Everyone\n[#] 2. Me Only\n[#] Choice: "), lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
             react_to_messages(user_token, type)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '10':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            type = validate_input(PURPLE + "[#] 1. Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+            type = validate_input(gradient_text("[#] 1. Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: "), lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
             if type == '1':
-                status_list_input = validate_input(PURPLE + "[#] Statuses (separated by commas): " + ENDC, lambda value: len(value.split(',')) >= 2 and all(s.strip() != '' for s in value.split(',')) and len(set(s.strip() for s in value.split(','))) == len(value.split(',')), "[#] Invalid Statuses. Please enter at least 2 unique statuses separated by commas.")
+                status_list_input = validate_input(gradient_text("[#] Statuses (separated by commas): "), lambda value: len(value.split(',')) >= 2 and all(s.strip() != '' for s in value.split(',')) and len(set(s.strip() for s in value.split(','))) == len(value.split(',')), "[#] Invalid Statuses. Please enter at least 2 unique statuses separated by commas.")
                 status_list = [status.strip() for status in status_list_input.split(',') if status.strip()]
             elif type == '2':
-                emoji_status_pairs_input = validate_input(PURPLE + "[#] Statuses (e.g., <:en:eid> - Status1, <:en2:eid2> - Status2): " + ENDC, lambda value: all(len(pair.split('-')) == 2 and pair.split('-')[0].strip().startswith('<:') and len(set(pair.split('-')[1].strip() for pair in value.split(','))) == len(value.split(',')) for pair in value.split(',')), "[#] Invalid Emoji & Text pairs. Please enter at least 2 unique pairs in the correct format.")
+                emoji_status_pairs_input = validate_input(gradient_text("[#] Statuses (e.g., <:en:eid> - Status1, <:en2:eid2> - Status2): "), lambda value: all(len(pair.split('-')) == 2 and pair.split('-')[0].strip().startswith('<:') and len(set(pair.split('-')[1].strip() for pair in value.split(','))) == len(value.split(',')) for pair in value.split(',')), "[#] Invalid Emoji & Text pairs. Please enter at least 2 unique pairs in the correct format.")
                 emoji_status_pairs = [pair.strip() for pair in emoji_status_pairs_input.split(',') if pair.strip()]
                 status_list: List[Dict[str, str]] = []
                 for pair in emoji_status_pairs:
@@ -716,7 +730,7 @@ while True:
                     text = emoji_text_pair[1].strip()
                     emoji_id = emoji.split(':')[2][:-1]
                     status_list.append({"emoji": emoji, "text": text, "emoji_id": emoji_id})
-            delay =  validate_input(PURPLE + "[#] Delay (in seconds): " + ENDC, lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid Delay. Please enter a positive number.")
+            delay =  validate_input(gradient_text("[#] Delay (in seconds): "), lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid Delay. Please enter a positive number.")
             delay = float(delay)
             headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6ImVuIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEyNy4wLjAuMCBTYWZhcmkvNTM3LjM2IiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTI3LjAuMC4wIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIiOiIiLCJyZWZlcnJpbmdfZG9tYWluIjoiIiwicmVmZXJyZXJfY3VycmVudCI6IiIsInJlZmVycmluZ19kb21haW5fY3VycmVudCI6IiIsInJlbGVhc2VfY2hhbm5lbCI6InN0YWJsZSIsImNsaWVudF9idWlsZF9udW1iZXIiOjMxMzM0NCwiY2xpZW50X2V2ZW50X3NvdXJjZSI6bnVsbH0='}
             index = 0
@@ -732,7 +746,7 @@ while True:
                 payload_json = json.dumps(payload)
                 response = requests.patch('https://discord.com/api/v9/users/@me/settings', data=payload_json, headers=headers)
                 if response.status_code == 200:
-                    print(GREEN + "[#] Changed Status to: " + PURPLE + status_message + ENDC)
+                    print(GREEN + "[#] Changed Status to: " + gradient_text(status_message) + ENDC)
                 else:
                     print(RED + f"[!] Failed to change Status - RSC: {response.status_code}" + ENDC)
                 index = (index + 1) % len(status_list)
@@ -740,7 +754,7 @@ while True:
         elif mode == '11':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
+            ip_address = validate_input(gradient_text("[#] IP Address: "), validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
             ip_data = ip_lookup(ip_address)
             if ip_data is not None:
                 print(GRAY + f"[#] City: {ip_data.get('city', 'N/A')}" + ENDC)
@@ -753,24 +767,24 @@ while True:
                 print(GRAY + f"[#] Location: {ip_data.get('loc', 'N/A')}" + ENDC)
             else:
                 print(RED + "[!] Unknown error occurred." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '12':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            ip_address = validate_input(PURPLE + "[#] IP Address: " + ENDC, validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
-            ping_count = validate_input(PURPLE + "[#] Number of times to ping: " + ENDC, lambda x: x.isdigit() and int(x) > 0, "[#] Invalid Input. Please enter a positive integer.")
+            ip_address = validate_input(gradient_text("[#] IP Address: "), validate_ip, "[#] Invalid IP Address. Please check the IP and try again.")
+            ping_count = validate_input(gradient_text("[#] Number of times to ping: "), lambda x: x.isdigit() and int(x) > 0, "[#] Invalid Input. Please enter a positive integer.")
             ping_ip(ip_address, int(ping_count))
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '13':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
             hypesquad_options = {'1': 'Bravery', '2': 'Brilliance', '3': 'Balance', '4': 'Remove'}
             for option, house in hypesquad_options.items():
-                print(PURPLE + f"[#] {option}. {house}" + ENDC)
-            selected_option = validate_input(PURPLE + "[#] Choice: " + ENDC, lambda x: x in hypesquad_options, "[#] Invalid Choice. Please enter either 1, 2, 3, or 4.")
+                print(gradient_text(f"[#] {option}. {house}"))
+            selected_option = validate_input(gradient_text("[#] Choice: "), lambda x: x in hypesquad_options, "[#] Invalid Choice. Please enter either 1, 2, 3, or 4.")
             headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6ImVuIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEyNy4wLjAuMCBTYWZhcmkvNTM3LjM2IiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTI3LjAuMC4wIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIiOiIiLCJyZWZlcnJpbmdfZG9tYWluIjoiIiwicmVmZXJyZXJfY3VycmVudCI6IiIsInJlZmVycmluZ19kb21haW5fY3VycmVudCI6IiIsInJlbGVhc2VfY2hhbm5lbCI6InN0YWJsZSIsImNsaWVudF9idWlsZF9udW1iZXIiOjMxMzM0NCwiY2xpZW50X2V2ZW50X3NvdXJjZSI6bnVsbH0='}
             if selected_option == '4':
                 response = requests.delete('https://discord.com/api/v9/hypesquad/online', headers=headers)
@@ -781,32 +795,35 @@ while True:
                 print(GREEN + f"[#] {'Successfully removed HypeSquad House.' if selected_option == '4' else f'Successfully changed HypeSquad House to {hypesquad_options[selected_option]}.'}" + ENDC)
             else:
                 print(RED + f"[!] {'Failed to remove HypeSquad House' if selected_option == '4' else 'Failed to change Hypesquad House'} - RSC: {response.status_code}" + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '14':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            type = validate_input(PURPLE + "[#] 1. Server ID\n[#] 2. Server Invite\n[#] Choice: " + ENDC, lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
-            if type == '1':
-                user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-                server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
+            type_options = {'1': 'Server ID', '2': 'Server Invite'}
+            for option, type in type_options.items():
+                print(gradient_text(f"[#] {option}. {type}"))
+            selected_option = validate_input(gradient_text("[#] Choice: "), lambda x: x in type_options, "[#] Invalid Choice. Please enter either 1 or 2.")
+            if selected_option == '1':
+                user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+                server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
                 get_serverid_info(user_token, server_id)
-            elif type == '2':
-                invite = validate_input(PURPLE + "[#] Server Invite: " + ENDC, lambda x: re.search(r"(?:https?://)?discord\.gg/(?:invite/)?([a-zA-Z0-9]+)", x), "[#] Invalid Invite. Please check the invite and try again.")
+            elif selected_option == '2':
+                invite = validate_input(gradient_text("[#] Server Invite: "), lambda x: len(x) > 0, "[#] Invalid Invite. Please check the invite and try again.")
                 get_invite_info(invite)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '15':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            email = validate_input(PURPLE + "[#] Email: " + ENDC, lambda x: re.match(r"[^@]+@[^@]+\.[^@]+", x), "[#] Invalid Email. Please check the email and try again.")
-            password = validate_input(PURPLE + "[#] Password: " + ENDC, lambda x: len(x) > 0, "[#] Invalid Password. Password cannot be empty.")
+            email = validate_input(gradient_text("[#] Email: "), lambda x: re.match(r"[^@]+@[^@]+\.[^@]+", x), "[#] Invalid Email. Please check the email and try again.")
+            password = validate_input(gradient_text("[#] Password: "), lambda x: len(x) > 0, "[#] Invalid Password. Password cannot be empty.")
             payload = {'email': email, 'password': password}
             response = requests.post("https://discord.com/api/v9/auth/login", json=payload)
             if response.status_code == 200:
                 if response.json().get('mfa') is True:
                     token = response.json()['ticket']
-                    mfa = validate_input(PURPLE + "[#] MFA Code: " + ENDC, lambda x: len(x) > 0, "[#] Invalid MFA Code. MFA Code cannot be empty.")
+                    mfa = validate_input(gradient_text("[#] MFA Code: "), lambda x: len(x) > 0, "[#] Invalid MFA Code. MFA Code cannot be empty.")
                     payload = {'code': mfa, 'ticket': token}
                     response2 = requests.post("https://discord.com/api/v9/auth/mfa/totp", json=payload)
                     if response2.status_code == 200:
@@ -828,12 +845,12 @@ while True:
                     print(RED + "[!] Unknown error occurred." + ENDC)
             else:
                 print(RED + "[!] Unknown error occurred." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '16':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
             user_info = get_user_info(user_token)
             account_locked_state = get_account_locked(user_token)
             account_standing_state = get_account_standing(user_token)
@@ -875,12 +892,12 @@ while True:
                 print(GRAY + f"[#] Blocked Users: {num_blocked_users}" + ENDC)
                 print(GRAY + f"[#] Friend Requests: {num_friend_requests}" + ENDC)
                 print(GRAY + f"[#] Servers: {num_guilds}" + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '17':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
             headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6ImVuIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEyNy4wLjAuMCBTYWZhcmkvNTM3LjM2IiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTI3LjAuMC4wIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIiOiIiLCJyZWZlcnJpbmdfZG9tYWluIjoiIiwicmVmZXJyZXJfY3VycmVudCI6IiIsInJlZmVycmluZ19kb21haW5fY3VycmVudCI6IiIsInJlbGVhc2VfY2hhbm5lbCI6InN0YWJsZSIsImNsaWVudF9idWlsZF9udW1iZXIiOjMxMzM0NCwiY2xpZW50X2V2ZW50X3NvdXJjZSI6bnVsbH0='}
             response = requests.get('https://discord.com/api/v9/users/@me/billing/payments', headers=headers)
             if response.status_code == 200:
@@ -905,14 +922,14 @@ while True:
                     print(RED + "[#] No payment history found." + ENDC)
             else:
                 print(RED + f"[!] Failed to retrieve payment history - RSC: {response.status_code}" + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '18':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
             headers = {'Authorization': user_token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6ImVuIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEyNy4wLjAuMCBTYWZhcmkvNTM3LjM2IiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTI3LjAuMC4wIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIiOiIiLCJyZWZlcnJpbmdfZG9tYWluIjoiIiwicmVmZXJyZXJfY3VycmVudCI6IiIsInJlZmVycmluZ19kb21haW5fY3VycmVudCI6IiIsInJlbGVhc2VfY2hhbm5lbCI6InN0YWJsZSIsImNsaWVudF9idWlsZF9udW1iZXIiOjMxMzM0NCwiY2xpZW50X2V2ZW50X3NvdXJjZSI6bnVsbH0='}
-            print(PURPLE + '[#] Logging in with Token..' + ENDC)
+            print(gradient_text("[#] Logging in with Token.."))
             options = webdriver.ChromeOptions()
             options.add_experimental_option("detach", True)
             options.add_experimental_option("excludeSwitches", ['enable-logging'])
@@ -927,13 +944,13 @@ while True:
                 print(RED + "[!] WebDriverException occurred." + ENDC)
             except Exception:
                 print(RED + "[!] Unknown error occurred." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '19':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+            server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
             inner_emoji_dir = os.path.join("emojis", str(server_id))
             os.makedirs(inner_emoji_dir, exist_ok=True)
             emojis = get_guild_emojis(user_token, server_id)
@@ -941,16 +958,16 @@ while True:
                 print(RED + "[!] Failed to retrieve Emojis for specified Server.")
             elif emojis:
                 scs = asyncio.run(download_emoji_async(emojis, inner_emoji_dir))
-                print(PURPLE + f"[#] Successfully downloaded {scs} of {len(emojis)} Emojis.")
+                print(gradient_text(f"[#] Successfully downloaded {scs} of {len(emojis)} Emojis."))
             else:
                 print(RED + "[!] No Emojis found for specified Server." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '20':
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
-            user_token = validate_input(PURPLE + "[#] Token: " + ENDC, validate_token, "[#] Invalid Token. Please check the token and try again.")
-            server_id = validate_input(PURPLE + "[#] Server ID: " + ENDC, lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
+            user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
+            server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
             inner_sticker_dir = os.path.join("stickers", str(server_id))
             os.makedirs(inner_sticker_dir, exist_ok=True)
             stickers = get_guild_stickers(user_token, server_id)
@@ -958,10 +975,10 @@ while True:
                 print(RED + "[!] Failed to retrieve Stickers for specified Server.")
             elif stickers:
                 scs = asyncio.run(download_stickers_async(stickers, inner_sticker_dir))
-                print(PURPLE + f"[#] Successfully downloaded {scs} of {len(stickers)} Stickers.")
+                print(gradient_text(f"[#] Successfully downloaded {scs} of {len(stickers)} Stickers."))
             else:
                 print(RED + "[!] No Stickers found for specified Server." + ENDC)
-            input(PURPLE + "[#] Press enter to return." + ENDC)
+            input(gradient_text("[#] Press enter to return."))
             continue
     except KeyboardInterrupt:
         continue
