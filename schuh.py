@@ -103,6 +103,9 @@ def delete_webhook(url) -> None:
         print(RED + f"[!] Failed to delete webhook - RSC: {response.status_code}" + ENDC)
         input(gradient_text("[#] Press enter to return."))
 def validate_webhook(url) -> bool:
+    pattern = re.compile(r'^https://discord\.com/api/webhooks/\d+/[A-Za-z0-9_\-]+$')
+    if not pattern.match(url):
+        return False
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -447,7 +450,7 @@ def get_guild_stickers(token, server_id) -> Union[Dict, int, None]:
         return 404
     else:
         return None
-def get_format_type(format_type: int) -> str:
+def get_format_type(format_type) -> str:
     format_map = {1: 'webp', 2: 'png', 3: 'lottie', 4: 'gif'}
     return format_map.get(format_type, 'webp')
 async def download_sticker(session, sticker, inner_sticker_dir) -> bool:
