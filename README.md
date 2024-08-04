@@ -43,9 +43,10 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 22 - 04.08.24
+Update 22 - 04.08.24 (1000+ Lines 🎉)
 * More error handling for 'Scrape Emojis' & 'Scrape Stickers'
 * Text Optimizations for better gradients
+* Better Wehbook validation
 * Code optimization
 
 <details>
