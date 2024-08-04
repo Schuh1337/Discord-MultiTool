@@ -1,4 +1,6 @@
 ##########################################
+#     Licensed under the MIT License     #
+#    I do not take any responsibility    #
 # github.com/Schuh1337/Discord-MultiTool #
 # schuh.wtf/schuhrewrite | made by Schuh #
 ##########################################
@@ -55,6 +57,20 @@ def scroll_enable() -> None:
     ctypes.windll.kernel32.SetConsoleWindowInfo(handle, True, ctypes.byref(original_window))
 def set_window_properties(hwnd, style) -> None:
     ctypes.windll.user32.SetWindowLongW(hwnd, GWL_STYLE, ctypes.windll.user32.GetWindowLongW(hwnd, GWL_STYLE) & ~style)
+def gradient_text(text, start_color = "AD99AD", end_color = "6A0D91") -> str:
+    start_color_rgb = tuple(int(start_color[i:i+2], 16) for i in (0, 2, 4))
+    end_color_rgb = tuple(int(end_color[i:i+2], 16) for i in (0, 2, 4))
+    steps = len(text)
+    r_step = (end_color_rgb[0] - start_color_rgb[0]) / steps
+    g_step = (end_color_rgb[1] - start_color_rgb[1]) / steps
+    b_step = (end_color_rgb[2] - start_color_rgb[2]) / steps
+    gradient_text = ""
+    for i, char in enumerate(text):
+        r = int(start_color_rgb[0] + (r_step * i))
+        g = int(start_color_rgb[1] + (g_step * i))
+        b = int(start_color_rgb[2] + (b_step * i))
+        gradient_text += f"\033[38;2;{r};{g};{b}m{char}"
+    return gradient_text + ENDC
 def validate_input(prompt, validator, error_message) -> str:
     while True:
         user_input = input(prompt).strip()
@@ -83,11 +99,9 @@ def delete_webhook(url) -> None:
     if response.status_code == 204:
         print(GREEN + "[#] Webhook deleted successfully!" + ENDC)
         input(gradient_text("[#] Press enter to return."))
-        return True
     else:
         print(RED + f"[!] Failed to delete webhook - RSC: {response.status_code}" + ENDC)
         input(gradient_text("[#] Press enter to return."))
-        return False
 def validate_webhook(url) -> bool:
     try:
         response = requests.get(url)
@@ -407,15 +421,15 @@ async def download_emoji(session, emoji, inner_emoji_dir) -> bool:
     try:
         async with session.get(f"https://cdn.discordapp.com/emojis/{emoji['id']}.{'gif' if emoji['animated'] else 'png'}") as response:
             if response.status == 200:
-                print(GREEN + f"[#] Successfully downloaded Emoji: {emoji['name']}" + ENDC)
+                print(GREEN + f"[#] Successfully downloaded Emoji" + ENDC + " : " + gradient_text(emoji['name']))
                 with open(emoji_path, 'wb') as f:
                     f.write(await response.read())
                 return True
             else:
-                print(RED + f"[!] Failed to download Emoji: {emoji['name']} - RSC: {response.status_code}" + ENDC)
+                print(RED + f"[!] Failed to download Emoji" + ENDC + " : " +  gradient_text(emoji['name']) + RED + f"- RSC: {response.status_code}" + ENDC)
                 return False
     except Exception:
-        print(RED + f"[!] Unknown error while downloading Emoji: {emoji['name']} - RSC: {response.status_code}" + ENDC)
+        print(RED + f"[!] Unknown error while downloading Emoji" + ENDC + " : " +  gradient_text(emoji['name']) + RED + f"- RSC: {response.status_code}" + ENDC)
         return False
 async def download_emoji_async(emojis, inner_emoji_dir) -> int:
     print(gradient_text(f"[#] Downloading {len(emojis)} Emojis.."))
@@ -433,17 +447,9 @@ def get_guild_stickers(token, server_id) -> Union[Dict, int, None]:
         return 404
     else:
         return None
-def get_format_type(format_type) -> str:
-    if format_type == 1:
-        return 'webp'
-    elif format_type == 2:
-        return 'png'
-    elif format_type == 3:
-        return 'lottie'
-    elif format_type == 4:
-        return 'gif'
-    else:
-        return 'webp'
+def get_format_type(format_type: int) -> str:
+    format_map = {1: 'webp', 2: 'png', 3: 'lottie', 4: 'gif'}
+    return format_map.get(format_type, 'webp')
 async def download_sticker(session, sticker, inner_sticker_dir) -> bool:
     valid_filename = re.sub(r'[\\/*?:"<>|]', '', sticker['name'])
     sticker_path = os.path.join(inner_sticker_dir, f"{valid_filename}.webp")
@@ -452,13 +458,13 @@ async def download_sticker(session, sticker, inner_sticker_dir) -> bool:
             if response.status == 200:
                 with open(sticker_path, 'wb') as f:
                     f.write(await response.read())
-                print(GREEN + f"[#] Successfully downloaded Sticker: {sticker['name']}" + ENDC)
+                print(GREEN + f"[#] Successfully downloaded Sticker" + ENDC + " : " + gradient_text(sticker['name']))
                 return True
             else:
-                print(RED + f"[!] Failed to download Sticker: {sticker['name']} - RSC: {response.status_code}" + ENDC)
+                print(RED + f"[!] Failed to download Sticker" + ENDC + " : " + gradient_text(sticker['name']) + RED + f" - RSC: {response.status_code}" + ENDC)
                 return False
     except Exception:
-        print(RED + f"[!] Error downloading Sticker {sticker['name']} - RSC: {response.status_code}" + ENDC)
+        print(RED + f"[!] Error downloading Sticker" + ENDC + " : " + gradient_text(sticker['name']) + RED + f" - RSC: {response.status_code}" + ENDC)
         return False
 async def download_stickers_async(stickers, inner_sticker_dir) -> str:
     print(gradient_text(f"[#] Downloading {len(stickers)} Stickers.."))
@@ -469,20 +475,6 @@ async def download_stickers_async(stickers, inner_sticker_dir) -> str:
         return successful_downloads
 system("title " + "Schuh Rewrite    -    CTRL + C at any time to stop")
 set_window_properties(ctypes.windll.kernel32.GetConsoleWindow(), WS_SIZEBOX | WS_MAXIMIZEBOX)
-def gradient_text(text, start_color = "AD99AD", end_color = "6A0D91") -> str:
-    start_color_rgb = tuple(int(start_color[i:i+2], 16) for i in (0, 2, 4))
-    end_color_rgb = tuple(int(end_color[i:i+2], 16) for i in (0, 2, 4))
-    steps = len(text)
-    r_step = (end_color_rgb[0] - start_color_rgb[0]) / steps
-    g_step = (end_color_rgb[1] - start_color_rgb[1]) / steps
-    b_step = (end_color_rgb[2] - start_color_rgb[2]) / steps
-    gradient_text = ""
-    for i, char in enumerate(text):
-        r = int(start_color_rgb[0] + (r_step * i))
-        g = int(start_color_rgb[1] + (g_step * i))
-        b = int(start_color_rgb[2] + (b_step * i))
-        gradient_text += f"\033[38;2;{r};{g};{b}m{char}"
-    return gradient_text + ENDC
 while True:
     try:
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -708,7 +700,10 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
             user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
-            type = validate_input(gradient_text("[#] 1. Everyone\n[#] 2. Me Only\n[#] Choice: "), lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
+            type_options = {'1': 'Everyone', '2': 'Me Only'}
+            for option, type in type_options.items():
+                print(gradient_text(f"[#] {option}. {type}"))
+            type = validate_input(gradient_text("[#] Choice: "), lambda x: x in type_options, "[#] Invalid Choice. Please enter either 1 or 2.")
             react_to_messages(user_token, type)
             input(gradient_text("[#] Press enter to return."))
             continue
@@ -716,7 +711,10 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
             user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
-            type = validate_input(gradient_text("[#] 1. Text Statuses\n[#] 2. Emoji & Text Statuses\n[#] Choice: "), lambda choice: choice in ['1', '2'], "[#] Invalid Choice. Please enter either 1 or 2.")
+            type_options = {'1': 'Text Statuses', '2': 'Emoji & Text Statuses'}
+            for option, type in type_options.items():
+                print(gradient_text(f"[#] {option}. {type}"))
+            type = validate_input(gradient_text("[#] Choice: "), lambda x: x in type_options, "[#] Invalid Choice. Please enter either 1 or 2.")
             if type == '1':
                 status_list_input = validate_input(gradient_text("[#] Statuses (separated by commas): "), lambda value: len(value.split(',')) >= 2 and all(s.strip() != '' for s in value.split(',')) and len(set(s.strip() for s in value.split(','))) == len(value.split(',')), "[#] Invalid Statuses. Please enter at least 2 unique statuses separated by commas.")
                 status_list = [status.strip() for status in status_list_input.split(',') if status.strip()]
@@ -803,12 +801,12 @@ while True:
             type_options = {'1': 'Server ID', '2': 'Server Invite'}
             for option, type in type_options.items():
                 print(gradient_text(f"[#] {option}. {type}"))
-            selected_option = validate_input(gradient_text("[#] Choice: "), lambda x: x in type_options, "[#] Invalid Choice. Please enter either 1 or 2.")
-            if selected_option == '1':
+            type = validate_input(gradient_text("[#] Choice: "), lambda x: x in type_options, "[#] Invalid Choice. Please enter either 1 or 2.")
+            if type == '1':
                 user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
                 server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
                 get_serverid_info(user_token, server_id)
-            elif selected_option == '2':
+            elif type == '2':
                 invite = validate_input(gradient_text("[#] Server Invite: "), lambda x: len(x) > 0, "[#] Invalid Invite. Please check the invite and try again.")
                 get_invite_info(invite)
             input(gradient_text("[#] Press enter to return."))
@@ -952,15 +950,23 @@ while True:
             user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
             inner_emoji_dir = os.path.join("emojis", str(server_id))
-            os.makedirs(inner_emoji_dir, exist_ok=True)
-            emojis = get_guild_emojis(user_token, server_id)
-            if emojis == 404:
-                print(RED + "[!] Failed to retrieve Emojis for specified Server.")
-            elif emojis:
-                scs = asyncio.run(download_emoji_async(emojis, inner_emoji_dir))
-                print(gradient_text(f"[#] Successfully downloaded {scs} of {len(emojis)} Emojis."))
-            else:
-                print(RED + "[!] No Emojis found for specified Server." + ENDC)
+            try:
+                os.makedirs(inner_emoji_dir, exist_ok=True)
+            except PermissionError:
+                print(RED + "[!] Permission Denied. Unable to create directory." + ENDC)
+                input(gradient_text("[#] Press enter to return."))
+                continue
+            try:
+                emojis = get_guild_emojis(user_token, server_id)
+                if emojis == 404:
+                    print(RED + "[!] Failed to retrieve Emojis for specified Server." + ENDC)
+                elif emojis:
+                    scs = asyncio.run(download_emoji_async(emojis, inner_emoji_dir))
+                    print(gradient_text(f"[#] Successfully downloaded {scs} of {len(emojis)} Emojis."))
+                else:
+                    print(RED + "[!] No Emojis found for specified Server." + ENDC)
+            except Exception:
+                print(RED + "[!] An error occurred while processing Emojis." + ENDC)
             input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '20':
@@ -969,15 +975,23 @@ while True:
             user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
             server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
             inner_sticker_dir = os.path.join("stickers", str(server_id))
-            os.makedirs(inner_sticker_dir, exist_ok=True)
-            stickers = get_guild_stickers(user_token, server_id)
-            if stickers == 404:
-                print(RED + "[!] Failed to retrieve Stickers for specified Server.")
-            elif stickers:
-                scs = asyncio.run(download_stickers_async(stickers, inner_sticker_dir))
-                print(gradient_text(f"[#] Successfully downloaded {scs} of {len(stickers)} Stickers."))
-            else:
-                print(RED + "[!] No Stickers found for specified Server." + ENDC)
+            try:
+                os.makedirs(inner_sticker_dir, exist_ok=True)
+            except PermissionError:
+                print(RED + "[!] Permission Denied. Unable to create directory." + ENDC)
+                input(gradient_text("[#] Press enter to return."))
+                continue
+            try:
+                stickers = get_guild_stickers(user_token, server_id)
+                if stickers == 404:
+                    print(RED + "[!] Failed to retrieve Stickers for specified Server.")
+                elif stickers:
+                    scs = asyncio.run(download_stickers_async(stickers, inner_sticker_dir))
+                    print(gradient_text(f"[#] Successfully downloaded {scs} of {len(stickers)} Stickers."))
+                else:
+                    print(RED + "[!] No Stickers found for specified Server." + ENDC)
+            except Exception:
+                print(RED + "[!] An error occurred while processing Emojis." + ENDC)
             input(gradient_text("[#] Press enter to return."))
             continue
     except KeyboardInterrupt:
