@@ -41,12 +41,22 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 21 - 03.08.24
-* New overall UI Color (Gradient) AD99AD <-> 6A0D91
+Update 22 - 04.08.24
+* More error handling for 'Scrape Emojis' & 'Scrape Stickers'
+* Text Optimizations for better gradients
+* Code optimization
 
 <details>
 <summary>Past Updates & Changes</summary>
 <br>
+
+<details>
+<summary>Update 21 - 03.08.24</summary>
+<br>
+
+* New overall UI Color (Gradient) AD99AD <-> 6A0D91
+
+</details>
 
 <details>
 <summary>Update 20 🎉 - 02.08.24</summary>
