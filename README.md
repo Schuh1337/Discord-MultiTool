@@ -1,5 +1,5 @@
 # Discord-Tool - Schuh Rewrite
-![image](https://schuh.wtf/resources/images/schuh.png)
+![image](https://schuh.wtf/resources/images/schuhrewrite.png)
 
 > [!IMPORTANT]
 > Skids are stealing this Tool, rebranding it (changing the big ascii text), and selling it. (lol)<br>
