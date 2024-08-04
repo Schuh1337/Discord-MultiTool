@@ -4,7 +4,7 @@
 # github.com/Schuh1337/Discord-MultiTool #
 # schuh.wtf/schuhrewrite | made by Schuh #
 ##########################################
-vers = "v0.2.0"
+vers = "v0.2.1"
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from typing import Dict, List, Tuple, Union, Optional
 from datetime import datetime, timedelta
