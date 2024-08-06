@@ -4,7 +4,7 @@
 # github.com/Schuh1337/Discord-MultiTool #
 # schuh.wtf/schuhrewrite | made by Schuh #
 ##########################################
-vers = "v0.2.1"
+vers = "v0.2.2"
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from typing import Dict, List, Tuple, Union, Optional
 from datetime import datetime, timedelta
@@ -89,9 +89,9 @@ def send_webhook(url, content) -> None:
     data = {'content': content}
     response = requests.post(url, json=data)
     if response.status_code == 204:
-        print(GREEN + "[#] Message sent successfully!" + ENDC, ": " + gradient_text(content) + ENDC)
+        print(GREEN + "[#] Successfully sent to Webhook" + ENDC, ": " + gradient_text(content) + ENDC)
     else:
-        print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
+        print(RED + f"[!] Failed to send to Webhook - RSC: {response.status_code}" + ENDC)
         print("[#] Retrying in 5 seconds...")
         time.sleep(5)
 def delete_webhook(url) -> None:
@@ -609,7 +609,7 @@ while True:
             while num_messages == 0 or i < num_messages:
                 response = requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", data=payload, headers=header)
                 if response.status_code == 200:
-                    print(GREEN + f"[#] Message {i + 1}{'/' + str(num_messages) if num_messages != 0 else ''} sent successfully!" + ENDC + " : " + gradient_text(message_content) + ENDC)
+                    print(GREEN + f"[#] Successfully sent Message {i + 1}{'/' + str(num_messages) if num_messages != 0 else ''}" + ENDC + " : " + gradient_text(message_content) + ENDC)
                 else:
                     print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
                     print("[#] Retrying in 5 seconds...")
@@ -690,7 +690,7 @@ while True:
             channel_id_match = re.search(r'/channels/(\d+)/', channel_linkorid)
             channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
             confirmation = validate_input(gradient_text("[#] Are you sure you want to delete all messages from the provided token in this channel?\n[#] (y/n): "), lambda v: v.lower() in ["y", "n"], "[#] Invalid Input. Please enter either 'y' or 'n'")
-            if confirmation == 'y':
+            if confirmation.lower() == 'y':
                 try:
                     delete_all_messages(user_token, channel_id)
                 except Exception:
@@ -951,7 +951,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
             user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
-            server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
+            server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and len(id) == 19, "[#] Invalid Server ID. Please check the ID and try again.")
             inner_emoji_dir = os.path.join("emojis", str(server_id))
             try:
                 os.makedirs(inner_emoji_dir, exist_ok=True)
@@ -976,7 +976,7 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
             user_token = validate_input(gradient_text("[#] Token: "), validate_token, "[#] Invalid Token. Please check the token and try again.")
-            server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and 18 <= len(id) <= 21, "[#] Invalid Server ID. Please check the ID and try again.")
+            server_id = validate_input(gradient_text("[#] Server ID: "), lambda id: id.isdigit() and len(id) == 19, "[#] Invalid Server ID. Please check the ID and try again.")
             inner_sticker_dir = os.path.join("stickers", str(server_id))
             try:
                 os.makedirs(inner_sticker_dir, exist_ok=True)
