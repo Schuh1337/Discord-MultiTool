@@ -4,7 +4,7 @@
 # github.com/Schuh1337/Discord-MultiTool #
 # schuh.wtf/schuhrewrite | made by Schuh #
 ##########################################
-vers = "v0.2.2"
+vers = "v0.2.3"
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from typing import Dict, List, Tuple, Union, Optional
 from datetime import datetime, timedelta
@@ -610,11 +610,11 @@ while True:
                 response = requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", data=payload, headers=header)
                 if response.status_code == 200:
                     print(GREEN + f"[#] Successfully sent Message {i + 1}{'/' + str(num_messages) if num_messages != 0 else ''}" + ENDC + " : " + gradient_text(message_content) + ENDC)
+                    i += 1
                 else:
                     print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
                     print("[#] Retrying in 5 seconds...")
                     time.sleep(5)
-                i += 1
                 time.sleep(delay)
             input(gradient_text("[#] Press enter to return."))
             continue
