@@ -43,12 +43,20 @@
 #
 > ### 🛠️ Updates & Changes
 
-Update 23 - 06.08.24
-* Few fixes & improvements
+Update 24 - 11.08.24
+* Very small fix in 'Channel Spammer'
 
 <details>
 <summary>Past Updates & Changes</summary>
 <br>
+
+<details>
+<summary>Update 23 - 06.08.24</summary>
+<br>
+  
+* Few fixes & improvements
+
+</details>
 
 <details>
 <summary>Update 22 - 04.08.24 (1000+ Lines 🎉)</summary>
