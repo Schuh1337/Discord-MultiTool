@@ -4,7 +4,7 @@
 # github.com/Schuh1337/Discord-MultiTool #
 # schuh.wtf/schuhrewrite | made by Schuh #
 ##########################################
-vers = "v0.2.3"
+vers = "v0.2.4"
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from typing import Dict, List, Tuple, Union, Optional
 from datetime import datetime, timedelta
@@ -91,7 +91,7 @@ def send_webhook(url, content) -> None:
     if response.status_code == 204:
         print(GREEN + "[#] Successfully sent to Webhook" + ENDC, ": " + gradient_text(content) + ENDC)
     else:
-        print(RED + f"[!] Failed to send to Webhook - RSC: {response.status_code}" + ENDC)
+        print(RED + f"[!] Failed to send to Webhook {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
         print("[#] Retrying in 5 seconds...")
         time.sleep(5)
 def delete_webhook(url) -> None:
@@ -100,7 +100,7 @@ def delete_webhook(url) -> None:
         print(GREEN + "[#] Webhook deleted successfully!" + ENDC)
         input(gradient_text("[#] Press enter to return."))
     else:
-        print(RED + f"[!] Failed to delete webhook - RSC: {response.status_code}" + ENDC)
+        print(RED + f"[!] Failed to delete webhook {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
         input(gradient_text("[#] Press enter to return."))
 def validate_webhook(url) -> bool:
     pattern = re.compile(r'^https://discord\.com/api/webhooks/\d+/[A-Za-z0-9_\-]+$')
@@ -214,7 +214,7 @@ def leave_all_groupchats(token) -> None:
                 if response.status_code == 200:
                     print(GREEN + "[#] Successfully left Groupchat" + ENDC + " : " + gradient_text(channel['id']) + ENDC)
                 else:
-                    print(RED + "[!] Failed to leave Groupchat" + ENDC + " : " + gradient_text(channel['id']) + RED + f" - RSC: {response.status_code}" + ENDC)
+                    print(RED + "[!] Failed to leave Groupchat" + ENDC + " : " + gradient_text(channel['id']) + RED + f" {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
         if not any(channel['type'] == 3 for channel in channels):
             print(RED + "[#] No Groupchats found to leave." + ENDC)
         else:
@@ -269,14 +269,14 @@ def delete_all_messages(token, channel_id) -> None:
                             print(GREEN + "[#] Successfully deleted message" + ENDC + " : " + gradient_text(message['id']) + ENDC)
                             break
                         elif delete_response.status_code == 429:
-                            print(RED + "[!] Failed to delete message" + ENDC + " : " + gradient_text(message['id']) + RED + f" - RSC: {delete_response.status_code}" + ENDC)
-                            print("[#] Retrying in 5 seconds...")
+                            print(RED + "[!] Failed to delete message" + ENDC + " : " + gradient_text(message['id']) + RED + f" {ENDC}-{RED} RSC: {delete_response.status_code}" + ENDC)
+                            print(f"[#] Retrying in 5 seconds...")
                             time.sleep(5)
                         else:
-                            print(RED + "[!] Failed to delete message" + ENDC + " : " + gradient_text(message['id']) + RED + f" - RSC: {delete_response.status_code}" + ENDC)
+                            print(RED + "[!] Failed to delete message" + ENDC + " : " + gradient_text(message['id']) + RED + f" {ENDC}-{RED} RSC: {delete_response.status_code}" + ENDC)
                             break
         else:
-            print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
+            print(RED + f"[!] Failed to retrieve messages {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
             break
     if messages_found and messages_deleted:
         print(GREEN + "[#] All messages from Token have been deleted." + ENDC)
@@ -301,7 +301,7 @@ def react_to_messages(token, type) -> None:
     while True:
         response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages?limit=3", headers=headers)
         if response.status_code != 200:
-            print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
+            print(RED + f"[!] Failed to retrieve messages {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
             break
         messages = response.json()
         for message in messages:
@@ -313,7 +313,7 @@ def react_to_messages(token, type) -> None:
                         if response.status_code == 204:
                             print(GREEN + "[#] Reacted to message" + ENDC, ": " + gradient_text(message_id) + ENDC)
                         else:
-                            print(RED + f"[!] Failed to react to message {message_id} - RSC: {response.status_code}" + ENDC)
+                            print(RED + f"[!] Failed to react to message {message_id} {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
                         last_message_id = message_id
 def get_invite_info(invite_url) -> None:
     match = re.search(r"(?:https?://)?(?:www\.)?(discord\.gg|discord\.com/invite)/(?:invite/)?([a-zA-Z0-9]+)", invite_url)
@@ -354,7 +354,7 @@ def get_invite_info(invite_url) -> None:
         print(GRAY + f"[#] Member Count: {data.get('approximate_member_count', 'N/A')}" + ENDC)
         print(GRAY + f"[#] Online Count: {data.get('approximate_presence_count', 'N/A')}" + ENDC)
     else:
-        print(RED + f"[!] Failed to retrieve information - RSC: {response.status_code}" + ENDC)
+        print(RED + f"[!] Failed to retrieve information {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
 def get_serverid_info(token, id) -> None:
     headers = {'Authorization': token, 'Authority': 'discord.com', 'Accept': '*/*', 'Accept-Language': 'sv,sv-SE;q=0.9', 'Content-Type': 'application/json', 'Origin': 'https://discord.com', 'Referer': 'https://discord.com/', 'Sec-Ch-Ua': '"Not?A_Brand";v="8", "Chromium";v="108"', 'Sec-Ch-Ua-Mobile': '?0', 'Sec-Ch-Ua-Platform': '"Windows"', 'Sec-Fetch-Dest': 'empty', 'Sec-Fetch-Mode': 'cors', 'Sec-Fetch-Site': 'same-origin', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9016 Chrome/108.0.5359.215 Electron/22.3.12 Safari/537.36', 'X-Debug-Options': 'bugReporterEnabled', 'X-Discord-Locale': 'en-US', 'X-Discord-Timezone': 'Europe/Stockholm', 'X-Super-Properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwic3lzdGVtX2xvY2FsZSI6ImVuIiwiYnJvd3Nlcl91c2VyX2FnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEyNy4wLjAuMCBTYWZhcmkvNTM3LjM2IiwiYnJvd3Nlcl92ZXJzaW9uIjoiMTI3LjAuMC4wIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIiOiIiLCJyZWZlcnJpbmdfZG9tYWluIjoiIiwicmVmZXJyZXJfY3VycmVudCI6IiIsInJlZmVycmluZ19kb21haW5fY3VycmVudCI6IiIsInJlbGVhc2VfY2hhbm5lbCI6InN0YWJsZSIsImNsaWVudF9idWlsZF9udW1iZXIiOjMxMzM0NCwiY2xpZW50X2V2ZW50X3NvdXJjZSI6bnVsbH0='}
     response = requests.get(f"https://discord.com/api/v10/guilds/{id}?with_counts=true", headers=headers)
@@ -382,7 +382,7 @@ def get_serverid_info(token, id) -> None:
         print(GRAY + f"[#] Sticker Count: {len(data.get('stickers', []))}" + ENDC)
         print(GRAY + f"[#] Role Count: {len(data.get('roles', []))}" + ENDC)
     else:
-        print(RED + f"[!] Failed to retrieve information - RSC: {response.status_code}" + ENDC)
+        print(RED + f"[!] Failed to retrieve information {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
 def validate_ip(ip) -> bool:
     try:
         ipaddress.ip_address(ip)
@@ -464,10 +464,10 @@ async def download_sticker(session, sticker, inner_sticker_dir) -> bool:
                 print(GREEN + f"[#] Successfully downloaded Sticker" + ENDC + " : " + gradient_text(sticker['name']))
                 return True
             else:
-                print(RED + f"[!] Failed to download Sticker" + ENDC + " : " + gradient_text(sticker['name']) + RED + f" - RSC: {response.status_code}" + ENDC)
+                print(RED + f"[!] Failed to download Sticker" + ENDC + " : " + gradient_text(sticker['name']) + RED + f" {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
                 return False
     except Exception:
-        print(RED + f"[!] Error downloading Sticker" + ENDC + " : " + gradient_text(sticker['name']) + RED + f" - RSC: {response.status_code}" + ENDC)
+        print(RED + f"[!] Error downloading Sticker" + ENDC + " : " + gradient_text(sticker['name']) + RED + f" {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
         return False
 async def download_stickers_async(stickers, inner_sticker_dir) -> str:
     print(gradient_text(f"[#] Downloading {len(stickers)} Stickers.."))
@@ -518,36 +518,19 @@ while True:
                     print(GRAY + f"[#] Current Version: {vers}" + ENDC)
                     print(GRAY + f"[#] Latest Version: {latest_version}" + ENDC)
                     try:
-                        current_match = re.match(r'^[\d\.]+', vers.lstrip('v'))
-                        latest_match = re.match(r'^[\d\.]+', latest_version.lstrip('v'))
-                        if current_match and latest_match:
-                            current_ver = current_match.group(0)
-                            latest_ver = latest_match.group(0)
-                            if current_ver < latest_ver:
-                                comparison_result = 1
-                            elif current_ver > latest_ver:
-                                comparison_result = 2
-                            else:
-                                current_label = re.sub(r'^[\d\.]+', '', vers).strip('-')
-                                latest_label = re.sub(r'^[\d\.]+', '', latest_version).strip('-')
-                                if current_label < latest_label:
-                                    comparison_result = 1
-                                elif current_label > latest_label:
-                                    comparison_result = 2
-                                else:
-                                    comparison_result = 2
-                        else:
-                            comparison_result = 2
+                        current_ver = re.match(r'^[\d\.]+', vers.lstrip('v')).group(0)
+                        latest_ver = re.match(r'^[\d\.]+', latest_version.lstrip('v')).group(0)
+                        comparison_result = (current_ver < latest_ver) or (current_ver == latest_ver and re.sub(r'^[\d\.]+', '', vers).strip('-') < re.sub(r'^[\d\.]+', '', latest_version).strip('-'))
                     except Exception:
-                        comparison_result = 2
-                    if comparison_result == 1:
+                        comparison_result = False
+                    if comparison_result:
                         print(RED + f"[#] Not on Latest Version!\n[>] Latest download (EXE): https://github.com/Schuh1337/Discord-MultiTool/releases/download/{latest_version}/schuh.exe\n[>] Latest download (SRC): https://github.com/Schuh1337/Discord-MultiTool/archive/refs/heads/main.zip" + ENDC)
-                    elif comparison_result == 2:
+                    else:
                         print(GREEN + "[#] On Latest Version!" + ENDC)
                 else:
                     print(RED + "[!] Unknown error occurred." + ENDC)
             else:
-                print(RED + f"[!] Failed to fetch latest version - RSC: {response.status_code}" + ENDC)
+                print(RED + f"[!] Failed to fetch latest version {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
             input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '1':
@@ -577,7 +560,7 @@ while True:
                     else:
                         print(GRAY + "[#] Avatar: N/A" + ENDC)
                 else:
-                    print(RED + f"[!] Failed to fetch webhook information - RSC: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to fetch webhook information {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
                 input(gradient_text("[#] Press enter to return."))
             except json.JSONDecodeError:
                 pass
@@ -601,7 +584,7 @@ while True:
             channel_id = channel_id_match.group(1) if channel_id_match else channel_linkorid
             num_messages = validate_input(gradient_text("[#] Number of times to send the message (0 = infinite): "), lambda value: value.isdigit() and int(value) >= 0, "[#] Invalid Input. Please enter a non-negative integer.")
             num_messages = int(num_messages)
-            delay = validate_input(gradient_text("[#] Delay (in seconds): "),  lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0,  "[#] Invalid Delay. Please enter a positive number.")
+            delay = validate_input(gradient_text("[#] Delay (in seconds): "),  lambda value: (value.replace('.', '', 1).isdigit() if '.' in value else value.isdigit()) and float(value) > 0, "[#] Invalid Delay. Please enter a positive number.")
             delay = float(delay)
             payload = {'content': message_content}
             header = {'Authorization': user_token}
@@ -612,7 +595,7 @@ while True:
                     print(GREEN + f"[#] Successfully sent Message {i + 1}{'/' + str(num_messages) if num_messages != 0 else ''}" + ENDC + " : " + gradient_text(message_content) + ENDC)
                     i += 1
                 else:
-                    print(RED + f"[!] Failed to send message - RSC: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to send message {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
                     print("[#] Retrying in 5 seconds...")
                     time.sleep(5)
                 time.sleep(delay)
@@ -633,7 +616,7 @@ while True:
                 while True:
                     response = requests.get(f"https://discord.com/api/v9/channels/{channel_id}/messages", params=params, headers=headers)
                     if response.status_code != 200:
-                        print(RED + f"[!] Failed to retrieve messages - RSC: {response.status_code}" + ENDC)
+                        print(RED + f"[!] Failed to retrieve messages {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
                     else:
                         messages = response.json()
                         for message in reversed(messages):
@@ -749,7 +732,7 @@ while True:
                 if response.status_code == 200:
                     print(GREEN + "[#] Changed Status to: " + gradient_text(status_message) + ENDC)
                 else:
-                    print(RED + f"[!] Failed to change Status - RSC: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to change Status {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
                 index = (index + 1) % len(status_list)
                 time.sleep(delay)
         elif mode == '11':
@@ -889,10 +872,10 @@ while True:
                     print(GRAY + f"[#] Active Boosts: {used_boosts_formatted}" + ENDC)
                 print(GRAY + f"[#] NSFW Allowed: {'Yes' if user_info.get('nsfw_allowed') else 'No'}" + ENDC)
                 print(GRAY + f"[#] Clan: {user_info['clan']['tag'] if user_info['clan'] else 'None'}" + ENDC)
-                print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
-                print(GRAY + f"[#] Blocked Users: {num_blocked_users}" + ENDC)
-                print(GRAY + f"[#] Friend Requests: {num_friend_requests}" + ENDC)
                 print(GRAY + f"[#] Servers: {num_guilds}" + ENDC)
+                print(GRAY + f"[#] Friends: {num_friends}" + ENDC)
+                print(GRAY + f"[#] Friend Requests: {num_friend_requests}" + ENDC)
+                print(GRAY + f"[#] Blocked Users: {num_blocked_users}" + ENDC)
             input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '17':
@@ -922,7 +905,7 @@ while True:
                 else:
                     print(RED + "[#] No payment history found." + ENDC)
             else:
-                print(RED + f"[!] Failed to retrieve payment history - RSC: {response.status_code}" + ENDC)
+                print(RED + f"[!] Failed to retrieve payment history {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
             input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '18':
