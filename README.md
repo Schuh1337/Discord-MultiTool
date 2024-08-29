@@ -43,6 +43,10 @@
 #
 > ### 🛠️ Updates & Changes
 
+Update 25 - 29.08.24
+* Optimized some code
+* Some small changes on stuff that bothered me
+
 Update 24 - 11.08.24
 * Very small fix in 'Channel Spammer'
 
