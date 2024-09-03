@@ -68,7 +68,7 @@ Update 24 - 11.08.24
   
 * More error handling for 'Scrape Emojis' & 'Scrape Stickers'
 * Text Optimizations for better gradients
-* Better Wehbook validation
+* Better Webhook validation
 * Code optimization
 
 </details>
