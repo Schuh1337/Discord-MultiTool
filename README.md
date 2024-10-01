@@ -42,6 +42,9 @@
 #
 > ### 🛠️ Updates & Changes
 
+Update 26 - 01.10.24
+* discordapp.com regex for Webhook Validation 🤑
+
 Update 25 - 29.08.24
 * Optimized some code
 * Some small changes on stuff that bothered me
