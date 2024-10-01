@@ -1,4 +1,4 @@
-##########################################
+0##########################################
 #     Licensed under the MIT License     #
 #    I do not take any responsibility    #
 # github.com/Schuh1337/Discord-MultiTool #
@@ -103,7 +103,7 @@ def delete_webhook(url) -> None:
         print(RED + f"[!] Failed to delete webhook {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
         input(gradient_text("[#] Press enter to return."))
 def validate_webhook(url) -> bool:
-    pattern = re.compile(r'^https://discord\.com/api/webhooks/\d+/[A-Za-z0-9_\-]+$')
+    pattern = re.compile(r'^https://(discord(app)?\.com)/api/webhooks/\d+/[A-Za-z0-9_\-]+$')
     if not pattern.match(url):
         return False
     try:
@@ -511,26 +511,29 @@ while True:
             os.system('cls' if os.name == 'nt' else 'clear')
             if scroll_disabled: scroll_enable()
             print(gradient_text("[#] Getting Latest Version.."))
-            response = requests.get("https://api.github.com/repos/Schuh1337/Discord-MultiTool/releases/latest")
-            if response.status_code == 200:
-                latest_version = response.json().get('tag_name')
-                if latest_version:
-                    print(GRAY + f"[#] Current Version: {vers}" + ENDC)
-                    print(GRAY + f"[#] Latest Version: {latest_version}" + ENDC)
-                    try:
-                        current_ver = re.match(r'^[\d\.]+', vers.lstrip('v')).group(0)
-                        latest_ver = re.match(r'^[\d\.]+', latest_version.lstrip('v')).group(0)
-                        comparison_result = (current_ver < latest_ver) or (current_ver == latest_ver and re.sub(r'^[\d\.]+', '', vers).strip('-') < re.sub(r'^[\d\.]+', '', latest_version).strip('-'))
-                    except Exception:
-                        comparison_result = False
-                    if comparison_result:
-                        print(RED + f"[#] Not on Latest Version!\n[>] Latest download (EXE): https://github.com/Schuh1337/Discord-MultiTool/releases/download/{latest_version}/schuh.exe\n[>] Latest download (SRC): https://github.com/Schuh1337/Discord-MultiTool/archive/refs/heads/main.zip" + ENDC)
+            try:
+                response = requests.get("https://api.github.com/repos/Schuh1337/Discord-MultiTool/releases/latest")
+                if response.status_code == 200:
+                    latest_version = response.json().get('tag_name')
+                    if latest_version:
+                        print(GRAY + f"[#] Current Version: {vers}" + ENDC)
+                        print(GRAY + f"[#] Latest Version: {latest_version}" + ENDC)
+                        try:
+                            current_ver = re.match(r'^[\d\.]+', vers.lstrip('v')).group(0)
+                            latest_ver = re.match(r'^[\d\.]+', latest_version.lstrip('v')).group(0)
+                            comparison_result = (current_ver < latest_ver) or (current_ver == latest_ver and re.sub(r'^[\d\.]+', '', vers).strip('-') < re.sub(r'^[\d\.]+', '', latest_version).strip('-'))
+                        except Exception:
+                            comparison_result = False
+                        if comparison_result:
+                            print(RED + f"[#] Not on Latest Version!\n[>] Latest download (EXE): https://github.com/Schuh1337/Discord-MultiTool/releases/download/{latest_version}/schuh.exe\n[>] Latest download (SRC): https://github.com/Schuh1337/Discord-MultiTool/archive/refs/heads/main.zip" + ENDC)
+                        else:
+                            print(GREEN + "[#] On Latest Version!" + ENDC)
                     else:
-                        print(GREEN + "[#] On Latest Version!" + ENDC)
+                        print(RED + "[!] Unknown error occurred." + ENDC)
                 else:
-                    print(RED + "[!] Unknown error occurred." + ENDC)
-            else:
-                print(RED + f"[!] Failed to fetch latest version {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
+                    print(RED + f"[!] Failed to fetch latest version {ENDC}-{RED} RSC: {response.status_code}" + ENDC)
+            except Exception:
+                print(RED + f"[!] Failed to get latest Version." + ENDC)
             input(gradient_text("[#] Press enter to return."))
             continue
         elif mode == '1':
