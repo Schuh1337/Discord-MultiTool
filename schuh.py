@@ -4,7 +4,7 @@
 # github.com/Schuh1337/Discord-MultiTool #
 # schuh.lol/schuhrewrite | made by Schuh #
 ##########################################
-vers = "v0.2.5"
+vers = "v0.2.6"
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
 from typing import Dict, List, Tuple, Union, Optional
 from datetime import datetime, timedelta
@@ -260,7 +260,7 @@ def delete_all_messages(token, channel_id) -> None:
                 last_message_id = message['id']
                 if 'call' in message:
                     continue
-                if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and 'interaction_metadata' in message and message['interaction_metadata'].get('user_id') == user_id):
+                if (message['author']['id'] == user_id) or (message['author'].get('bot', False) and message.get('interaction_metadata', {}).get('user_id') == user_id) or (message.get('interaction', {}).get('user', {}).get('id') == user_id):
                     messages_found = True
                     while True:
                         delete_response = requests.delete(f"https://discord.com/api/v9/channels/{channel_id}/messages/{message['id']}", headers=headers)
