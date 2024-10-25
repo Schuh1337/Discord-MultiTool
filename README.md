@@ -42,6 +42,10 @@
 #
 > ### 🛠️ Updates & Changes
 
+Update 27 - 25.10.24
+* Additional checking for Messages in 'Message Deleter'
+* ?: Message Deleter will delete more types of your messages
+
 Update 26 - 01.10.24
 * Added discordapp.com to regex for Webhook Validation 🤑
 
@@ -49,12 +53,18 @@ Update 25 - 29.08.24
 * Optimized some code
 * Some small changes on stuff that bothered me
 
-Update 24 - 11.08.24
-* Very small fix in 'Channel Spammer'
 
 <details>
 <summary>Past Updates & Changes</summary>
 <br>
+
+<details>
+<summary>Update 24 - 11.08.24</summary>
+<br>
+  
+* Very small fix in 'Channel Spammer'
+
+<details>
 
 <details>
 <summary>Update 23 - 06.08.24</summary>
