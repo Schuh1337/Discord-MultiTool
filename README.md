@@ -43,7 +43,7 @@
 > ### 🛠️ Updates & Changes
 
 Update 27 - 25.10.24
-* Additional checking for Messages in 'Message Deleter'
+* Additional checking for Messages in 'Message Deleter'<br>
   ⮡&nbsp;&nbsp; Means: Message Deleter will delete more types of your Messages
 
 Update 26 - 01.10.24
