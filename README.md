@@ -44,7 +44,7 @@
 
 Update 27 - 25.10.24
 * Additional checking for Messages in 'Message Deleter'
-* ?: Message Deleter will delete more types of your messages
+  ⮡&nbsp;&nbsp; Means: Message Deleter will delete more types of your Messages
 
 Update 26 - 01.10.24
 * Added discordapp.com to regex for Webhook Validation 🤑
