@@ -2,7 +2,7 @@
 #     Licensed under the MIT License     #
 #    I do not take any responsibility    #
 # github.com/Schuh1337/Discord-MultiTool #
-# schuh.wtf/schuhrewrite | made by Schuh #
+# schuh.lol/schuhrewrite | made by Schuh #
 ##########################################
 vers = "v0.2.5"
 import os, requests, time, re, json, ipaddress, asyncio, aiohttp, subprocess, ctypes
