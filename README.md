@@ -27,7 +27,7 @@
 > To get started with this tool, follow these steps:
 > 
 > 1. **Download:**
->    - If you prefer the source code, download the repo as a [zip file](https://github.com/Schuh1337/Discord-MultiTool/archive/refs/heads/main.zip). Extract the contents and navigate to the extracted directory.
+>    - If you prefer the source code, download the repo as a [zip file](https://github.com/Schuh1337/Discord-MultiTool/archive/refs/heads/main.zip). Extract the file and navigate to the extracted directory.
 >    - If you prefer the compiled executable (exe), download it directly from the [Releases](https://github.com/Schuh1337/Discord-MultiTool/releases) section.
 > 
 > 2. **For Source Code:**
