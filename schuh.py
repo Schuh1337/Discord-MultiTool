@@ -1,4 +1,4 @@
-0##########################################
+##########################################
 #     Licensed under the MIT License     #
 #    I do not take any responsibility    #
 # github.com/Schuh1337/Discord-MultiTool #
