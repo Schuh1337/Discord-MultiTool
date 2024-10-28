@@ -64,7 +64,7 @@ Update 25 - 29.08.24
   
 * Very small fix in 'Channel Spammer'
 
-<details>
+</details>
 
 <details>
 <summary>Update 23 - 06.08.24</summary>
