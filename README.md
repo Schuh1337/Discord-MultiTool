@@ -75,7 +75,7 @@ Update 25 - 29.08.24
 </details>
 
 <details>
-<summary>Update 22 - 04.08.24 (1000+ Lines 🎉)</summary>
+<summary>Update 22 - 04.08.24</summary>
 <br>
   
 * More error handling for 'Scrape Emojis' & 'Scrape Stickers'
